@@ -10,8 +10,8 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "inlineTemplate": true,
-          "inlineStyle": true,
+          "inlineTemplate": false,
+          "inlineStyle": false,
           "style": "less",
           "skipTests": true
         },
@@ -44,19 +44,14 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/v2ray-ng",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
+            "outputPath": "dist/v2ray-ng/renderer",
+            "index": "src/renderer/index.html",
+            "main": "src/renderer/main.ts",
+            "polyfills": "src/renderer/polyfills.ts",
+            "tsConfig": "tsconfig.renderer.json",
             "aot": true,
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.less"
-            ],
+            "assets": ["src/renderer/favicon.ico", "src/renderer/assets"],
+            "styles": ["src/renderer/styles.less"],
             "scripts": []
           },
           "configurations": {
@@ -108,6 +103,7 @@
           }
         }
       }
-    }},
+    }
+  },
   "defaultProject": "v2ray-ng"
 }
