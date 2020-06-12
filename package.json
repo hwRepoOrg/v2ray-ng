@@ -5,7 +5,8 @@
     "start:renderer": "ng serve --port=4204",
     "start:main": "wait-on http://localhost:4204 && npm run run-main",
     "run-main": "cross-env NODE_ENV=development webpack --config webpack.main.config.js",
-    "start:dev": "npm-run-all -p start:renderer start:main"
+    "start:dev": "npm-run-all -p start:renderer start:main",
+    "start:app": "./node_modules/.bin/electron ./dist/v2ray-ng/main/main.js"
   },
   "private": true,
   "dependencies": {
@@ -19,21 +20,21 @@
     "@angular/router": "~9.1.11",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.10.2",
+    "canvas": "^2.6.1",
+    "electron": "^9.0.3",
+    "electron-is": "^3.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.901.8",
     "@angular/cli": "~9.1.8",
     "@angular/compiler-cli": "~9.1.11",
     "@types/node": "12",
-    "canvas": "^2.6.1",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.2",
     "cross-env": "^7.0.2",
-    "electron": "^9.0.3",
-    "electron-is": "^3.0.0",
+    "electron-rebuild": "^1.11.0",
     "file-loader": "^6.0.0",
-    "fs": "^0.0.1-security",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5",
     "ts-loader": "^7.0.5",

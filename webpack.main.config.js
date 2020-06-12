@@ -5,12 +5,12 @@ const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const webpack = require('webpack');
 
 module.exports = {
-  mode: process.env.NODE_ENV || 'production',
+  mode: process.env.NODE_ENV,
   entry: path.resolve(__dirname, 'src/main/main.ts'),
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist/v2ray-ng/main'),
-    publicPath: path.resolve(__dirname, 'src/main/assets'),
+    publicPath: path.resolve(__dirname, 'dist/v2ray-ng/main'),
   },
   watch: process.env.NODE_ENV === 'development',
   watchOptions: { ignored: /node_modules/ },
@@ -22,13 +22,13 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jeg|jpeg|gif)$/,
-        use: [{ loader: 'file-loader', options: { name: './assets/[name].[ext]' } }],
+        use: [{ loader: 'file-loader', options: { name: '/assets/[name].[ext]' } }],
       },
     ],
   },
   plugins: [
     new webpack.ProgressPlugin(),
-    new CleanWebpackPlugin({ dry: true, verbose: process.env.NODE_ENV === 'production' }),
+    new CleanWebpackPlugin(),
     new CopyPlugin({
       patterns: [
         {

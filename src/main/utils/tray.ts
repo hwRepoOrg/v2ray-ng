@@ -1,17 +1,17 @@
-import { NativeImage, nativeTheme } from 'electron';
-import { macOS } from 'electron-is';
 import { createCanvas, loadImage } from 'canvas';
+import { nativeImage, nativeTheme } from 'electron';
+import { macOS } from 'electron-is';
 import { writeFileSync } from 'fs';
+import dogColorful from '../assets/dog-colorful.png';
 import dogDark from '../assets/dog-dark.png';
 import dogLight from '../assets/dog-light.png';
-import dogColorful from '../assets/dog-colorful.png';
 
-export function getTrayImageUrl() {
+export async function getTrayImage(upload: number, download: number) {
   if (macOS()) {
     if (nativeTheme.shouldUseDarkColors) {
-      return dogDark;
+      return await getMacOSTrayImage(dogDark, upload, download, true);
     } else {
-      return dogLight;
+      return await getMacOSTrayImage(dogLight, upload, download, false);
     }
   }
   return dogColorful;
@@ -25,15 +25,19 @@ export function formatSpeedText(speed: number) {
   }
 }
 
-export async function getTrayImage(upload: number, download: number): Promise<NativeImage> {
-  const canvas = createCanvas(100, 32);
+export async function getMacOSTrayImage(imgUrl: string, upload: number, download: number, isDark: boolean) {
+  const canvas = createCanvas(300, 96);
   const ctx = canvas.getContext('2d');
-  const image = await loadImage(getTrayImageUrl());
-  ctx.drawImage(image, 0, 0, 200, 200, 0, 0, 32, 32);
+  const image = await loadImage(imgUrl);
+  ctx.drawImage(image, 0, 0, 200, 200, 5, 0, 96, 96);
   ctx.beginPath();
-  ctx.strokeText(formatSpeedText(upload), 38, 2, 60);
-  ctx.strokeText(formatSpeedText(download), 38, 18, 60);
+  ctx.fillStyle = isDark ? '#ffffff' : '#333';
+  ctx.font = '35px "PingFang SF"';
+  ctx.direction = 'rtl';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.fillText(formatSpeedText(upload), 290, 15);
+  ctx.fillText(formatSpeedText(download), 290, 55);
   ctx.closePath();
-  writeFileSync('./tray.png', canvas.toBuffer());
-  return NativeImage.createFromDataURL(canvas.toDataURL('image/png'));
+  return nativeImage.createFromBuffer(canvas.toBuffer(), { scaleFactor: 4 });
 }

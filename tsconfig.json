@@ -9,7 +9,7 @@
     "importHelpers": true,
     "outDir": "./dist/v2ray-ng/main",
     "target": "esnext",
-    "lib": ["es2018", "dom", "dom.iterable", "esnext"],
+    "lib": ["es2018", "esnext"],
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -19,7 +19,5 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "isolatedModules": true
-  },
-  "files": ["./src/main/main.ts"],
-  "include": ["./src/main/", "src/main/typings"]
+  }
 }

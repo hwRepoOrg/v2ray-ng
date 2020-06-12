@@ -12,7 +12,9 @@ async function makeSingleInstance() {
 
 function init() {
   makeSingleInstance().then(() => {
-    global.appInstance = new Application();
+    app.on('ready', () => {
+      global.appInstance = new Application();
+    });
   });
 }
 

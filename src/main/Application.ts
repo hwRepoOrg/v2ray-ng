@@ -6,9 +6,12 @@ export class Application extends EventEmitter {
   public tray?: Tray;
   constructor() {
     super();
+    this.init();
   }
 
-  init() {}
+  init() {
+    this.initTray();
+  }
 
   initTray() {
     getTrayImage(0, 0).then((image) => {
