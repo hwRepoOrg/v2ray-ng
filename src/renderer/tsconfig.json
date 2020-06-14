@@ -2,11 +2,9 @@
   "$schema": "https://schemastore.azurewebsites.net/schemas/json/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
-    "module": "CommonJS",
-    "importHelpers": true,
-    "outDir": "./dist/v2ray-ng/main",
-    "target": "esnext",
-    "lib": ["es2018", "esnext"],
+    "outDir": "./out-tsc/app",
+    "target": "es2015",
+    "lib": ["es2018", "dom"],
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,
@@ -20,10 +18,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "paths": {
-      "@typing/*": ["src/typings/*"],
-      "@main/*": ["src/main/*"]
+      "@typing/*": ["../typings/*"],
+      "@main/*": ["../main/*"]
     }
   },
-  "include": ["src/main", "src/typings"],
-  "exclude": ["src/renderer", "./node_modules"]
+  "files": ["./main.ts", "./polyfills.ts"],
+  "include": ["./", "../typings"],
+  "exclude": ["../../node_modules", "../main"],
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  }
 }
