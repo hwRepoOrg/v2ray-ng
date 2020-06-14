@@ -2,18 +2,20 @@
   "$schema": "https://schemastore.azurewebsites.net/schemas/json/tsconfig.json",
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./src/renderer",
+    "baseUrl": "./",
     "sourceMap": true,
     "declaration": false,
     "outDir": "./out-tsc/app",
     "target": "es2015",
     "lib": ["es2018", "dom"],
     "paths": {
-      "@typing/*": ["../../src/typings/*"]
+      "@typing/*": ["./src/typings/*"],
+      "@main/*": ["src/main/*"]
     }
   },
   "files": ["src/renderer/main.ts", "src/renderer/polyfills.ts"],
-  "include": ["src/renderer", "src/typings"],
+  "include": ["./src/renderer", "./src/typings"],
+  "exclude": ["./node_modules", "./src/main"],
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true

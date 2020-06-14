@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IApplication } from '@typing/application.interface';
+import { Application } from '@main/Application';
 import { ElectronService } from '../../core/services/electron.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { ElectronService } from '../../core/services/electron.service';
 })
 export class TitleComponent {
   @Input() title: string;
-  private get application(): IApplication {
+  private get application(): Application {
     return this.electronSrv.remote.getGlobal('appInstance');
   }
   public get isMacOS() {
