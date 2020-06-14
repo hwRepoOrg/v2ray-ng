@@ -11,16 +11,27 @@
           flex-direction: column;
         }
       }
-    }
-    .collapse-icon {
-      cursor: pointer;
-      transition: all 0.3s;
-      &.collapsed {
-        transform: rotate(180deg);
+      [nz-menu-item] {
+        -webkit-app-region: no-drag;
+        padding: 0;
+        a {
+          display: block;
+          padding: 0 16px;
+        }
+        * {
+          -webkit-app-region: no-drag;
+        }
+      }
+      .collapse-icon {
+        cursor: pointer;
+        transition: all 0.3s;
+        &.collapsed {
+          transform: rotate(180deg);
+        }
       }
     }
-  }
-  [nz-menu-item] {
-    -webkit-app-region: no-drag;
+    nz-content {
+      padding: 5px;
+    }
   }
 }
