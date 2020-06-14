@@ -1,13 +1,18 @@
-import { app, BrowserWindow, Menu, Tray } from 'electron';
+import { INode } from '@typing/node.interface';
+import { ISubscribe } from '@typing/subscribe.interface';
+import { app, BrowserWindow } from 'electron';
 import { EventEmitter } from 'events';
+import { readJsonSync, writeJsonSync } from 'fs-extra';
+import * as path from 'path';
 import { environment } from '../environments/environment';
 import { IApplication } from '../typings/application.interface';
-import { getTrayImage } from './utils/tray';
+import { AppTray } from './AppTray';
 
 export class Application extends EventEmitter implements IApplication {
-  public tray?: Tray;
+  public tray?: AppTray;
   public mainWindow?: BrowserWindow;
 
+  private homePath = process.env.HOME;
   private get mainWindowUrl(): string {
     return environment.production ? '../renderer/index.html' : 'http://localhost:4204';
   }
@@ -18,27 +23,8 @@ export class Application extends EventEmitter implements IApplication {
   }
 
   private init() {
-    this.initTray();
+    this.tray = new AppTray();
     this.showMainPanel();
-  }
-
-  private initTray() {
-    getTrayImage(0, 0).then((image) => {
-      this.tray = new Tray(image);
-      this.tray.setContextMenu(
-        Menu.buildFromTemplate([
-          { label: '节点选择' },
-          { label: '代理模式' },
-          { type: 'separator' },
-          {
-            label: '退出',
-            click: () => {
-              this.quit();
-            },
-          },
-        ])
-      );
-    });
   }
 
   showMainPanel() {
@@ -60,5 +46,23 @@ export class Application extends EventEmitter implements IApplication {
 
   quit() {
     app.quit();
+  }
+
+  saveNodeConfig(nodes: INode[]) {
+    writeJsonSync(path.resolve(this.homePath, './.v2ray-ng/nodes.json'), nodes);
+    return nodes;
+  }
+
+  saveSubscribeConfig(subscribes: ISubscribe[]) {
+    writeJsonSync(path.resolve(this.homePath, './.v2ray-ng/nodes.json'), subscribes);
+    return subscribes;
+  }
+
+  getNodes() {
+    return readJsonSync(path.resolve(this.homePath, './.v2ray-ng/nodes.json'), { throws: false }) || [];
+  }
+
+  getSubscribes() {
+    return readJsonSync(path.resolve(this.homePath, './.v2ray-ng/nodes.json'), { throws: false }) || [];
   }
 }
