@@ -5,7 +5,7 @@ declare namespace NodeJS {
     readonly NODE_ENV: 'development' | 'production';
   }
   interface Global {
-    appInstance: import('../Application').Application;
+    appInstance: import('./application.interface').IApplication;
   }
 }
 

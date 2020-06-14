@@ -37,6 +37,11 @@ module.exports = {
         },
       ],
     }),
+    new webpack.NormalModuleReplacementPlugin(/environment\.ts$/, (resource) => {
+      if (process.env.NODE_ENV === 'production') {
+        resource.request = resource.request.replace(/environment\.ts$/, 'environment.prod.ts');
+      }
+    }),
   ],
   externals: [nodeExternals()],
   resolve: {

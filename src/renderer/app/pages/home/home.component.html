@@ -1,0 +1,29 @@
+<v2ray-title [title]="'v2ray ng'"></v2ray-title>
+<nz-layout class="home-layout">
+  <nz-sider [nzWidth]="150" nzCollapsible [(nzCollapsed)]="menuCollapsed" [nzTrigger]="null">
+    <ul nz-menu nzTheme="dark" [nzInlineCollapsed]="menuCollapsed">
+      <li nz-menu-item>
+        <i nz-icon nzType="ordered-list" nzTheme="outline"></i>
+        <span>节点列表</span>
+      </li>
+      <li nz-menu-item>
+        <i nz-icon nzType="unordered-list" nzTheme="outline"></i>
+        <span>订阅管理</span>
+      </li>
+      <li nz-menu-item>
+        <i nz-icon nzType="setting" nzTheme="outline"></i>
+        <span>偏好设置</span>
+      </li>
+    </ul>
+    <div class="d-flex justify-content-center ml-3 mr-3 mt-auto">
+      <i
+        class="collapse-icon"
+        [class.collapsed]="menuCollapsed"
+        nz-icon
+        nzType="double-left"
+        (click)="menuCollapsed = !menuCollapsed"
+      ></i>
+    </div>
+  </nz-sider>
+  <nz-content></nz-content>
+</nz-layout>

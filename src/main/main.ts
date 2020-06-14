@@ -15,6 +15,9 @@ function init() {
     app.on('ready', () => {
       global.appInstance = new Application();
     });
+    app.on('window-all-closed', () => {
+      app.dock.hide();
+    });
   });
 }
 

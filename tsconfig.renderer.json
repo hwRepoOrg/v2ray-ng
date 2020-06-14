@@ -1,20 +1,19 @@
 {
   "$schema": "https://schemastore.azurewebsites.net/schemas/json/tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
+    "baseUrl": "./src/renderer",
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "importHelpers": true,
     "outDir": "./out-tsc/app",
-    "types": [],
     "target": "es2015",
-    "lib": ["es2018", "dom"]
+    "lib": ["es2018", "dom"],
+    "paths": {
+      "@typing/*": ["../../src/typings/*"]
+    }
   },
   "files": ["src/renderer/main.ts", "src/renderer/polyfills.ts"],
-  "include": ["src/renderer/**/*.d.ts"],
+  "include": ["src/renderer", "src/typings"],
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true

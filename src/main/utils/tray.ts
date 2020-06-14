@@ -19,7 +19,7 @@ export async function getTrayImage(upload: number, download: number) {
 
 export function formatSpeedText(speed: number) {
   if (speed < 1024) {
-    return `${Math.round(speed)}KB/s`;
+    return `${Math.round(speed)} KB/s`;
   } else {
     return `${Math.round((speed / 1024) * Math.pow(10, 2)) / Math.pow(10, 2)}MB/s`;
   }
@@ -32,7 +32,7 @@ export async function getMacOSTrayImage(imgUrl: string, upload: number, download
   ctx.drawImage(image, 0, 0, 200, 200, 5, 0, 96, 96);
   ctx.beginPath();
   ctx.fillStyle = isDark ? '#ffffff' : '#333';
-  ctx.font = '35px "PingFang SF"';
+  ctx.font = '590 35px ".SF Display"';
   ctx.direction = 'rtl';
   ctx.textAlign = 'right';
   ctx.textBaseline = 'top';

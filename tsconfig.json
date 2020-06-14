@@ -18,6 +18,10 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "paths": {
+      "@typing/*": ["src/typings/*"],
+      "@main/*": ["src/main/*"]
+    }
   }
 }
