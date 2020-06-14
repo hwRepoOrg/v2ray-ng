@@ -8,6 +8,7 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { AppComponent } from './app.component';
 import { routes } from './app.routing';
+import { ElectronService } from './core/services/electron.service';
 import { TitleComponent } from './layouts/title/title.component';
 import { HomeComponent } from './pages/home/home.component';
 
@@ -26,4 +27,8 @@ const PAGES = [HomeComponent];
   providers: [],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private electronSrv: ElectronService) {
+    this.electronSrv.remote.getGlobal('appInstance')?.showMainPanel();
+  }
+}
