@@ -12,6 +12,7 @@ import { ElectronService } from './core/services/electron.service';
 import { TitleComponent } from './layouts/title/title.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NodeListComponent } from './pages/node-list/node-list.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const antDesignIcons = AllIcons as {
   [key: string]: IconDefinition;
@@ -24,7 +25,14 @@ const PAGES = [HomeComponent, NodeListComponent];
 
 @NgModule({
   declarations: [AppComponent, ...PAGES, ...LAYOUTS],
-  imports: [BrowserModule, CommonModule, RouterModule.forRoot(routes), NzIconModule.forRoot(icons), NgZorroAntdModule],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    CommonModule,
+    RouterModule.forRoot(routes),
+    NzIconModule.forRoot(icons),
+    NgZorroAntdModule,
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
