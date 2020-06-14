@@ -22,9 +22,9 @@ export class Application extends EventEmitter {
     this.tray = new AppTray();
     this.config = new AppConfig();
     this.mainWindow = new BrowserWindow({
-      width: 800,
+      width: 900,
       height: 600,
-      minWidth: 800,
+      minWidth: 900,
       minHeight: 600,
       frame: false,
       titleBarStyle: 'hidden',
