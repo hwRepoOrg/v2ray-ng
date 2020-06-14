@@ -38,7 +38,7 @@
         }
       },
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "src/renderer",
       "prefix": "v2ray",
       "architect": {
         "build": {
