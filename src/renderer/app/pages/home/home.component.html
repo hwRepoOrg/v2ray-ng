@@ -1,16 +1,34 @@
 <v2ray-title [title]="'v2ray ng'"></v2ray-title>
-<nz-layout class="home-layout">
+<nz-layout class="home-layout" [class.collapsed]="menuCollapsed">
   <nz-sider [nzWidth]="150" nzCollapsible [(nzCollapsed)]="menuCollapsed" [nzTrigger]="null">
     <ul nz-menu nzTheme="dark" [nzInlineCollapsed]="menuCollapsed">
-      <li nz-menu-item routerLinkActive="ant-menu-item-selected">
-        <a routerLink="/node-list"> <i nz-icon nzType="ordered-list" nzTheme="outline"></i><span>节点列表</span></a>
+      <li
+        nz-menu-item
+        routerLinkActive="ant-menu-item-selected"
+        nz-tooltip
+        [nzTooltipTrigger]="menuCollapsed ? 'hover' : 'null'"
+        nzTooltipTitle="节点列表"
+      >
+        <a routerLink="/node-list"> <i nz-icon nzType="ordered-list" nzTheme="outline"></i><span>节点列表</span> </a>
       </li>
-      <li nz-menu-item routerLinkActive="ant-menu-item-selected">
+      <li
+        nz-menu-item
+        routerLinkActive="ant-menu-item-selected"
+        nz-tooltip
+        [nzTooltipTrigger]="menuCollapsed ? 'hover' : 'null'"
+        nzTooltipTitle="订阅管理"
+      >
         <a routerLink="/subscribe-manage">
           <i nz-icon nzType="unordered-list" nzTheme="outline"></i> <span>订阅管理</span>
         </a>
       </li>
-      <li nz-menu-item routerLinkActive="ant-menu-item-selected">
+      <li
+        nz-menu-item
+        routerLinkActive="ant-menu-item-selected"
+        nz-tooltip
+        [nzTooltipTrigger]="menuCollapsed ? 'hover' : 'null'"
+        nzTooltipTitle="偏好设置"
+      >
         <a routerLink="/settings">
           <i nz-icon nzType="setting" nzTheme="outline"></i>
           <span>偏好设置</span>
