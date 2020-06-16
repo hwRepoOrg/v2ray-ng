@@ -1,10 +1,17 @@
 <div class="action-bar">
   <a class="action">
     <i nz-icon nzType="wifi" nzTheme="outline"></i>
-    <span>节点测速</span>
+    <span> 节点测速</span>
   </a>
   <a class="action">
     <i nz-icon nzType="plus"></i>
   </a>
 </div>
-<div class="node-list"></div>
+<nz-radio-group>
+  <div class="node-list">
+    <v2ray-node-info
+      class="node-info"
+      [node]="{ name: 'test server', server: 'test.v2ray.com', port: 6666, type: 'vmess' }"
+    ></v2ray-node-info>
+  </div>
+</nz-radio-group>

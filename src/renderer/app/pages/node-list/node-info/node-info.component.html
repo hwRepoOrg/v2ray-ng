@@ -1,0 +1,8 @@
+<nz-card nzSize="small">
+  <p class="d-flex justify-content-between">
+    <nz-tag>{{ node.type }}</nz-tag>
+    <span>333ms</span>
+    <label nz-radio [nzValue]="node?.id"></label>
+  </p>
+  <p class="d-flex justify-content-between">{{ node?.name || node?.server }}</p>
+</nz-card>
