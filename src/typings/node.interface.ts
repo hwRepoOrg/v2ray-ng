@@ -1,4 +1,5 @@
 export interface INode {
+  id: string;
   name: string;
   type: 'ss' | 'vmess';
   server: string;
