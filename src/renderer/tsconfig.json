@@ -24,7 +24,7 @@
   },
   "files": ["./main.ts", "./polyfills.ts"],
   "include": ["./", "../typings"],
-  "exclude": ["../../node_modules", "../main"],
+  "exclude": ["../main"],
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
