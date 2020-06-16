@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Application } from '@main/Application';
-import { ElectronService } from '../../core/services/electron.service';
+import { ElectronService } from '../../services/electron.service';
 
 @Component({
   selector: 'v2ray-title',
