@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -7,21 +8,24 @@ import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
 import {
   NzCardModule,
+  NzDrawerModule,
   NzFormModule,
   NzLayoutModule,
   NzMenuModule,
   NzRadioModule,
-  NzToolTipModule,
   NzTagModule,
+  NzToolTipModule,
 } from 'ng-zorro-antd';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzResizableModule } from 'ng-zorro-antd/resizable';
 import { AppComponent } from './app.component';
 import { routes } from './app.routing';
-import { ElectronService } from './services/electron.service';
 import { TitleComponent } from './layouts/title/title.component';
 import { HomeComponent } from './pages/home/home.component';
+import { NodeFormComponent } from './pages/node-list/node-form/node-form.component';
 import { NodeInfoComponent } from './pages/node-list/node-info/node-info.component';
 import { NodeListComponent } from './pages/node-list/node-list.component';
+import { ElectronService } from './services/electron.service';
 
 const antDesignIcons = AllIcons as {
   [key: string]: IconDefinition;
@@ -37,15 +41,25 @@ const ANTD_MODULES = [
   NzFormModule,
   NzRadioModule,
   NzTagModule,
+  NzDrawerModule,
+  NzResizableModule,
 ];
 
 const LAYOUTS = [TitleComponent];
 
-const PAGES = [HomeComponent, NodeListComponent, NodeInfoComponent];
+const PAGES = [HomeComponent, NodeListComponent, NodeInfoComponent, NodeFormComponent];
 
 @NgModule({
   declarations: [AppComponent, ...PAGES, ...LAYOUTS],
-  imports: [BrowserModule, BrowserAnimationsModule, CommonModule, RouterModule.forRoot(routes), ...ANTD_MODULES],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule.forRoot(routes),
+    ...ANTD_MODULES,
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })

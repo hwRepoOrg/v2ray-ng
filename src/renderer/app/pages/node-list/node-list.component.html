@@ -3,7 +3,7 @@
     <i nz-icon nzType="wifi" nzTheme="outline"></i>
     <span> 节点测速</span>
   </a>
-  <a class="action">
+  <a class="action" (click)="toggleDrawer()">
     <i nz-icon nzType="plus"></i>
   </a>
 </div>
@@ -15,3 +15,22 @@
     ></v2ray-node-info>
   </div>
 </nz-radio-group>
+<nz-drawer
+  [nzWidth]="drawerWidth"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  nzTitle="添加节点"
+  (nzOnClose)="toggleDrawer()"
+  [nzBodyStyle]="{ padding: 0 }"
+>
+  <div
+    *ngIf="drawerVisible"
+    class="drawer-body"
+    nz-resizable
+    nzBounds="window"
+    [nzMinWidth]="300"
+    (nzResize)="onDrawerResize($event)"
+  >
+    <nz-resize-handles [nzDirections]="['left']"></nz-resize-handles>
+  </div>
+</nz-drawer>
