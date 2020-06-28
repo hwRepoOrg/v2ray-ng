@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
+import { DelonFormModule } from '@delon/form';
 import {
   NzCardModule,
   NzDrawerModule,
@@ -44,6 +45,7 @@ const ANTD_MODULES = [
   NzDrawerModule,
   NzResizableModule,
 ];
+const THIRD_MODULES = [DelonFormModule.forRoot()];
 
 const LAYOUTS = [TitleComponent];
 
@@ -59,6 +61,7 @@ const PAGES = [HomeComponent, NodeListComponent, NodeInfoComponent, NodeFormComp
     ReactiveFormsModule,
     RouterModule.forRoot(routes),
     ...ANTD_MODULES,
+    ...THIRD_MODULES,
   ],
   providers: [],
   bootstrap: [AppComponent],
