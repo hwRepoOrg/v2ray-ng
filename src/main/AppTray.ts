@@ -2,6 +2,7 @@ import { createCanvas, loadImage } from 'canvas';
 import { Menu, nativeImage, nativeTheme, Tray } from 'electron';
 import { macOS } from 'electron-is';
 import { EventEmitter } from 'events';
+import fs from 'fs-extra';
 import dogColorful from './assets/dog-colorful.png';
 import dogDark from './assets/dog-dark.png';
 import dogLight from './assets/dog-light.png';
@@ -37,7 +38,7 @@ export class AppTray extends EventEmitter {
         return await this.getMacOSTrayImage(dogLight, upload, download, false);
       }
     }
-    return dogColorful;
+    return nativeImage.createFromBuffer(fs.readFileSync(dogColorful), { scaleFactor: 8.5 });
   }
 
   formatSpeedText(speed: number) {
