@@ -20,6 +20,8 @@ export interface IConfig {
   policy?: IConfigPolicy;
   reverse?: IConfigReverse;
   transport?: IConfigTransport;
+  inbounds?: IConfigInbound[];
+  outbounds?: IConfigOutbound[];
 }
 
 export interface IConfigLog {
@@ -87,20 +89,98 @@ export interface IConfigReverse {
 }
 
 export interface IConfigTransport {
-  tcpSettings?: {};
-  kcpSettings?: {};
-  wsSettings?: {};
-  httpSettings?: {};
-  dsSettings?: {};
-  quicSettings?: {};
+  tcpSettings?: IConfigTCPSetting;
+  kcpSettings?: IConfigKCPSetting;
+  wsSettings?: IConfigWSSetting;
+  httpSettings?: IConfigHTTPSetting;
+  dsSettings?: IConfigDSSetting;
+  quicSettings?: IConfigQUICSetting;
+}
+
+export interface IConfigTCPSetting {
+  header: {
+    type: 'none' | 'http';
+    request: {
+      version: string;
+      method: string;
+      path: string[];
+      headers: { [key: string]: string | string[] };
+    };
+    response: {
+      version: string;
+      status: string;
+      reason: string;
+      headers: { [key: string]: string | string[] };
+    };
+  };
+}
+
+export interface IConfigKCPSetting {
+  mtu: number;
+  tti: number;
+  uplinkCapacity: number;
+  downlinkCapacity: number;
+  congestion: boolean;
+  readBufferSize: number;
+  writeBufferSize: number;
+  header: {
+    type: 'none' | 'srtp' | 'utp' | 'wechat-video' | 'dtls' | 'wireguard';
+  };
+}
+
+export interface IConfigWSSetting {
+  path: string;
+  headers: {
+    Host: string;
+  };
+}
+
+export interface IConfigHTTPSetting {
+  host: string[];
+  path: string;
+}
+
+export interface IConfigDSSetting {
+  path: string;
+}
+
+export interface IConfigQUICSetting {
+  security: 'none' | 'aes-128-gcm' | 'chacha20-poly1305';
+  key: string;
+  header: {
+    type: 'none' | 'srtp' | 'utp' | 'wechat-video' | 'dtls' | 'wireguard';
+  };
 }
 
 export interface IConfigInbound {
   port: number;
   listen: string;
-  protocol: ProtocolType;
+  protocol: InboundProtocolType;
+  settings: any;
+  streamSettings: IConfigTransport;
+  tag: string;
+  sniffing: {
+    enabled: boolean;
+    destOverride: ('http' | 'tls')[];
+  };
+  allocate: {
+    strategy: 'always' | 'random';
+    refresh: number;
+    concurrency: number;
+  };
 }
 
-export interface IConfigProtocolSettings {
-  dolodemo: {};
+export interface IConfigOutbound {
+  sendThrough: string;
+  protocol: OutboundProtocolType;
+  settings: any;
+  tag: string;
+  streamSettings: IConfigTransport;
+  proxySettings: {
+    tag: string;
+  };
+  mux: {
+    enabled: boolean;
+    concurrency: number;
+  };
 }

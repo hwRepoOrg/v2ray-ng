@@ -8,12 +8,7 @@
   </a>
 </div>
 <nz-radio-group>
-  <div class="node-list">
-    <v2ray-node-info
-      class="node-info"
-      [node]="{ name: 'test server', server: 'test.v2ray.com', port: 6666, type: 'vmess' }"
-    ></v2ray-node-info>
-  </div>
+  <div class="node-list"></div>
 </nz-radio-group>
 <nz-drawer
   [nzWidth]="drawerWidth"
@@ -32,6 +27,5 @@
     (nzResize)="onDrawerResize($event)"
   >
     <nz-resize-handles [nzDirections]="['left']"></nz-resize-handles>
-    <v2ray-node-form></v2ray-node-form>
   </div>
 </nz-drawer>
