@@ -6,7 +6,7 @@
     "start:main": "wait-on http://localhost:4204 && npm run run-main",
     "run-main": "cross-env NODE_ENV=development webpack --config webpack.main.config.js",
     "start:dev": "npm-run-all -p start:renderer start:main",
-    "start:app": "./node_modules/.bin/electron ./dist/v2ray-ng/main/main.js"
+    "start:app": "./node_modules/.bin/electron --remote-debugging-port=9222 ./dist/v2ray-ng/main/main.js"
   },
   "private": true,
   "dependencies": {
