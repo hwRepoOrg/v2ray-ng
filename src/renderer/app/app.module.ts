@@ -25,6 +25,7 @@ import { TitleComponent } from './layouts/title/title.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NodeListComponent } from './pages/node-list/node-list.component';
 import { ElectronService } from './services/electron.service';
+import { NodeConfigFormComponent } from './pages/node-config-form/node-config-form.component';
 
 const antDesignIcons = AllIcons as {
   [key: string]: IconDefinition;
@@ -50,7 +51,7 @@ const LAYOUTS = [TitleComponent];
 const PAGES = [HomeComponent, NodeListComponent];
 
 @NgModule({
-  declarations: [AppComponent, ...PAGES, ...LAYOUTS],
+  declarations: [AppComponent, ...PAGES, ...LAYOUTS, NodeConfigFormComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

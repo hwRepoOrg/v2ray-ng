@@ -7,7 +7,7 @@ import { NzResizeEvent } from 'ng-zorro-antd/resizable';
   styleUrls: ['./node-list.component.less'],
 })
 export class NodeListComponent {
-  public drawerWidth = 300;
+  public drawerWidth = 600;
   public drawerVisible = false;
   private drawerAnimationId: number;
 
