@@ -14,6 +14,7 @@ module.exports = {
   },
   watch: process.env.NODE_ENV === 'development',
   watchOptions: { ignored: /node_modules/ },
+  devtool: 'source-map',
   module: {
     rules: [
       {
