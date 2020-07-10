@@ -1,0 +1,16 @@
+<sf [schema]="nodeFormSchema" button="none">
+  <ng-template sf-template="/streamSettings/tcpSettings/header/request/headers" let-me>
+    <textarea
+      nz-input
+      [ngModel]="me.formProperty.value | jsonToObject: false"
+      (ngModelChange)="me.setValue(parse($event))"
+    ></textarea>
+  </ng-template>
+  <ng-template sf-template="/streamSettings/tcpSettings/header/response/headers" let-me>
+    <textarea
+      nz-input
+      [ngModel]="me.formProperty.value | jsonToObject: false"
+      (ngModelChange)="me.setValue(parse($event))"
+    ></textarea>
+  </ng-template>
+</sf>

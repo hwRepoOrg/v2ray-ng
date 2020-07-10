@@ -23,9 +23,10 @@
     class="drawer-body"
     nz-resizable
     nzBounds="window"
-    [nzMinWidth]="600"
+    [nzMinWidth]="785"
     (nzResize)="onDrawerResize($event)"
   >
     <nz-resize-handles [nzDirections]="['left']"></nz-resize-handles>
+    <v2ray-node-config-form></v2ray-node-config-form>
   </div>
 </nz-drawer>
