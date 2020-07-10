@@ -157,7 +157,7 @@ export interface IConfigInbound {
   listen: string;
   protocol: InboundProtocolType;
   settings: any;
-  streamSettings: IConfigTransport;
+  streamSettings: IConfigStreamSetting;
   tag: string;
   sniffing: {
     enabled: boolean;
@@ -175,7 +175,7 @@ export interface IConfigOutbound {
   protocol: OutboundProtocolType;
   settings: any;
   tag: string;
-  streamSettings: IConfigTransport;
+  streamSettings: IConfigStreamSetting;
   proxySettings: {
     tag: string;
   };
@@ -183,4 +183,33 @@ export interface IConfigOutbound {
     enabled: boolean;
     concurrency: number;
   };
+}
+
+export interface IConfigStreamSetting extends IConfigTransport {
+  network: 'tcp' | 'kcp' | 'ws' | 'http' | 'domainsocket' | 'quic';
+  security: 'none' | 'tls';
+  tlsSettings: IConfigTLSSetting;
+  sockopt: IConfigSockOption;
+}
+
+export interface IConfigTLSSetting {
+  serverName: string;
+  allowInsecure: boolean;
+  alpn: string[];
+  certificates: IConfigCertificate[];
+  disableSystemRoot: boolean;
+}
+
+export interface IConfigCertificate {
+  usage: 'encipherment' | 'verify' | 'issue';
+  certificateFile: string;
+  certificate: string[];
+  keyFile: string;
+  key: string[];
+}
+
+export interface IConfigSockOption {
+  mark: number;
+  tcpFastOpen: boolean;
+  tproxy: 'redirect' | 'tproxy' | 'off';
 }
