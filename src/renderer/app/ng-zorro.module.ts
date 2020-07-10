@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
@@ -10,6 +11,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzResizableModule } from 'ng-zorro-antd/resizable';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -33,6 +35,8 @@ const ANTD_MODULES = [
   NzCollapseModule,
   NzMessageModule,
   NzInputModule,
+  NzButtonModule,
+  NzPopconfirmModule,
 ];
 
 @NgModule({
