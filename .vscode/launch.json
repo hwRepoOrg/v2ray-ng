@@ -5,11 +5,21 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug Main Process",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+      },
+      "args": ["./dist/v2ray-ng/main/main.js"]
+    },
+    {
       "name": "Attach",
-      "port": 9222,
+      "port": 5858,
       "request": "attach",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "pwa-node"
+      "type": "node"
     }
   ]
 }
