@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ElectronService } from '../../services/electron.service';
+import { ElectronService } from '@renderer/services/electron.service';
 
 @Component({
   selector: 'v2ray-home',
