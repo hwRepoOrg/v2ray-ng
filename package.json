@@ -6,7 +6,8 @@
     "start:main": "wait-on http://localhost:4204 && npm run run-main",
     "run-main": "cross-env NODE_ENV=development webpack --config webpack.main.config.js",
     "start:dev": "npm-run-all -p start:renderer start:main",
-    "start:app": "./node_modules/.bin/electron --remote-debugging-port=9222 ./dist/v2ray-ng/main/main.js"
+    "start:app": "./node_modules/.bin/electron --remote-debugging-port=9222 ./dist/v2ray-ng/main/main.js",
+    "lint-staged": "lint-staged"
   },
   "private": true,
   "dependencies": {
@@ -51,6 +52,13 @@
     "typescript": "~3.8.3",
     "wait-on": "^5.0.1",
     "webpack-cli": "^3.3.11",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^1.7.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged"
+    }
   }
 }
