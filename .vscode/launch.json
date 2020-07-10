@@ -13,7 +13,7 @@
       "windows": {
         "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
       },
-      "args": ["./dist/v2ray-ng/main/main.js"]
+      "args": ["./dist/v2ray-ng/main/main.js"],
     },
     {
       "name": "Attach",
