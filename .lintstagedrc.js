@@ -2,6 +2,9 @@
 
 module.exports = {
   'src/main/**/*.ts': (files) => [
+    `./node_modules/.bin/tslint --fix -p ./tsconfig.json ${files
+      .map((file) => file.replace(process.cwd() + '/', ''))
+      .join(' ')}`,
     `./node_modules/.bin/prettier --write ${files.map((file) => file.replace(process.cwd() + '/', '')).join(' ')}`,
   ],
   'src/renderer/**/*.ts': (files) => [
