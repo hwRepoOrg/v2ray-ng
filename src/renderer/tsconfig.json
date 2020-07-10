@@ -19,7 +19,8 @@
     "isolatedModules": true,
     "paths": {
       "@typing/*": ["../typings/*"],
-      "@main/*": ["../main/*"]
+      "@main/*": ["../main/*"],
+      "@renderer/*": ["./app/*"]
     }
   },
   "files": ["./main.ts", "./polyfills.ts"],

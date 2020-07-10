@@ -21,9 +21,16 @@
     "isolatedModules": true,
     "paths": {
       "@typing/*": ["src/typings/*"],
-      "@main/*": ["src/main/*"]
+      "@main/*": ["src/main/*"],
+      "@renderer/*": ["src/renderer/app/*"]
     }
   },
-  "include": ["src/main", "src/typings"],
+  "include": [
+    "src/main",
+    "src/typings",
+    "src/renderer/app/interfaces/form-schema.interface.ts",
+    "src/typings/subscribe.interface.ts",
+    "src/typings/config.interface.ts"
+  ],
   "exclude": ["src/renderer", "./node_modules"]
 }
