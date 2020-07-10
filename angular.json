@@ -101,6 +101,16 @@
           "options": {
             "browserTarget": "v2ray-ng:build"
           }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["./src/renderer/tsconfig.json"],
+            "exclude": ["**/node_modules/**"],
+            "fix": true,
+            "silent": false,
+            "typeCheck": true
+          }
         }
       }
     }
