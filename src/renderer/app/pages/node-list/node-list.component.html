@@ -3,9 +3,17 @@
     <i nz-icon nzType="wifi" nzTheme="outline"></i>
     <span> 节点测速</span>
   </a>
-  <a class="action" (click)="toggleDrawer()">
+  <a class="action" nz-dropdown [nzDropdownMenu]="menu">
     <i nz-icon nzType="plus"></i>
+    添加节点
+    <i nz-icon nzType="down"></i>
   </a>
+  <nz-dropdown-menu #menu>
+    <ul nz-menu>
+      <li nz-menu-item (click)="toggleDrawer()">手动添加</li>
+      <li nz-menu-item>从url导入</li>
+    </ul>
+  </nz-dropdown-menu>
 </div>
 <nz-radio-group>
   <div class="node-list"></div>
@@ -17,16 +25,9 @@
   nzTitle="添加节点"
   (nzOnClose)="toggleDrawer()"
   [nzBodyStyle]="{ padding: 0 }"
+  [nzMaskClosable]="false"
 >
-  <div
-    *ngIf="drawerVisible"
-    class="drawer-body"
-    nz-resizable
-    nzBounds="window"
-    [nzMinWidth]="785"
-    (nzResize)="onDrawerResize($event)"
-  >
-    <nz-resize-handles [nzDirections]="['left']"></nz-resize-handles>
-    <v2ray-node-config-form></v2ray-node-config-form>
+  <div *ngIf="drawerVisible" class="drawer-body" nzBounds="window">
+    <v2ray-node-config-form (whenSubmit)="addNode($event)"></v2ray-node-config-form>
   </div>
 </nz-drawer>

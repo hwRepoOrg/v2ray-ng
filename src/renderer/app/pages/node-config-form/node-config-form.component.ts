@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { SFComponent } from '@delon/form';
 import { ISFSchema } from '@renderer/interfaces/form-schema.interface';
 import { IConfigOutbound } from '@typing/config.interface';
@@ -10,6 +10,9 @@ import { NodeConfigSchema } from './schema';
   styleUrls: ['./node-config-form.component.less'],
 })
 export class NodeConfigFormComponent implements OnInit {
+  public get formValid(): boolean {
+    return this.nodeConfigForm?.valid;
+  }
   @Input()
   public set nodeConfig(val: IConfigOutbound) {
     const vnext = (val.settings?.vnext && val.settings.vnext[0]) ?? {};
@@ -28,7 +31,7 @@ export class NodeConfigFormComponent implements OnInit {
   }
   public nodeFormSchema: ISFSchema<IConfigOutbound> = NodeConfigSchema;
   @ViewChild('nodeConfigForm', { read: SFComponent }) public nodeConfigForm: SFComponent;
-  public whenSubmit = new EventEmitter<IConfigOutbound>();
+  @Output() public whenSubmit = new EventEmitter<IConfigOutbound>();
   private _nodeConfig: any;
 
   constructor(private msgSrv: NzMessageService) {}

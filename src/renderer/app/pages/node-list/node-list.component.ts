@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { NzResizeEvent } from 'ng-zorro-antd/resizable';
+import { ElectronService } from '@renderer/services/electron.service';
+import { IConfigOutbound } from '@typing/config.interface';
 
 @Component({
   selector: 'v2ray-node-list',
@@ -9,18 +10,14 @@ import { NzResizeEvent } from 'ng-zorro-antd/resizable';
 export class NodeListComponent {
   public drawerWidth = 785;
   public drawerVisible = false;
-  private drawerAnimationId: number;
 
-  constructor() {}
-
-  onDrawerResize({ width }: NzResizeEvent): void {
-    cancelAnimationFrame(this.drawerAnimationId);
-    this.drawerAnimationId = requestAnimationFrame(() => {
-      this.drawerWidth = width!;
-    });
-  }
+  constructor(private electronSrv: ElectronService) {}
 
   toggleDrawer() {
     this.drawerVisible = !this.drawerVisible;
+  }
+
+  addNode(nodeConfig: IConfigOutbound) {
+    this.electronSrv.remote.getGlobal('appInstance').config.addNodeConfig(nodeConfig);
   }
 }
