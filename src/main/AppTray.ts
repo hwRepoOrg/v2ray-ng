@@ -19,11 +19,15 @@ export class AppTray extends EventEmitter {
       this.tray = new Tray(image);
       this.tray.setContextMenu(
         Menu.buildFromTemplate([
-          {
-            label: '节点选择',
-          },
+          { label: '节点选择' },
           { label: '代理模式', submenu: [{ label: '全局' }, { label: '手动' }] },
           { type: 'separator' },
+          {
+            label: '控制面板',
+            click: () => {
+              global.appInstance.showMainPanel();
+            },
+          },
           { label: '退出', role: 'quit' },
         ])
       );

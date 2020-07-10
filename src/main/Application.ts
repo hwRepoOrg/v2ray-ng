@@ -35,8 +35,12 @@ export class Application extends EventEmitter {
   }
 
   showMainPanel() {
-    if (!this.mainWindow.isVisible()) {
-      this.mainWindow.show();
+    if (this.mainWindow) {
+      if (this.mainWindow.isDestroyed()) {
+      } else {
+        this.mainWindow.show();
+        this.mainWindow.focus();
+      }
     }
   }
 
