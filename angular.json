@@ -52,7 +52,7 @@
             "aot": true,
             "assets": ["src/renderer/favicon.ico", "src/renderer/assets"],
             "styles": ["src/renderer/styles.less"],
-            "scripts": []
+            "scripts": ["./node_modules/ajv/dist/ajv.bundle.js"]
           },
           "configurations": {
             "production": {
