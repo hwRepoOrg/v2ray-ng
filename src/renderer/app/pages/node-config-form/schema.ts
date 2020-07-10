@@ -1,6 +1,18 @@
 import { ISFSchema } from '@renderer/interfaces/form-schema.interface';
 import { IConfigOutbound } from '@typing/config.interface';
 
+const jsonValidator = (value) => {
+  if (typeof value === 'string') {
+    return [
+      {
+        keyword: 'json-parse',
+        message: 'json序列化失败',
+      },
+    ];
+  }
+  return [];
+};
+
 export const NodeConfigSchema: ISFSchema<IConfigOutbound> = {
   type: 'object',
   properties: {
@@ -152,17 +164,7 @@ export const NodeConfigSchema: ISFSchema<IConfigOutbound> = {
                       default: {},
                       ui: {
                         widget: 'custom',
-                        validator: (value) => {
-                          if (typeof value === 'string') {
-                            return [
-                              {
-                                keyword: 'json-parse',
-                                message: 'json序列化失败',
-                              },
-                            ];
-                          }
-                          return [];
-                        },
+                        validator: jsonValidator,
                       },
                     },
                   },
@@ -189,17 +191,7 @@ export const NodeConfigSchema: ISFSchema<IConfigOutbound> = {
                       default: {},
                       ui: {
                         widget: 'custom',
-                        validator: (value) => {
-                          if (typeof value === 'string') {
-                            return [
-                              {
-                                keyword: 'json-parse',
-                                message: 'json序列化失败',
-                              },
-                            ];
-                          }
-                          return [];
-                        },
+                        validator: jsonValidator,
                       },
                     },
                   },
@@ -208,15 +200,86 @@ export const NodeConfigSchema: ISFSchema<IConfigOutbound> = {
             },
           },
         },
-        kcpSettings: { type: 'object', ui: { visibleIf: { '/streamSettings/network': ['mKcp'] } }, properties: {} },
-        wsSettings: { type: 'object', ui: { visibleIf: { '/streamSettings/network': ['ws'] } }, properties: {} },
-        httpSettings: { type: 'object', ui: { visibleIf: { '/streamSettings/network': ['http/2'] } }, properties: {} },
+        kcpSettings: {
+          type: 'object',
+          ui: {
+            type: 'card',
+            cardSize: 'small',
+            visibleIf: { '/streamSettings/network': ['mKcp'] },
+            grid: { span: 24, gutter: 8 },
+            spanLabelFixed: 150,
+          },
+          properties: {
+            mtu: {
+              type: 'number',
+              default: 1350,
+              minimum: 576,
+              maximum: 1460,
+              ui: { grid: { span: 8 } },
+            },
+            tti: { type: 'number', default: 50, minimum: 10, maximum: 100, ui: { unit: 'ms', grid: { span: 8 } } },
+            congestion: { type: 'boolean', ui: { grid: { span: 8 } } },
+            uplinkCapacity: { type: 'number', default: 5, minimum: 0, ui: { unit: 'MB/s', grid: { span: 12 } } },
+            downlinkCapacity: { type: 'number', default: 20, minimum: 0, ui: { unit: 'MB/s', grid: { span: 12 } } },
+            readBufferSize: { type: 'number', default: 2, ui: { unit: 'MB', grid: { span: 12 } } },
+            writeBufferSize: { type: 'number', default: 2, ui: { unit: 'MB', grid: { span: 12 } } },
+          },
+        },
+        wsSettings: {
+          type: 'object',
+          ui: { type: 'card', cardSize: 'small', visibleIf: { '/streamSettings/network': ['ws'] } },
+          properties: {
+            path: { type: 'string' },
+            headers: {
+              type: 'string',
+              default: {},
+              ui: {
+                widget: 'custom',
+                validator: jsonValidator,
+              },
+            },
+          },
+        },
+        httpSettings: {
+          type: 'object',
+          ui: { type: 'card', cardSize: 'small', visibleIf: { '/streamSettings/network': ['http/2'] } },
+          properties: {
+            host: { type: 'string', ui: { widget: 'select', mode: 'tags' } },
+            path: { type: 'string' },
+          },
+        },
         dsSettings: {
           type: 'object',
-          ui: { visibleIf: { '/streamSettings/network': ['domainSocket'] } },
-          properties: {},
+          ui: { type: 'card', cardSize: 'small', visibleIf: { '/streamSettings/network': ['domainSocket'] } },
+          properties: {
+            path: { type: 'string' },
+          },
         },
-        quicSettings: { type: 'object', ui: { visibleIf: { '/streamSettings/network': ['quic'] } }, properties: {} },
+        quicSettings: {
+          type: 'object',
+          ui: { type: 'card', cardSize: 'small', visibleIf: { '/streamSettings/network': ['quic'] } },
+          properties: {
+            security: {
+              type: 'string',
+              default: 'none',
+              enum: ['none', 'aes-128-gcm', 'chacha20-poly1305'],
+            },
+            key: {
+              type: 'string',
+              ui: { visibleIf: { '/streamSettings/quicSettings/security': ['aes-128-gcm', 'chacha20-poly1305'] } },
+            },
+            header: {
+              type: 'object',
+              properties: {
+                type: {
+                  type: 'string',
+                  default: 'none',
+                  enum: ['none', 'srtp', 'utp', 'wechat-video', 'dtls', 'wireguard'],
+                },
+              },
+            },
+          },
+        },
       },
     },
   },
