@@ -37,9 +37,9 @@ export class AppTray extends EventEmitter {
   async getTrayImage(upload: number, download: number) {
     if (macOS()) {
       if (nativeTheme.shouldUseDarkColors) {
-        return await this.getMacOSTrayImage(dogDark, upload, download, true);
+        return nativeImage.createFromBuffer(fs.readFileSync(dogDark), { scaleFactor: 8.5 });
       } else {
-        return await this.getMacOSTrayImage(dogLight, upload, download, false);
+        return nativeImage.createFromBuffer(fs.readFileSync(dogLight), { scaleFactor: 8.5 });
       }
     }
     return nativeImage.createFromBuffer(fs.readFileSync(dogColorful), { scaleFactor: 8.5 });
