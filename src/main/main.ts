@@ -1,5 +1,12 @@
 import { app } from 'electron';
+import * as log from 'electron-log';
 import { Application } from './Application';
+
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+
+global.console.log = log.log;
+global.console.warn = log.warn;
+global.console.error = log.error;
 
 async function makeSingleInstance() {
   const gotSingleLock = app.requestSingleInstanceLock();
@@ -21,4 +28,8 @@ function init() {
   });
 }
 
-init();
+try {
+  init();
+} catch (err) {
+  console.error(err.message);
+}

@@ -26,8 +26,11 @@
     "canvas": "^2.6.1",
     "electron": "^9.0.3",
     "electron-is": "^3.0.0",
+    "electron-log": "^4.2.2",
+    "fs": "^0.0.1-security",
     "fs-extra": "^9.0.1",
     "ng-zorro-antd": "^9.1.2",
+    "path": "^0.12.7",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
