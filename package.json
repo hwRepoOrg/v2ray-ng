@@ -7,7 +7,8 @@
     "run-main": "cross-env NODE_ENV=development webpack --config webpack.main.config.js",
     "start:dev": "npm-run-all -p start:renderer start:main",
     "start:app": "./node_modules/.bin/electron --inspect-brk=5858 ./dist/v2ray-ng/main/main.js",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "electron-rebuild": "./node_modules/.bin/electron-rebuild"
   },
   "private": true,
   "dependencies": {
@@ -19,9 +20,11 @@
     "@angular/platform-browser": "~9.1.11",
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
-    "@delon/abc": "^9.5.2",
-    "@delon/chart": "^9.5.2",
-    "@delon/form": "^9.4.0",
+    "@delon/abc": "~9.5.3",
+    "@delon/chart": "^9.5.3",
+    "@delon/form": "~9.5.3",
+    "@delon/theme": "~9.5.3",
+    "@delon/util": "~9.5.3",
     "ajv": "^6.12.3",
     "canvas": "^2.6.1",
     "electron": "^9.0.3",
@@ -29,7 +32,7 @@
     "electron-log": "^4.2.2",
     "fs": "^0.0.1-security",
     "fs-extra": "^9.0.1",
-    "ng-zorro-antd": "^9.1.2",
+    "ng-zorro-antd": "^9.3.0",
     "path": "^0.12.7",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
