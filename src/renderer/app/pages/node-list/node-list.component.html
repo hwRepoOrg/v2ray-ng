@@ -15,9 +15,9 @@
     </ul>
   </nz-dropdown-menu>
 </div>
-<nz-radio-group>
-  <div class="node-list"></div>
-</nz-radio-group>
+<div class="node-list">
+  <nz-divider nzText="自定义节点列表" nzOrientation="left"></nz-divider>
+</div>
 <nz-drawer
   [nzWidth]="drawerWidth"
   [nzVisible]="drawerVisible"
@@ -28,6 +28,6 @@
   [nzMaskClosable]="false"
 >
   <div *ngIf="drawerVisible" class="drawer-body" nzBounds="window">
-    <v2ray-node-config-form (whenSubmit)="addNode($event)"></v2ray-node-config-form>
+    <v2ray-node-config-form [nodeConfig]="nodeConfig" (whenSubmit)="addNode($event)"></v2ray-node-config-form>
   </div>
 </nz-drawer>

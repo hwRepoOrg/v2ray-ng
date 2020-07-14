@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { SFComponent } from '@delon/form';
 import { ISFSchema } from '@renderer/interfaces/form-schema.interface';
 import { IConfigOutbound } from '@typing/config.interface';
@@ -8,23 +8,23 @@ import { NodeConfigSchema } from './schema';
   selector: 'v2ray-node-config-form',
   templateUrl: './node-config-form.component.html',
   styleUrls: ['./node-config-form.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeConfigFormComponent implements OnInit {
-  public get formValid(): boolean {
-    return this.nodeConfigForm?.valid;
-  }
   @Input()
   public set nodeConfig(val: IConfigOutbound) {
-    const vnext = (val.settings?.vnext && val.settings.vnext[0]) ?? {};
-    const servers = (val.settings?.servers && val.settings.servers[0]) ?? {};
-    this._nodeConfig = {
-      ...val,
-      settings: {
-        ...val.settings,
-        servers,
-        vnext,
-      },
-    };
+    if (val) {
+      const vnext = (val.settings?.vnext && val.settings.vnext[0]) ?? {};
+      const servers = (val.settings?.servers && val.settings.servers[0]) ?? {};
+      this._nodeConfig = {
+        ...val,
+        settings: {
+          ...val.settings,
+          servers,
+          vnext,
+        },
+      };
+    }
   }
   public get nodeConfig(): IConfigOutbound {
     return this._nodeConfig;
