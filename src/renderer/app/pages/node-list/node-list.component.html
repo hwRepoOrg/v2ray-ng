@@ -15,8 +15,9 @@
     </ul>
   </nz-dropdown-menu>
 </div>
+<nz-divider nzText="自定义节点列表" nzOrientation="left"></nz-divider>
 <div class="node-list">
-  <nz-divider nzText="自定义节点列表" nzOrientation="left"></nz-divider>
+  <v2ray-node-card *ngFor="let node of localNodeList" [nodeConfig]="node"></v2ray-node-card>
 </div>
 <nz-drawer
   [nzWidth]="drawerWidth"

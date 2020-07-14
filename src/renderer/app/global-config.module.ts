@@ -9,6 +9,9 @@ const alainModules = [AlainThemeModule.forRoot()];
 const alainProvides = [{ provide: ALAIN_CONFIG, useValue: alainConfig }];
 
 const ngZorroConfig: NzConfig = {
+  card: {
+    nzSize: 'small',
+  },
   table: {
     nzSize: 'middle',
   },

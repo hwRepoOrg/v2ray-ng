@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { UtilsService } from '@renderer/commons/services/utils.service';
+import { IConfigOutbound } from '@typing/config.interface';
 
 @Component({
   selector: 'v2ray-node-card',
@@ -6,7 +8,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./node-card.component.less'],
 })
 export class NodeCardComponent implements OnInit {
-  constructor() {}
+  @Input() nodeConfig: IConfigOutbound;
+
+  constructor(public utilsSrv: UtilsService) {}
 
   ngOnInit(): void {}
 }

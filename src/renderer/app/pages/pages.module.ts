@@ -5,6 +5,7 @@ import { DelonABCModule } from '@renderer/delon-abc.module';
 import { TitleComponent } from '@renderer/layouts/title/title.component';
 import { NgZorroModule } from '@renderer/ng-zorro.module';
 import { HomeComponent } from './home/home.component';
+import { NodeCardComponent } from './node-card/node-card.component';
 import { NodeConfigFormComponent } from './node-config-form/node-config-form.component';
 import { NodeListComponent } from './node-list/node-list.component';
 import { routes } from './pages.routing';
@@ -12,6 +13,6 @@ import { routes } from './pages.routing';
 @NgModule({
   imports: [RouterModule.forRoot(routes), CommonsModule, NgZorroModule, DelonABCModule],
   exports: [RouterModule],
-  declarations: [HomeComponent, NodeListComponent, TitleComponent, NodeConfigFormComponent],
+  declarations: [HomeComponent, NodeListComponent, TitleComponent, NodeConfigFormComponent, NodeCardComponent],
 })
 export class PagesModule {}

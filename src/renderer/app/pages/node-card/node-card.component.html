@@ -1,1 +1,9 @@
-<p>node-card works!</p>
+<nz-card class="node-card">
+  <p class="d-flex justify-content-between">
+    <span></span>
+    <nz-tag nzColor="blue">{{ nodeConfig?.protocol }}</nz-tag>
+  </p>
+  <p class="content text-right mb-0">
+    {{ utilsSrv?.getConfigByProtocol(nodeConfig)?.address }}:{{ utilsSrv?.getConfigByProtocol(nodeConfig)?.port }}
+  </p>
+</nz-card>
