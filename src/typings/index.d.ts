@@ -1,11 +1,13 @@
 /// <reference types="node" />
 
+declare type IApplication = import('../main/Application').Application;
+
 declare namespace NodeJS {
   interface ProcessEnv {
     readonly NODE_ENV: 'development' | 'production';
   }
   interface Global {
-    appInstance: import('../main/Application').Application;
+    appInstance: IApplication;
   }
 }
 
