@@ -17,7 +17,12 @@
 </div>
 <nz-divider nzText="自定义节点列表" nzOrientation="left"></nz-divider>
 <div class="node-list">
-  <v2ray-node-card *ngFor="let node of localNodeList" [nodeConfig]="node"></v2ray-node-card>
+  <v2ray-node-card
+    *ngFor="let node of localNodeList"
+    [nodeConfig]="node"
+    (vEdit)="toggleDrawer($event)"
+    (vSelect)="setActivatedNode($event)"
+  ></v2ray-node-card>
 </div>
 <nz-drawer
   [nzWidth]="drawerWidth"
@@ -29,6 +34,6 @@
   [nzMaskClosable]="false"
 >
   <div *ngIf="drawerVisible" class="drawer-body" nzBounds="window">
-    <v2ray-node-config-form [nodeConfig]="nodeConfig" (whenSubmit)="addNode($event)"></v2ray-node-config-form>
+    <v2ray-node-config-form [nodeConfig]="nodeConfig" (whenSubmit)="nodeFormSubmit($event)"></v2ray-node-config-form>
   </div>
 </nz-drawer>

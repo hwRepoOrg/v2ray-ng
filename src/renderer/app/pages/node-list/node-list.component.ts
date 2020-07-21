@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { UtilsService } from '@renderer/commons/services/utils.service';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ElectronService } from '@renderer/services/electron.service';
 import { IConfigOutbound } from '@typing/config.interface';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'v2ray-node-list',
@@ -15,7 +15,7 @@ export class NodeListComponent implements OnInit {
   public localNodeList: IConfigOutbound[] = [];
   public nodeConfig: IConfigOutbound = null;
 
-  constructor(private electronSrv: ElectronService) {}
+  constructor(private electronSrv: ElectronService, private msg: NzMessageService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.getLocalNodeList();
@@ -27,11 +27,22 @@ export class NodeListComponent implements OnInit {
   }
 
   getLocalNodeList() {
-    this.localNodeList = this.electronSrv.remote.getGlobal('appInstance').config.getNodeConfigList();
+    this.localNodeList = this.electronSrv.app.config.getNodeConfigList();
   }
 
-  addNode(nodeConfig: IConfigOutbound) {
-    this.electronSrv.remote.getGlobal('appInstance').config.addNodeConfig(nodeConfig);
+  nodeFormSubmit(nodeConfig: IConfigOutbound) {
+    this.electronSrv.app.config[nodeConfig.tag ? 'updateNodeConfig' : 'addNodeConfig'](nodeConfig)
+      .then(() => {
+        this.msg.success(`节点${nodeConfig.tag ? '更新' : '添加'}成功`);
+      })
+      .catch((err: Error) => {
+        this.msg.error(`操作失败。err: ${err.message}`);
+      })
+      .finally(() => {
+        this.drawerVisible = false;
+        this.getLocalNodeList();
+        this.cdr.detectChanges();
+      });
   }
 
   setActivatedNode(node: IConfigOutbound | null) {

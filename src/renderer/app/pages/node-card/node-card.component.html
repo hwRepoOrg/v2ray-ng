@@ -1,6 +1,8 @@
 <nz-card class="node-card">
   <p class="d-flex justify-content-between">
-    <span></span>
+    <span>
+      <a nz-icon nzType="edit" (click)="emitEdit($event)"></a>
+    </span>
     <nz-tag nzColor="blue">{{ nodeConfig?.protocol }}</nz-tag>
   </p>
   <p class="content text-right mb-0">
