@@ -1,11 +1,12 @@
 import { IConfigOutbound } from '@typing/config.interface';
 import { app } from 'electron';
 import { EventEmitter } from 'events';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs-extra';
+import { existsSync, mkdirSync, pathExists, readFile, readFileSync, writeFile } from 'fs-extra';
 import * as Path from 'path';
 
 export class AppConfig extends EventEmitter {
   private configPath: string;
+  private nodeListPath: string;
 
   constructor() {
     super();
@@ -13,6 +14,7 @@ export class AppConfig extends EventEmitter {
     if (!existsSync(this.configPath)) {
       mkdirSync(this.configPath);
     }
+    this.nodeListPath = Path.resolve(this.configPath, 'node-list.json');
     console.log(this.configPath);
   }
 
@@ -28,19 +30,21 @@ export class AppConfig extends EventEmitter {
     }
   }
 
-  public addNodeConfig(nodeConfig: IConfigOutbound) {
-    try {
-      const nodeListPath = Path.resolve(this.configPath, 'node-list.json');
-      if (!existsSync(nodeListPath)) {
-        writeFileSync(nodeListPath, JSON.stringify([]));
-      }
-      const nodeList: IConfigOutbound[] = JSON.parse(readFileSync(nodeListPath).toString());
-      nodeList.push({ ...nodeConfig, tag: `${Date.now()}${Math.round(Math.random() * 10000000)}` });
-      writeFileSync(nodeListPath, JSON.stringify(nodeList, null, 2));
-      return true;
-    } catch (err) {
-      console.error(err.message);
-      return false;
+  public async addNodeConfig(nodeConfig: IConfigOutbound) {
+    const hasConfig = await pathExists(this.nodeListPath);
+    if (!hasConfig) {
+      await writeFile(this.nodeListPath, JSON.stringify([]));
     }
+    const nodeList: IConfigOutbound[] = JSON.parse((await readFile(this.nodeListPath)).toString());
+    nodeList.push({ ...nodeConfig, tag: `${Date.now()}${Math.round(Math.random() * 10000000)}` });
+    await writeFile(this.nodeListPath, JSON.stringify(nodeList, null, 2));
   }
+
+  public async updateNodeConfig(nodeConfig: IConfigOutbound) {
+    const nodeList: IConfigOutbound[] = JSON.parse((await readFile(this.nodeListPath)).toString());
+    const newNodeList = nodeList.map((node) => (node.tag === nodeConfig.tag ? nodeConfig : node));
+    await writeFile(this.nodeListPath, JSON.stringify(newNodeList, null, 2));
+  }
+
+  public generatorConfig(node: IConfigOutbound) {}
 }
