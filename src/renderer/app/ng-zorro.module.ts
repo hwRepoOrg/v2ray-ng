@@ -17,6 +17,7 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzResizableModule } from 'ng-zorro-antd/resizable';
 import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
@@ -43,6 +44,7 @@ const ANTD_MODULES = [
   NzTableModule,
   NzDropDownModule,
   NzDividerModule,
+  NzTabsModule,
 ];
 
 @NgModule({
