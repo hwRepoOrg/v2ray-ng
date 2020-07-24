@@ -12,3 +12,27 @@ body {
   height: 100%;
   padding: 24px;
 }
+
+.tabs-card-container {
+  .ant-tabs-card {
+    .ant-tabs-content {
+      margin-top: -16px;
+      .ant-tabs-tabpane {
+        padding: 16px;
+        background: @component-background;
+      }
+    }
+    .ant-tabs-bar {
+      border-color: @component-background;
+      .ant-tabs-tab {
+        background: transparent;
+        border-color: transparent;
+        transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+      }
+      .ant-tabs-tab-active {
+        background: @component-background;
+        border-color: @component-background;
+      }
+    }
+  }
+}
