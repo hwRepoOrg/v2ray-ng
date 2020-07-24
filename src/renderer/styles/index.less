@@ -5,6 +5,24 @@ body {
   margin: 0;
   padding: 0;
   background-color: transparent;
+  * {
+    caret-color: auto;
+    ::-webkit-scrollbar {
+      position: relative;
+      width: 0;
+    }
+    ::-webkit-scrollbar-thumb {
+      position: absolute;
+      right: 0;
+      width: 10px;
+      background-color: red;
+    }
+  }
+  .ant-select-multiple {
+    .ant-select-selection-search {
+      min-width: 10px;
+    }
+  }
 }
 
 .drawer-body {
