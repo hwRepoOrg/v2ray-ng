@@ -9,6 +9,7 @@ import { NodeCardComponent } from './node-card/node-card.component';
 import { NodeConfigFormComponent } from './node-config-form/node-config-form.component';
 import { NodeListComponent } from './node-list/node-list.component';
 import { routes } from './pages.routing';
+import { RoutingFormComponent } from './settings/components/routing-form/routing-form.component';
 import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
@@ -21,6 +22,7 @@ import { SettingsComponent } from './settings/settings.component';
     NodeConfigFormComponent,
     NodeCardComponent,
     SettingsComponent,
+    RoutingFormComponent,
   ],
 })
 export class PagesModule {}

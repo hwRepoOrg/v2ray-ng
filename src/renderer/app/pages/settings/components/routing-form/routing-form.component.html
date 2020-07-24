@@ -1,0 +1,13 @@
+<form nz-form [formGroup]="routingFormGroup">
+  <nz-form-item>
+    <nz-form-label nzRequired>域名策略</nz-form-label>
+    <nz-form-control>
+      <nz-select>
+        <nz-option nzLabel="AsIs" nzValue="AsIs">AsIs</nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-collapse nzAccordion>
+    <nz-collapse-panel nzHeader="规则配置"></nz-collapse-panel>
+  </nz-collapse>
+</form>

@@ -1,17 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ISFSchema } from '@renderer/interfaces/form-schema.interface';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'v2ray-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsComponent implements OnInit {
-  settingsFormSchema: ISFSchema = {
-    type: 'object',
-    properties: {},
-  };
+export class SettingsComponent {
   constructor() {}
-
-  ngOnInit(): void {}
 }

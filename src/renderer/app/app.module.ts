@@ -1,11 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DelonFormModule } from '@delon/form';
 import { AlainThemeModule } from '@delon/theme';
+import { environment } from '../../environments/environment';
 import { AppComponent } from './app.component';
 import { GlobalConfigModule } from './global-config.module';
 import { PagesModule } from './pages/pages.module';
@@ -21,6 +19,8 @@ const THIRD_MODULES = [DelonFormModule.forRoot(), AlainThemeModule.forRoot()];
 })
 export class AppModule {
   constructor(private electronSrv: ElectronService) {
-    this.electronSrv.remote.getGlobal('appInstance')?.showMainPanel();
+    if (environment.production) {
+      this.electronSrv.remote.getGlobal('appInstance')?.showMainPanel();
+    }
   }
 }
