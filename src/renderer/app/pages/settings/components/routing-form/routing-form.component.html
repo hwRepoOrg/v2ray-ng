@@ -47,7 +47,7 @@
           </button>
         </div>
       </ng-template>
-      <nz-collapse>
+      <nz-collapse *ngIf="routingFormGroup.get('rules')['controls'].length">
         <nz-collapse-panel
           *ngFor="let ruleFormGroup of routingFormGroup.controls.rules['controls']; let i = index"
           [nzHeader]="ruleCardTitle"
@@ -78,7 +78,11 @@
             >
               <nz-form-label>outboundTag</nz-form-label>
               <nz-form-control>
-                <nz-select formControlName="outboundTag"></nz-select>
+                <nz-select formControlName="outboundTag">
+                  <nz-option nzLabel="代理" nzValue="proxy"></nz-option>
+                  <nz-option nzLabel="直连" nzValue="direct"></nz-option>
+                  <nz-option nzLabel="DNS" nzValue="dns-out"></nz-option>
+                </nz-select>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item *ngIf="ruleFormGroup.controls.detail.value" class="col-4 p-0">
