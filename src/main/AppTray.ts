@@ -1,5 +1,5 @@
 import { createCanvas, loadImage } from 'canvas';
-import { Menu, nativeImage, nativeTheme, Tray } from 'electron';
+import { app, Menu, nativeImage, nativeTheme, shell, Tray } from 'electron';
 import { macOS } from 'electron-is';
 import { EventEmitter } from 'events';
 import fs from 'fs-extra';
@@ -26,6 +26,12 @@ export class AppTray extends EventEmitter {
             label: '控制面板',
             click: () => {
               global.appInstance.showMainPanel();
+            },
+          },
+          {
+            label: '打开配置文件夹',
+            click: () => {
+              shell.openPath(global.appInstance.config.configPath);
             },
           },
           { label: '退出', role: 'quit' },
