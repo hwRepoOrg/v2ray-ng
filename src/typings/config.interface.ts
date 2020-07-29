@@ -25,39 +25,39 @@ export interface IConfig {
 }
 
 export interface IConfigLog {
-  access: string;
-  error: string;
-  loglevel: 'debug' | 'info' | 'warning' | 'error' | 'none';
+  access?: string;
+  error?: string;
+  loglevel?: 'debug' | 'info' | 'warning' | 'error' | 'none';
 }
 
 export interface IConfigApi {
-  tag: string;
-  services: string[];
+  tag?: string;
+  services?: string[];
 }
 export interface IConfigDNS {
-  host: { [key: string]: string };
-  servers: { address: string; port: number; domains: string[]; expectIps: string[] }[];
+  host?: { [key: string]: string };
+  servers?: { address: string; port: number; domains: string[]; expectIps: string[] }[];
 }
 
 export interface IConfigRouting {
-  domainStrategy: 'AsIs' | 'IPIfNonMatch' | 'IPOnDemand';
-  rules: IConfigRoutingRule[];
-  balancers: IConfigRoutingBalancer[];
+  domainStrategy?: 'AsIs' | 'IPIfNonMatch' | 'IPOnDemand';
+  rules?: IConfigRoutingRule[];
+  balancers?: IConfigRoutingBalancer[];
 }
 
 export interface IConfigRoutingRule {
   type: string;
-  domain: string[];
-  ip: string[];
-  port: number | string;
-  network: 'tcp' | 'udp' | 'tcp,udp';
-  source: string[];
-  user: string[];
-  inboundTag: [];
-  protocol: ('http' | 'tls' | 'bittorrent')[];
-  attrs: string;
-  outboundTag: string;
-  balancerTag: string;
+  domain?: string[];
+  ip?: string[];
+  port?: number | string;
+  network?: 'tcp' | 'udp' | 'tcp,udp';
+  source?: string[];
+  user?: string[];
+  inboundTag?: [];
+  protocol?: ('http' | 'tls' | 'bittorrent')[];
+  attrs?: string;
+  outboundTag?: string;
+  balancerTag?: string;
 }
 
 export interface IConfigRoutingBalancer {
@@ -156,14 +156,14 @@ export interface IConfigInbound {
   port: number;
   listen: string;
   protocol: InboundProtocolType;
-  settings: any;
-  streamSettings: IConfigStreamSetting;
+  settings?: any;
+  streamSettings?: IConfigStreamSetting;
   tag: string;
-  sniffing: {
+  sniffing?: {
     enabled: boolean;
     destOverride: ('http' | 'tls')[];
   };
-  allocate: {
+  allocate?: {
     strategy: 'always' | 'random';
     refresh: number;
     concurrency: number;
