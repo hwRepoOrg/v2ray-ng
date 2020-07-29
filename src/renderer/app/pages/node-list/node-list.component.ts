@@ -14,6 +14,7 @@ export class NodeListComponent implements OnInit {
   public drawerVisible = false;
   public localNodeList: IConfigOutbound[] = [];
   public nodeConfig: IConfigOutbound = null;
+  public loading = false;
 
   constructor(private electronSrv: ElectronService, private msg: NzMessageService, private cdr: ChangeDetectorRef) {}
 
@@ -27,7 +28,16 @@ export class NodeListComponent implements OnInit {
   }
 
   getLocalNodeList() {
-    this.localNodeList = this.electronSrv.app.config.getNodeConfigList();
+    this.loading = true;
+    this.electronSrv.app.config
+      .getNodeConfigList()
+      .then((list) => {
+        this.localNodeList = list;
+      })
+      .finally(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      });
   }
 
   nodeFormSubmit(nodeConfig: IConfigOutbound) {

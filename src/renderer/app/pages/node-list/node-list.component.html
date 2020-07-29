@@ -16,14 +16,16 @@
   </nz-dropdown-menu>
 </div>
 <nz-divider nzText="自定义节点列表" nzOrientation="left"></nz-divider>
-<div class="node-list">
-  <v2ray-node-card
-    *ngFor="let node of localNodeList"
-    [nodeConfig]="node"
-    (vEdit)="toggleDrawer($event)"
-    (vSelect)="setActivatedNode($event)"
-  ></v2ray-node-card>
-</div>
+<nz-spin [nzSpinning]="loading">
+  <div class="node-list">
+    <v2ray-node-card
+      *ngFor="let node of localNodeList"
+      [nodeConfig]="node"
+      (vEdit)="toggleDrawer($event)"
+      (vSelect)="setActivatedNode($event)"
+    ></v2ray-node-card>
+  </div>
+</nz-spin>
 <nz-drawer
   [nzWidth]="drawerWidth"
   [nzVisible]="drawerVisible"

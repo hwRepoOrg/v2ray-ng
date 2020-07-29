@@ -18,6 +18,7 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzResizableModule } from 'ng-zorro-antd/resizable';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
@@ -51,6 +52,7 @@ const ANTD_MODULES = [
   NzSelectModule,
   NzSwitchModule,
   NzInputNumberModule,
+  NzSpinModule,
 ];
 
 @NgModule({
