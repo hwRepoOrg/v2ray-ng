@@ -171,15 +171,15 @@ export interface IConfigInbound {
 }
 
 export interface IConfigOutbound {
-  sendThrough: string;
+  sendThrough?: string;
   protocol: OutboundProtocolType;
-  settings: any;
+  settings?: any;
   tag: string;
-  streamSettings: IConfigStreamSetting;
-  proxySettings: {
+  streamSettings?: IConfigStreamSetting;
+  proxySettings?: {
     tag: string;
   };
-  mux: {
+  mux?: {
     enabled: boolean;
     concurrency: number;
   };
