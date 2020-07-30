@@ -1,144 +1,151 @@
-<form nz-form [formGroup]="routingFormGroup">
-  <nz-form-item>
-    <nz-form-label nzRequired>域名策略</nz-form-label>
-    <nz-form-control>
-      <div class="d-flex align-items-center">
-        <nz-select formControlName="domainStrategy">
-          <nz-option nzLabel="AsIs" nzValue="AsIs"></nz-option>
-          <nz-option nzLabel="IPIfNonMatch" nzValue="IPIfNonMatch" nz-tooltip></nz-option>
-          <nz-option nzLabel="IPOnDemand" nzValue="IPOnDemand" nz-tooltip></nz-option>
-        </nz-select>
-        <i
-          nz-icon
-          nzType="question-circle"
-          [ngStyle]="{ 'font-size.px': 16, 'margin-left.px': 15 }"
-          nz-tooltip
-          nzTooltipPlacement="bottomRight"
-          [nzTooltipTitle]="domainStrategyTooltip"
-          [nzTooltipOverlayStyle]="{ 'max-width.px': 600, 'font-size.px': 10 }"
-        ></i>
-        <ng-template #domainStrategyTooltip>
-          <ul>
-            <li><code>"AsIs"</code>: 只使用域名进行路由选择.</li>
-            <li>
-              <code>"IPIfNonMatch"</code>
-              <span>: 当域名没有匹配任何规则时，将域名解析成 IP（A 记录或 AAAA 记录）再次进行匹配；</span>
-              <ul>
-                <li>当一个域名有多个 A 记录时，会尝试匹配所有的 A 记录，直到其中一个与某个规则匹配为止；</li>
-                <li>解析后的 IP 仅在路由选择时起作用，转发的数据包中依然使用原始域名；</li>
-              </ul>
-            </li>
-            <li>
-              <code>"IPOnDemand"</code>
-              <span>: 当匹配时碰到任何基于 IP 的规则，将域名立即解析为 IP 进行匹配；</span>
-            </li>
-          </ul>
-        </ng-template>
-      </div>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-collapse nzAccordion>
-    <nz-collapse-panel nzHeader="规则配置" [nzExtra]="rulesExtra" formArrayName="rules" nzActive>
-      <ng-template #rulesExtra>
-        <div class="mr-2">
-          <button nz-button nzType="link" v2ray-prevent-default (click)="addRule()">
-            <i nz-icon nzType="plus"></i>
-            <span>添加</span>
-          </button>
+<nz-spin [nzSpinning]="loading">
+  <div class="d-flex mb-2 justify-content-end">
+    <button nz-button nzType="primary" [disabled]="!routingFormGroup.valid" (click)="submit()">
+      <span>保存</span>
+    </button>
+  </div>
+  <form nz-form [formGroup]="routingFormGroup">
+    <nz-form-item>
+      <nz-form-label nzRequired>域名策略</nz-form-label>
+      <nz-form-control>
+        <div class="d-flex align-items-center">
+          <nz-select formControlName="domainStrategy">
+            <nz-option nzLabel="AsIs" nzValue="AsIs"></nz-option>
+            <nz-option nzLabel="IPIfNonMatch" nzValue="IPIfNonMatch" nz-tooltip></nz-option>
+            <nz-option nzLabel="IPOnDemand" nzValue="IPOnDemand" nz-tooltip></nz-option>
+          </nz-select>
+          <i
+            nz-icon
+            nzType="question-circle"
+            [ngStyle]="{ 'font-size.px': 16, 'margin-left.px': 15 }"
+            nz-tooltip
+            nzTooltipPlacement="bottomRight"
+            [nzTooltipTitle]="domainStrategyTooltip"
+            [nzTooltipOverlayStyle]="{ 'max-width.px': 600, 'font-size.px': 10 }"
+          ></i>
+          <ng-template #domainStrategyTooltip>
+            <ul>
+              <li><code>"AsIs"</code>: 只使用域名进行路由选择.</li>
+              <li>
+                <code>"IPIfNonMatch"</code>
+                <span>: 当域名没有匹配任何规则时，将域名解析成 IP（A 记录或 AAAA 记录）再次进行匹配；</span>
+                <ul>
+                  <li>当一个域名有多个 A 记录时，会尝试匹配所有的 A 记录，直到其中一个与某个规则匹配为止；</li>
+                  <li>解析后的 IP 仅在路由选择时起作用，转发的数据包中依然使用原始域名；</li>
+                </ul>
+              </li>
+              <li>
+                <code>"IPOnDemand"</code>
+                <span>: 当匹配时碰到任何基于 IP 的规则，将域名立即解析为 IP 进行匹配；</span>
+              </li>
+            </ul>
+          </ng-template>
         </div>
-      </ng-template>
-      <nz-collapse *ngIf="routingFormGroup.get('rules')['controls'].length">
-        <nz-collapse-panel
-          *ngFor="let ruleFormGroup of routingFormGroup.controls.rules['controls']; let i = index"
-          [nzHeader]="ruleCardTitle"
-          [nzExtra]="ruleCardExtra"
-          [formGroupName]="i.toString()"
-          nzActive
-        >
-          <ng-template #ruleCardTitle>
-            <nz-switch
-              v2ray-prevent-default
-              formControlName="detail"
-              nzCheckedChildren="详细配置"
-              nzUnCheckedChildren="精简配置"
-            ></nz-switch>
-          </ng-template>
-          <ng-template #ruleCardExtra>
-            <button nz-button nzType="link" (click)="removeRule(i)">
-              <i nz-icon nzType="delete"></i>
-              <span>删除</span>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-collapse nzAccordion>
+      <nz-collapse-panel nzHeader="规则配置" [nzExtra]="rulesExtra" formArrayName="rules" nzActive>
+        <ng-template #rulesExtra>
+          <div class="mr-2">
+            <button nz-button nzType="link" v2ray-prevent-default (click)="addRule()">
+              <i nz-icon nzType="plus"></i>
+              <span>添加</span>
             </button>
-          </ng-template>
-
-          <div class="d-flex">
-            <nz-form-item
-              class="p-0"
-              [class.col-4]="ruleFormGroup.controls.detail.value"
-              [class.col-12]="!ruleFormGroup.controls.detail.value"
-            >
-              <nz-form-label>outboundTag</nz-form-label>
-              <nz-form-control>
-                <nz-select formControlName="outboundTag">
-                  <nz-option nzLabel="代理" nzValue="proxy"></nz-option>
-                  <nz-option nzLabel="直连" nzValue="direct"></nz-option>
-                  <nz-option nzLabel="DNS" nzValue="dns-out"></nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item *ngIf="ruleFormGroup.controls.detail.value" class="col-4 p-0">
-              <nz-form-label>network</nz-form-label>
-              <nz-form-control>
-                <nz-select formControlName="network">
-                  <nz-option nzLabel="tcp" nzValue="tcp"></nz-option>
-                  <nz-option nzLabel="udp" nzValue="udp"></nz-option>
-                  <nz-option nzLabel="tcp,udp" nzValue="tcp,udp"></nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item *ngIf="ruleFormGroup.controls.detail.value" class="col-4 p-0">
-              <nz-form-label>port</nz-form-label>
-              <nz-form-control>
-                <nz-input-number [nzMin]="0" [nzMax]="99999" [nzStep]="1" formControlName="port"></nz-input-number>
-              </nz-form-control>
-            </nz-form-item>
           </div>
-          <nz-form-item *ngIf="ruleFormGroup.controls.detail.value">
-            <nz-form-label>protocol</nz-form-label>
-            <nz-form-control>
-              <nz-select formControlName="protocol" nzMode="multiple">
-                <nz-option nzLabel="http" nzValue="http"></nz-option>
-                <nz-option nzLabel="tls" nzValue="tls"></nz-option>
-                <nz-option nzLabel="bittorrent" nzValue="bittorrent"></nz-option>
-              </nz-select>
-            </nz-form-control>
-          </nz-form-item>
+        </ng-template>
+        <nz-collapse *ngIf="routingFormGroup.get('rules')['controls'].length">
+          <nz-collapse-panel
+            *ngFor="let ruleFormGroup of routingFormGroup.controls.rules['controls']; let i = index"
+            [nzHeader]="ruleCardTitle"
+            [nzExtra]="ruleCardExtra"
+            [formGroupName]="i.toString()"
+            nzActive
+          >
+            <ng-template #ruleCardTitle>
+              <nz-switch
+                v2ray-prevent-default
+                formControlName="detail"
+                nzCheckedChildren="详细配置"
+                nzUnCheckedChildren="精简配置"
+              ></nz-switch>
+            </ng-template>
+            <ng-template #ruleCardExtra>
+              <button nz-button nzType="link" (click)="removeRule(i)">
+                <i nz-icon nzType="delete"></i>
+                <span>删除</span>
+              </button>
+            </ng-template>
 
-          <nz-form-item>
-            <nz-form-label>ip</nz-form-label>
-            <nz-form-control>
-              <nz-select formControlName="ip" nzMode="tags"> </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label>domain</nz-form-label>
-            <nz-form-control>
-              <nz-select formControlName="domain" nzMode="tags"> </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item *ngIf="ruleFormGroup.controls.detail.value">
-            <nz-form-label>source</nz-form-label>
-            <nz-form-control>
-              <nz-select formControlName="source" nzMode="tags"> </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item *ngIf="ruleFormGroup.controls.detail.value">
-            <nz-form-label>attrs</nz-form-label>
-            <nz-form-control>
-              <textarea formControlName="attrs" nz-input [nzAutosize]="{ minRows: 3 }"></textarea>
-            </nz-form-control>
-          </nz-form-item>
-        </nz-collapse-panel>
-      </nz-collapse>
-    </nz-collapse-panel>
-  </nz-collapse>
-</form>
+            <div class="d-flex">
+              <nz-form-item
+                class="p-0"
+                [class.col-4]="ruleFormGroup.controls.detail.value"
+                [class.col-12]="!ruleFormGroup.controls.detail.value"
+              >
+                <nz-form-label>outboundTag</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="outboundTag">
+                    <nz-option nzLabel="代理" nzValue="proxy"></nz-option>
+                    <nz-option nzLabel="直连" nzValue="direct"></nz-option>
+                    <nz-option nzLabel="DNS" nzValue="dns-out"></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item *ngIf="ruleFormGroup.controls.detail.value" class="col-4 p-0">
+                <nz-form-label>network</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="network">
+                    <nz-option nzLabel="tcp" nzValue="tcp"></nz-option>
+                    <nz-option nzLabel="udp" nzValue="udp"></nz-option>
+                    <nz-option nzLabel="tcp,udp" nzValue="tcp,udp"></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item *ngIf="ruleFormGroup.controls.detail.value" class="col-4 p-0">
+                <nz-form-label>port</nz-form-label>
+                <nz-form-control>
+                  <nz-input-number [nzMin]="0" [nzMax]="99999" [nzStep]="1" formControlName="port"></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <nz-form-item *ngIf="ruleFormGroup.controls.detail.value">
+              <nz-form-label>protocol</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="protocol" nzMode="multiple">
+                  <nz-option nzLabel="http" nzValue="http"></nz-option>
+                  <nz-option nzLabel="tls" nzValue="tls"></nz-option>
+                  <nz-option nzLabel="bittorrent" nzValue="bittorrent"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label>ip</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="ip" nzMode="tags"> </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label>domain</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="domain" nzMode="tags"> </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="ruleFormGroup.controls.detail.value">
+              <nz-form-label>source</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="source" nzMode="tags"> </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="ruleFormGroup.controls.detail.value">
+              <nz-form-label>attrs</nz-form-label>
+              <nz-form-control>
+                <textarea formControlName="attrs" nz-input [nzAutosize]="{ minRows: 3 }"></textarea>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-collapse-panel>
+        </nz-collapse>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </form>
+</nz-spin>
