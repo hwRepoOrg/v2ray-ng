@@ -19,7 +19,7 @@ export class AppConfig extends EventEmitter {
     }
     this.nodeListPath = Path.resolve(this.configPath, 'node-list.json');
     this.routingConfigPath = Path.resolve(this.configPath, 'routing-config.json');
-    this.routingConfigPath = Path.resolve(this.configPath, 'inbounds-config.json');
+    this.inboundsConfigPath = Path.resolve(this.configPath, 'inbounds-config.json');
     this.runningConfigPath = Path.resolve(this.configPath, 'running-config.json');
   }
 
@@ -52,7 +52,13 @@ export class AppConfig extends EventEmitter {
   public async getRoutingConfig(): Promise<IConfigRouting> {
     const hasConfig = await pathExists(this.routingConfigPath);
     if (!hasConfig) {
-      return { domainStrategy: 'IPIfNonMatch', rules: [] };
+      return {
+        domainStrategy: 'IPIfNonMatch',
+        rules: [
+          { detail: true, type: 'field', network: 'udp', port: 53, outboundTag: 'dns-out' },
+          { type: 'field', ip: ['geoip:cn'], outboundTag: 'proxy' },
+        ],
+      };
     } else {
       const res = await readFile(this.routingConfigPath);
       return JSON.parse(res.toString());
