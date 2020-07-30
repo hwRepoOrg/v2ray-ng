@@ -46,6 +46,7 @@ export interface IConfigRouting {
 }
 
 export interface IConfigRoutingRule {
+  detail?: boolean;
   type: string;
   domain?: string[];
   ip?: string[];
