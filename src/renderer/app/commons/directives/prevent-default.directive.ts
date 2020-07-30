@@ -1,12 +1,10 @@
-import { Directive, ElementRef, HostListener } from '@angular/core';
+import { Directive, HostListener } from '@angular/core';
 
 @Directive({
   selector: '[v2ray-prevent-default]',
 })
 export class PreventDefaultDirective {
-  constructor(private eleRef: ElementRef<HTMLElement>) {
-    console.log(this.eleRef);
-  }
+  constructor() {}
 
   @HostListener('click', ['$event'])
   click(ev: MouseEvent) {
