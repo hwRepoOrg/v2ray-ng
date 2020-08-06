@@ -13,7 +13,6 @@
         [nzExtra]="inboundCardExtra"
         [formGroupName]="i.toString()"
         [nzHeader]="inbound.get('tag').value"
-        nzActive
       >
         <ng-template #inboundCardExtra>
           <button nz-button nzType="link" (click)="inboundsFormArray.removeAt(i)">
