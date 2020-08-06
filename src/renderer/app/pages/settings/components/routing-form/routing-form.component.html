@@ -59,7 +59,6 @@
             [nzHeader]="ruleCardTitle"
             [nzExtra]="ruleCardExtra"
             [formGroupName]="i.toString()"
-            nzActive
           >
             <ng-template #ruleCardTitle>
               <nz-switch
@@ -68,6 +67,7 @@
                 nzCheckedChildren="详细配置"
                 nzUnCheckedChildren="精简配置"
               ></nz-switch>
+              <nz-tag class="ml-2">{{ outboundTypeMap.get(ruleFormGroup.get('outboundTag').value) }}</nz-tag>
             </ng-template>
             <ng-template #ruleCardExtra>
               <button nz-button nzType="link" (click)="removeRule(i)">
@@ -87,6 +87,7 @@
                   <nz-select formControlName="outboundTag">
                     <nz-option nzLabel="代理" nzValue="proxy"></nz-option>
                     <nz-option nzLabel="直连" nzValue="direct"></nz-option>
+                    <nz-option nzLabel="屏蔽" nzValue="block"></nz-option>
                     <nz-option nzLabel="DNS" nzValue="dns-out"></nz-option>
                   </nz-select>
                 </nz-form-control>

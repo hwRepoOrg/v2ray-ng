@@ -11,6 +11,12 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoutingFormComponent implements OnInit {
+  public outboundTypeMap = new Map([
+    ['proxy', '代理'],
+    ['direct', '直连'],
+    ['dns-out', 'DNS'],
+    ['block', '屏蔽'],
+  ]);
   public routingFormGroup: FormGroup;
   public loading = false;
 
