@@ -36,7 +36,7 @@ export interface IConfigApi {
 }
 export interface IConfigDNS {
   host?: { [key: string]: string };
-  servers?: { address: string; port: number; domains: string[]; expectIps: string[] }[];
+  servers?: (string | { address: string; port: number; domains: string[]; expectIps: string[] })[];
 }
 
 export interface IConfigRouting {
@@ -176,6 +176,7 @@ export interface IConfigOutbound {
   protocol: OutboundProtocolType;
   settings?: any;
   tag: string;
+  nodeTag?: string;
   streamSettings?: IConfigStreamSetting;
   proxySettings?: {
     tag: string;
