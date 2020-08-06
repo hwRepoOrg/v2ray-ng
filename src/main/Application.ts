@@ -21,7 +21,16 @@ export class Application extends EventEmitter {
   private init() {
     this.tray = new AppTray();
     this.config = new AppConfig();
-    this.mainWindow = new BrowserWindow({
+    this.initWindow();
+  }
+
+  initWindow() {
+    this.mainWindow = this.genMainWindow();
+    this.mainWindow.loadURL(this.mainWindowUrl);
+  }
+
+  genMainWindow() {
+    return new BrowserWindow({
       width: 900,
       height: 600,
       minWidth: 900,
@@ -31,12 +40,12 @@ export class Application extends EventEmitter {
       transparent: true,
       webPreferences: { nodeIntegration: true, nodeIntegrationInWorker: true, enableRemoteModule: true },
     });
-    this.mainWindow.loadURL(this.mainWindowUrl);
   }
 
   showMainPanel() {
     if (this.mainWindow) {
       if (this.mainWindow.isDestroyed()) {
+        this.initWindow();
       } else {
         this.mainWindow.show();
         this.mainWindow.focus();
