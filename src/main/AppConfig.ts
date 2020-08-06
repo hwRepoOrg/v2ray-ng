@@ -28,8 +28,7 @@ export class AppConfig extends EventEmitter {
     if (!hasConfig) {
       return [];
     } else {
-      const res = await readFile(Path.resolve(this.configPath, 'node-list.json'));
-      return JSON.parse(res.toString());
+      return JSON.parse((await readFile(Path.resolve(this.nodeListPath))).toString());
     }
   }
 
@@ -56,12 +55,18 @@ export class AppConfig extends EventEmitter {
         domainStrategy: 'IPIfNonMatch',
         rules: [
           { detail: true, type: 'field', network: 'udp', port: 53, outboundTag: 'dns-out' },
-          { type: 'field', ip: ['geoip:cn'], outboundTag: 'proxy' },
+          { type: 'field', ip: ['geoip:cn', 'geoip:private'], outboundTag: 'direct' },
+          {
+            type: 'field',
+            domain: ['geosite:cn', 'dlc:geolocation-cn'],
+            outboundTag: 'direct',
+          },
+          { type: 'field', domain: ['dlc:category-ads'], outboundTag: 'block' },
+          { type: 'field', domain: ['dlc:geolocation-!cn', 'dlc:speedtest'], outboundTag: 'proxy' },
         ],
       };
     } else {
-      const res = await readFile(this.routingConfigPath);
-      return JSON.parse(res.toString());
+      return JSON.parse((await readFile(this.routingConfigPath)).toString());
     }
   }
 
@@ -89,8 +94,7 @@ export class AppConfig extends EventEmitter {
         },
       ];
     } else {
-      const res = await readFile(this.inboundsConfigPath);
-      return JSON.parse(res.toString());
+      return JSON.parse((await readFile(this.inboundsConfigPath)).toString());
     }
   }
 
@@ -106,7 +110,7 @@ export class AppConfig extends EventEmitter {
       inbounds,
       routing,
       outbounds: [
-        { ...node, tag: 'proxy' },
+        { ...node, tag: 'proxy', nodeTag: node.tag },
         {
           protocol: 'freedom',
           tag: 'direct',
@@ -128,5 +132,22 @@ export class AppConfig extends EventEmitter {
     };
     await writeFile(this.runningConfigPath, JSON.stringify(config, null, 2));
     return config;
+  }
+
+  public async getRunningConfig(): Promise<IConfig | null> {
+    const hasConfig = await pathExists(this.runningConfigPath);
+    if (!hasConfig) {
+      return null;
+    }
+    return JSON.parse((await readFile(this.runningConfigPath)).toString());
+  }
+
+  public async getActivatedNode(): Promise<IConfigOutbound | null> {
+    const hasConfig = await pathExists(this.runningConfigPath);
+    if (!hasConfig) {
+      return null;
+    }
+    const runningConfig = JSON.parse((await readFile(this.runningConfigPath)).toString()) as IConfig;
+    return runningConfig.outbounds.find((out) => out.tag === 'proxy');
   }
 }
