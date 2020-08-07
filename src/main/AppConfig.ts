@@ -23,7 +23,7 @@ export class AppConfig extends EventEmitter {
     this.runningConfigPath = Path.resolve(this.configPath, 'running-config.json');
   }
 
-  public async getNodeConfigList() {
+  public async getNodeConfigList(): Promise<IConfigOutbound[]> {
     const hasConfig = await pathExists(this.nodeListPath);
     if (!hasConfig) {
       return [];
