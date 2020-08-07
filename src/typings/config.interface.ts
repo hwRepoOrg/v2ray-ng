@@ -176,6 +176,7 @@ export interface IConfigOutbound {
   protocol: OutboundProtocolType;
   settings?: any;
   tag: string;
+  active?: boolean;
   nodeTag?: string;
   streamSettings?: IConfigStreamSetting;
   proxySettings?: {
