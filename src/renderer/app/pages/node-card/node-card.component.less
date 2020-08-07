@@ -1,13 +1,18 @@
+@import '../../../../../node_modules/ng-zorro-antd/style/themes/default.less';
+@import '../../../styles/ng-zorro/ng-zorro.compact.less';
+@import '../../../styles/ng-zorro/ng-zorro.dark.less';
+
 :host {
   display: block;
   width: 25%;
   padding: 5px 5px;
   .node-card {
     margin: 0;
+    border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.1s ease-in;
     &:hover {
-      transform: scale(1.05);
+      transform: perspective(1px) scale(1.05);
     }
     nz-tag {
       margin: 0;
@@ -16,6 +21,9 @@
     }
     .content {
       font-size: 10px;
+    }
+    &.active {
+      background-color: @primary-color;
     }
   }
 }

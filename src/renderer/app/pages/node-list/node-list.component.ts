@@ -32,9 +32,19 @@ export class NodeListComponent implements OnInit {
     this.electronSrv.app.config
       .getNodeConfigList()
       .then((list) => {
-        this.localNodeList = list;
+        this.electronSrv.app.config.getActivatedNode().then((activated) => {
+          this.localNodeList = list.map((node) => {
+            if (activated) {
+              node.active = node.tag === activated?.nodeTag;
+            }
+            return node;
+          });
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
       })
-      .finally(() => {
+      .catch((err) => {
+        this.electronSrv.remote.getGlobal('console').error(err);
         this.loading = false;
         this.cdr.detectChanges();
       });
@@ -57,6 +67,9 @@ export class NodeListComponent implements OnInit {
 
   setActivatedNode(node: IConfigOutbound | null) {
     if (node) {
+      this.electronSrv.app.config.setRunningConfig(node).then((config) => {
+        this.getLocalNodeList();
+      });
     }
   }
 }

@@ -8,9 +8,10 @@ import { IConfigOutbound } from '@typing/config.interface';
   styleUrls: ['./node-card.component.less'],
 })
 export class NodeCardComponent {
-  @Input() nodeConfig: IConfigOutbound;
-  @Output() vEdit = new EventEmitter<IConfigOutbound>();
-  @Output() vSelect = new EventEmitter<IConfigOutbound>();
+  @Input() public activated = false;
+  @Input() public nodeConfig: IConfigOutbound;
+  @Output() public vEdit = new EventEmitter<IConfigOutbound>();
+  @Output() public vSelect = new EventEmitter<IConfigOutbound>();
 
   constructor(public utilsSrv: UtilsService) {}
 

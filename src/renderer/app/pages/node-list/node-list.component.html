@@ -23,6 +23,7 @@
       [nodeConfig]="node"
       (vEdit)="toggleDrawer($event)"
       (vSelect)="setActivatedNode($event)"
+      [activated]="node.active"
     ></v2ray-node-card>
   </div>
 </nz-spin>
