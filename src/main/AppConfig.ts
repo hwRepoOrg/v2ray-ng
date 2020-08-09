@@ -1,4 +1,4 @@
-import { IConfig, IConfigInbound, IConfigOutbound, IConfigRouting } from '@typing/config.interface';
+import { IConfig, IConfigInbound, IConfigOutbound, IConfigRouting, ISubscribeConfig } from '@typing/config.interface';
 import { app } from 'electron';
 import { EventEmitter } from 'events';
 import { existsSync, mkdirSync, pathExists, readFile, writeFile } from 'fs-extra';
@@ -10,6 +10,7 @@ export class AppConfig extends EventEmitter {
   public routingConfigPath: string;
   public inboundsConfigPath: string;
   public runningConfigPath: string;
+  public subscribesConfigPath: string;
 
   constructor() {
     super();
@@ -21,6 +22,7 @@ export class AppConfig extends EventEmitter {
     this.routingConfigPath = Path.resolve(this.configPath, 'routing-config.json');
     this.inboundsConfigPath = Path.resolve(this.configPath, 'inbounds-config.json');
     this.runningConfigPath = Path.resolve(this.configPath, 'running-config.json');
+    this.subscribesConfigPath = Path.resolve(this.configPath, 'subscribes-config.json');
   }
 
   public async getNodeConfigList(): Promise<IConfigOutbound[]> {
@@ -32,13 +34,7 @@ export class AppConfig extends EventEmitter {
     }
   }
 
-  public async addNodeConfig(nodeConfig: IConfigOutbound) {
-    const hasConfig = await pathExists(this.nodeListPath);
-    if (!hasConfig) {
-      await writeFile(this.nodeListPath, JSON.stringify([]));
-    }
-    const nodeList: IConfigOutbound[] = JSON.parse((await readFile(this.nodeListPath)).toString());
-    nodeList.push({ ...nodeConfig, tag: `${Date.now()}${Math.round(Math.random() * 10000000)}` });
+  public async setNodeConfigList(nodeList: IConfigOutbound[]) {
     await writeFile(this.nodeListPath, JSON.stringify(nodeList, null, 2));
   }
 
@@ -149,5 +145,17 @@ export class AppConfig extends EventEmitter {
     }
     const runningConfig = JSON.parse((await readFile(this.runningConfigPath)).toString()) as IConfig;
     return runningConfig.outbounds.find((out) => out.tag === 'proxy');
+  }
+
+  public async getSubscribesConfig(): Promise<ISubscribeConfig[]> {
+    const hasConfig = await pathExists(this.subscribesConfigPath);
+    if (!hasConfig) {
+      return [];
+    }
+    return JSON.parse((await readFile(this.subscribesConfigPath)).toString());
+  }
+
+  public async setSubscribesConfig(list: ISubscribeConfig[]) {
+    return await writeFile(this.subscribesConfigPath, JSON.stringify(list, null, 2));
   }
 }

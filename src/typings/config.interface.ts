@@ -216,3 +216,9 @@ export interface IConfigSockOption {
   tcpFastOpen: boolean;
   tproxy: 'redirect' | 'tproxy' | 'off';
 }
+
+export interface ISubscribeConfig {
+  title: string;
+  url: string;
+  nodes: IConfigOutbound[];
+}
