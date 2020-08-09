@@ -9,6 +9,7 @@ import { NodeCardComponent } from './node-card/node-card.component';
 import { NodeConfigFormComponent } from './node-config-form/node-config-form.component';
 import { NodeListComponent } from './node-list/node-list.component';
 import { routes } from './pages.routing';
+import { AppSettingsComponent } from './settings/components/app-settings/app-settings.component';
 import { InputFormComponent } from './settings/components/input-form/input-form.component';
 import { RoutingFormComponent } from './settings/components/routing-form/routing-form.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -25,6 +26,7 @@ import { SettingsComponent } from './settings/settings.component';
     SettingsComponent,
     RoutingFormComponent,
     InputFormComponent,
+    AppSettingsComponent,
   ],
 })
 export class PagesModule {}
