@@ -13,6 +13,7 @@ export class ElectronService {
   childProcess: typeof childProcess;
   is: typeof is;
   app: IApplication;
+  log: Console;
 
   get isElectron(): boolean {
     return !!(window && window.process && window.process.type);
@@ -26,6 +27,7 @@ export class ElectronService {
       this.childProcess = window.require('child_process');
       this.is = this.remote.require('electron-is');
       this.app = this.remote.getGlobal('appInstance');
+      this.log = this.remote.getGlobal('console');
     }
   }
 }
