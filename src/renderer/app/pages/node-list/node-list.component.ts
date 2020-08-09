@@ -32,6 +32,9 @@ export class NodeListComponent implements OnInit {
       newNode = { ...nodeConfig, tag: `${Date.now()}${Math.round(Math.random() * 100000000)}` };
       nodeList = [...this.cs.localNodeList, newNode];
     }
+    if (nodeConfig.active && !newNode) {
+      this.cs.setActivatedNode(nodeConfig);
+    }
     this.cs.updateLocalNodeList(nodeList);
   }
 }

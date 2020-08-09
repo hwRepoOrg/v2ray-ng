@@ -1,9 +1,9 @@
 <nz-card class="node-card" [class.active]="activated">
-  <p class="d-flex justify-content-between">
-    <span>
+  <p class="d-flex align-items-center">
+    <span *ngIf="showEdit">
       <a nz-icon nzType="edit" (click)="emitEdit($event)"></a>
     </span>
-    <nz-tag nzColor="#49aa19">{{ nodeConfig?.protocol }}</nz-tag>
+    <nz-tag class="ml-auto" nzColor="#49aa19">{{ nodeConfig?.protocol }}</nz-tag>
   </p>
   <p class="content text-right mb-0">
     {{ utilsSrv?.getConfigByProtocol(nodeConfig)?.address }}:{{ utilsSrv?.getConfigByProtocol(nodeConfig)?.port }}

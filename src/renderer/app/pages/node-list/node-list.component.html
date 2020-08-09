@@ -1,32 +1,3 @@
-<div class="action-bar">
-  <a class="action">
-    <i nz-icon nzType="wifi" nzTheme="outline"></i>
-    <span> 节点测速</span>
-  </a>
-  <a class="action" nz-dropdown [nzDropdownMenu]="menu">
-    <i nz-icon nzType="plus"></i>
-    添加节点
-    <i nz-icon nzType="down"></i>
-  </a>
-  <nz-dropdown-menu #menu>
-    <ul nz-menu>
-      <li nz-menu-item (click)="toggleDrawer()">手动添加</li>
-      <li nz-menu-item>从url导入</li>
-    </ul>
-  </nz-dropdown-menu>
-</div>
-<nz-divider nzText="自定义节点列表" nzOrientation="left"></nz-divider>
-<nz-spin [nzSpinning]="cs.loading">
-  <div class="node-list">
-    <v2ray-node-card
-      *ngFor="let node of cs.localNodeList"
-      [nodeConfig]="node"
-      (vEdit)="toggleDrawer($event)"
-      (vSelect)="cs.setActivatedNode($event)"
-      [activated]="node.active"
-    ></v2ray-node-card>
-  </div>
-</nz-spin>
 <nz-drawer
   [nzWidth]="drawerWidth"
   [nzVisible]="drawerVisible"
@@ -40,3 +11,46 @@
     <v2ray-node-config-form [nodeConfig]="nodeConfig" (whenSubmit)="nodeFormSubmit($event)"></v2ray-node-config-form>
   </div>
 </nz-drawer>
+
+<nz-back-top></nz-back-top>
+<div class="action-bar">
+  <a class="action">
+    <i nz-icon nzType="wifi" nzTheme="outline"></i>
+    <span>节点测速</span>
+  </a>
+  <a class="action" nz-dropdown [nzDropdownMenu]="menu">
+    <i nz-icon nzType="plus"></i>
+    <span>添加节点</span>
+    <i nz-icon nzType="down"></i>
+  </a>
+  <nz-dropdown-menu #menu>
+    <ul nz-menu>
+      <li nz-menu-item (click)="toggleDrawer()">手动添加</li>
+      <li nz-menu-item>从url导入</li>
+    </ul>
+  </nz-dropdown-menu>
+</div>
+<nz-spin [nzSpinning]="cs.loading">
+  <nz-divider nzText="自定义节点列表" nzOrientation="left"></nz-divider>
+  <div class="node-list">
+    <v2ray-node-card
+      *ngFor="let node of cs.localNodeList"
+      [nodeConfig]="node"
+      (vEdit)="toggleDrawer($event)"
+      (vSelect)="cs.setActivatedNode($event)"
+      [activated]="node.active"
+    ></v2ray-node-card>
+  </div>
+  <ng-container *ngFor="let subscribe of cs.subscribeList">
+    <nz-divider [nzText]="subscribe.title" nzOrientation="left"></nz-divider>
+    <div class="node-list">
+      <v2ray-node-card
+        *ngFor="let node of subscribe.nodes"
+        [nodeConfig]="node"
+        (vSelect)="cs.setActivatedNode($event)"
+        [activated]="node.active"
+        [showEdit]="false"
+      ></v2ray-node-card>
+    </div>
+  </ng-container>
+</nz-spin>

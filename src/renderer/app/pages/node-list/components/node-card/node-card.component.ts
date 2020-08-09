@@ -10,6 +10,7 @@ import { IConfigOutbound } from '@typing/config.interface';
 export class NodeCardComponent {
   @Input() public activated = false;
   @Input() public nodeConfig: IConfigOutbound;
+  @Input() public showEdit = true;
   @Output() public vEdit = new EventEmitter<IConfigOutbound>();
   @Output() public vSelect = new EventEmitter<IConfigOutbound>();
 
