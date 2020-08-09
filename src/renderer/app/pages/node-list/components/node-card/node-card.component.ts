@@ -13,7 +13,9 @@ export class NodeCardComponent {
   @Output() public vEdit = new EventEmitter<IConfigOutbound>();
   @Output() public vSelect = new EventEmitter<IConfigOutbound>();
 
-  constructor(public utilsSrv: UtilsService) {}
+  constructor(public utilsSrv: UtilsService) {
+    console.log('123');
+  }
 
   emitEdit(e: MouseEvent) {
     e.preventDefault();
