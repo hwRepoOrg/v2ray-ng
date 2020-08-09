@@ -13,6 +13,7 @@ import { AppSettingsComponent } from './settings/components/app-settings/app-set
 import { InputFormComponent } from './settings/components/input-form/input-form.component';
 import { RoutingFormComponent } from './settings/components/routing-form/routing-form.component';
 import { SettingsComponent } from './settings/settings.component';
+import { SubscribeListComponent } from './subscribe-list/subscribe-list.component';
 
 @NgModule({
   imports: [RouterModule.forRoot(routes), CommonsModule, NgZorroModule, DelonABCModule],
@@ -27,6 +28,7 @@ import { SettingsComponent } from './settings/settings.component';
     RoutingFormComponent,
     InputFormComponent,
     AppSettingsComponent,
+    SubscribeListComponent,
   ],
 })
 export class PagesModule {}
