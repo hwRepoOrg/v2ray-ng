@@ -46,4 +46,34 @@ export class ConfigService {
       });
     }
   }
+
+  getSubscribeList() {
+    this.loading = true;
+    this.es.app.config
+      .getSubscribesConfig()
+      .then((list) => {
+        this.subscribeList = list;
+      })
+      .catch((err) => {
+        this.es.log.error(err);
+      })
+      .finally(() => {
+        this.loading = false;
+      });
+  }
+
+  updateSubscribeList(list: ISubscribeConfig[]) {
+    this.loading = true;
+    this.es.app.config
+      .setSubscribesConfig(list)
+      .then(() => {
+        this.getSubscribeList();
+      })
+      .catch((err) => {
+        this.es.log.error(err);
+      })
+      .finally(() => {
+        this.loading = false;
+      });
+  }
 }
