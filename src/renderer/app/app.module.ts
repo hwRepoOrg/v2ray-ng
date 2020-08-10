@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -13,7 +14,14 @@ const THIRD_MODULES = [DelonFormModule.forRoot(), AlainThemeModule.forRoot()];
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, GlobalConfigModule.forRoot(), ...THIRD_MODULES, PagesModule],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    GlobalConfigModule.forRoot(),
+    ...THIRD_MODULES,
+    PagesModule,
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
