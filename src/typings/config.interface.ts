@@ -99,56 +99,56 @@ export interface IConfigTransport {
 }
 
 export interface IConfigTCPSetting {
-  header: {
-    type: 'none' | 'http';
-    request: {
-      version: string;
-      method: string;
-      path: string[];
-      headers: { [key: string]: string | string[] };
+  header?: {
+    type?: 'none' | 'http';
+    request?: {
+      version?: string;
+      method?: string;
+      path?: string[];
+      headers?: { [key: string]: string | string[] };
     };
-    response: {
-      version: string;
-      status: string;
-      reason: string;
-      headers: { [key: string]: string | string[] };
+    response?: {
+      version?: string;
+      status?: string;
+      reason?: string;
+      headers?: { [key: string]: string | string[] };
     };
   };
 }
 
 export interface IConfigKCPSetting {
-  mtu: number;
-  tti: number;
-  uplinkCapacity: number;
-  downlinkCapacity: number;
-  congestion: boolean;
-  readBufferSize: number;
-  writeBufferSize: number;
-  header: {
-    type: 'none' | 'srtp' | 'utp' | 'wechat-video' | 'dtls' | 'wireguard';
+  mtu?: number;
+  tti?: number;
+  uplinkCapacity?: number;
+  downlinkCapacity?: number;
+  congestion?: boolean;
+  readBufferSize?: number;
+  writeBufferSize?: number;
+  header?: {
+    type?: 'none' | 'srtp' | 'utp' | 'wechat-video' | 'dtls' | 'wireguard';
   };
 }
 
 export interface IConfigWSSetting {
-  path: string;
-  headers: {
-    Host: string;
+  path?: string;
+  headers?: {
+    Host?: string;
   };
 }
 
 export interface IConfigHTTPSetting {
-  host: string[];
-  path: string;
+  host?: string[];
+  path?: string;
 }
 
 export interface IConfigDSSetting {
-  path: string;
+  path?: string;
 }
 
 export interface IConfigQUICSetting {
-  security: 'none' | 'aes-128-gcm' | 'chacha20-poly1305';
-  key: string;
-  header: {
+  security?: 'none' | 'aes-128-gcm' | 'chacha20-poly1305';
+  key?: string;
+  header?: {
     type: 'none' | 'srtp' | 'utp' | 'wechat-video' | 'dtls' | 'wireguard';
   };
 }
@@ -172,6 +172,7 @@ export interface IConfigInbound {
 }
 
 export interface IConfigOutbound {
+  name?: string;
   sendThrough?: string;
   protocol: OutboundProtocolType;
   settings?: any;
@@ -189,10 +190,10 @@ export interface IConfigOutbound {
 }
 
 export interface IConfigStreamSetting extends IConfigTransport {
-  network: 'tcp' | 'kcp' | 'ws' | 'http' | 'domainsocket' | 'quic';
-  security: 'none' | 'tls';
-  tlsSettings: IConfigTLSSetting;
-  sockopt: IConfigSockOption;
+  network?: 'tcp' | 'kcp' | 'ws' | 'http' | 'domainsocket' | 'quic';
+  security?: 'none' | 'tls';
+  tlsSettings?: IConfigTLSSetting;
+  sockopt?: IConfigSockOption;
 }
 
 export interface IConfigTLSSetting {
@@ -220,5 +221,28 @@ export interface IConfigSockOption {
 export interface ISubscribeConfig {
   title: string;
   url: string;
+  updatedTime: string;
   nodes: IConfigOutbound[];
+}
+
+export interface IVmessShareConfig {
+  v: string;
+  ps: string;
+  add: string;
+  port: string;
+  id: string;
+  aid: string;
+  net: 'tcp' | 'kcp' | 'ws' | 'h2' | 'quic';
+  type: 'none' | 'http' | 'srtp' | 'utp' | 'wechat-video';
+  host: string;
+  path: string;
+  tls: string;
+}
+
+export enum VMESS_SHARE_NET {
+  tcp = 'tcp',
+  kcp = 'kcp',
+  ws = 'ws',
+  h2 = 'http',
+  quic = 'quic',
 }
