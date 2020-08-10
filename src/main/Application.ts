@@ -38,7 +38,12 @@ export class Application extends EventEmitter {
       frame: false,
       titleBarStyle: 'hidden',
       transparent: true,
-      webPreferences: { nodeIntegration: true, nodeIntegrationInWorker: true, enableRemoteModule: true },
+      webPreferences: {
+        nodeIntegration: true,
+        nodeIntegrationInWorker: true,
+        enableRemoteModule: true,
+        webSecurity: false,
+      },
     });
   }
 
