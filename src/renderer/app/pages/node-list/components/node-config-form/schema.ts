@@ -15,7 +15,9 @@ const jsonValidator = (value) => {
 
 export const NodeConfigSchema: ISFSchema<IConfigOutbound> = {
   type: 'object',
+  required: ['protocol'],
   properties: {
+    name: { title: '别名', type: 'string' },
     protocol: { title: '选择协议', type: 'string', default: 'shadowsocks', enum: ['vmess', 'shadowsocks'] },
     settings: {
       type: 'object',

@@ -13,6 +13,7 @@ import { AppSettingsComponent } from './settings/components/app-settings/app-set
 import { InputFormComponent } from './settings/components/input-form/input-form.component';
 import { RoutingFormComponent } from './settings/components/routing-form/routing-form.component';
 import { SettingsComponent } from './settings/settings.component';
+import { SubscribeFormComponent } from './subscribe-list/subscribe-form/subscribe-form.component';
 import { SubscribeListComponent } from './subscribe-list/subscribe-list.component';
 
 @NgModule({
@@ -29,6 +30,7 @@ import { SubscribeListComponent } from './subscribe-list/subscribe-list.componen
     InputFormComponent,
     AppSettingsComponent,
     SubscribeListComponent,
+    SubscribeFormComponent,
   ],
 })
 export class PagesModule {}

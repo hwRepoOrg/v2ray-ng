@@ -1,7 +1,48 @@
+<nz-drawer #drawer nzTitle="订阅管理" nzWidth="600px" (nzOnClose)="drawer.close()">
+  <v2ray-subscribe-form
+    *ngIf="drawer?.nzVisible"
+    [record]="activatedSubscribe"
+    (formSubmit)="submit($event)"
+  ></v2ray-subscribe-form>
+</nz-drawer>
+
 <div class="d-flex justify-content-end align-items-center">
-  <button nz-button nzType="link">
+  <button nz-button nzType="link" (click)="add()">
     <i nz-icon nzType="plus"></i>
     <span>添加订阅</span>
   </button>
 </div>
-<nz-divider nzText="订阅列表" nzOrientation="left"></nz-divider>
+<nz-spin [nzSpinning]="cs.loading">
+  <nz-divider nzText="订阅列表" nzOrientation="left"></nz-divider>
+  <div class="subscribe-list">
+    <div class="subscribe-card" *ngFor="let subscribe of cs.subscribeList; let i = index">
+      <nz-card>
+        <div class="subscribe-card-title">
+          <strong>{{ subscribe.title }}</strong>
+          <button class="ml-auto" nz-button nzType="link" (click)="syncSubscribe(subscribe.url, i)">
+            <i nz-icon nzType="sync"></i>
+            <span>更新订阅</span>
+          </button>
+          <button nz-button nzType="link" (click)="edit(i, subscribe)">
+            <i nz-icon nzType="edit"></i>
+            <span>编辑</span>
+          </button>
+          <button nz-button nzType="link" nz-popconfirm nzTooltipTitle="确认删除吗" (nzOnConfirm)="delete(i)">
+            <i nz-icon nzType="delete"></i>
+            <span>删除</span>
+          </button>
+        </div>
+        <div class="subscribe-card-body">
+          <div class="d-flex justify-content-between">
+            <span>节点数量：</span>
+            <span>{{ subscribe.nodes?.length }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>最后更新时间：</span>
+            <span>{{ subscribe.updatedTime }}</span>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+</nz-spin>

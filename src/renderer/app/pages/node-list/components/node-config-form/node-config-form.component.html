@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-end mb-3">
   <button nz-button nzType="primary" [disabled]="!nodeConfigForm?.valid" (click)="submit()">保存</button>
-  <button nz-button nz-popconfirm nzTitle="确认重置吗？" (nzOnConfirm)="nodeConfigForm.reset()">重置</button>
+  <button nz-button nz-popconfirm nzTooltipTitle="确认重置吗？" (nzOnConfirm)="nodeConfigForm.reset()">重置</button>
 </div>
 
 <sf #nodeConfigForm [schema]="nodeFormSchema" [formData]="nodeConfig" button="none">

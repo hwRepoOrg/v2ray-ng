@@ -1,0 +1,3 @@
+<sf #sf [schema]="schema" [button]="null" [formData]="record" (formSubmit)="formSubmit.emit(sf?.value)">
+  <button nz-button nzType="primary" type="submit" [disabled]="!sf.valid">保存</button>
+</sf>

@@ -1,3 +1,22 @@
 :host {
   display: block;
+  .subscribe-list {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    padding: 10px;
+    overflow-y: auto;
+    .subscribe-card {
+      width: 50%;
+      padding: 5px;
+      nz-card {
+        margin: 0;
+        border-radius: 6px;
+      }
+      &-title {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
 }

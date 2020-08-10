@@ -21,7 +21,10 @@ export class NodeConfigFormComponent implements OnInit {
         settings: {
           ...val.settings,
           servers,
-          vnext,
+          vnext: {
+            ...vnext,
+            users: vnext ? vnext.users[0] : {},
+          },
         },
       };
     }
@@ -51,12 +54,15 @@ export class NodeConfigFormComponent implements OnInit {
   submit() {
     if (this.nodeConfigForm.valid) {
       const formValue = this.nodeConfigForm.value;
+      console.log(formValue);
       this.whenSubmit.emit({
         ...formValue,
         settings: {
           ...formValue.settings,
           servers: formValue.settings.servers ? [formValue.settings.servers] : [],
-          vnext: formValue.settings.vnext ? [formValue.settings.vnext] : [],
+          vnext: formValue.settings.vnext
+            ? [{ ...formValue.settings.vnext, users: [formValue.settings.vnext.users] }]
+            : [],
         },
       } as IConfigOutbound);
     }

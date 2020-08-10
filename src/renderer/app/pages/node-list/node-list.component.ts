@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { SFComponent, SFSchema } from '@delon/form';
 import { ConfigService } from '@renderer/services/config.service';
 import { IConfigOutbound } from '@typing/config.interface';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'v2ray-node-list',
@@ -11,11 +13,21 @@ export class NodeListComponent implements OnInit {
   public drawerWidth = 785;
   public drawerVisible = false;
   public nodeConfig: IConfigOutbound = null;
+  public urlsSchema: SFSchema = {
+    type: 'object',
+    required: ['urls'],
+    properties: {
+      urls: { type: 'string', description: '一行一个', ui: { widget: 'textarea', autosize: { minRows: 5 } } },
+    },
+  };
+  @ViewChild('urlsSF', { read: SFComponent })
+  urlsSF: SFComponent;
 
-  constructor(public cs: ConfigService) {}
+  constructor(public cs: ConfigService, private modalSrv: NzModalService) {}
 
   ngOnInit() {
     this.cs.getLocalNodeList();
+    this.cs.getSubscribeList();
   }
 
   toggleDrawer(config?: IConfigOutbound) {
@@ -24,6 +36,7 @@ export class NodeListComponent implements OnInit {
   }
 
   nodeFormSubmit(nodeConfig: IConfigOutbound) {
+    this.toggleDrawer(null);
     let nodeList: IConfigOutbound[];
     let newNode: IConfigOutbound;
     if (nodeConfig.tag) {
@@ -32,9 +45,35 @@ export class NodeListComponent implements OnInit {
       newNode = { ...nodeConfig, tag: `${Date.now()}${Math.round(Math.random() * 100000000)}` };
       nodeList = [...this.cs.localNodeList, newNode];
     }
-    if (nodeConfig.active && !newNode) {
-      this.cs.setActivatedNode(nodeConfig);
-    }
     this.cs.updateLocalNodeList(nodeList);
+  }
+
+  showUrlsForm(tpl: TemplateRef<any>) {
+    const modalRef = this.modalSrv.create({
+      nzTitle: '添加节点',
+      nzWidth: 700,
+      nzContent: tpl,
+      nzFooter: [
+        {
+          type: 'default',
+          label: '取消',
+          onClick: () => {
+            modalRef.destroy();
+          },
+        },
+        {
+          type: 'primary',
+          label: '保存',
+          disabled: () => !this.urlsSF?.valid,
+          onClick: () => {
+            this.cs.updateLocalNodeList([
+              ...this.cs.localNodeList,
+              ...this.cs.getNodesFromUrls(this.urlsSF?.value.urls),
+            ]);
+            modalRef.destroy();
+          },
+        },
+      ],
+    });
   }
 }
