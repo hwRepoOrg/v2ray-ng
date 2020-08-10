@@ -38,12 +38,6 @@ export class AppConfig extends EventEmitter {
     await writeFile(this.nodeListPath, JSON.stringify(nodeList, null, 2));
   }
 
-  public async updateNodeConfig(nodeConfig: IConfigOutbound) {
-    const nodeList: IConfigOutbound[] = JSON.parse((await readFile(this.nodeListPath)).toString());
-    const newNodeList = nodeList.map((node) => (node.tag === nodeConfig.tag ? nodeConfig : node));
-    await writeFile(this.nodeListPath, JSON.stringify(newNodeList, null, 2));
-  }
-
   public async getRoutingConfig(): Promise<IConfigRouting> {
     const hasConfig = await pathExists(this.routingConfigPath);
     if (!hasConfig) {
