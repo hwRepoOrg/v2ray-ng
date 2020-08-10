@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
-import { NzBackTopModule } from 'ng-zorro-antd/back-top';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
@@ -54,7 +53,6 @@ const ANTD_MODULES = [
   NzSwitchModule,
   NzInputNumberModule,
   NzSpinModule,
-  NzBackTopModule,
 ];
 
 @NgModule({
