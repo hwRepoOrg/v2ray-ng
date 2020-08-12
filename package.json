@@ -1,5 +1,6 @@
 {
   "name": "v2ray-ng",
+  "productName": "V2ray-NG",
   "version": "0.0.0",
   "scripts": {
     "start:renderer": "ng serve --port=4204",
@@ -34,8 +35,12 @@
     "fs": "^0.0.1-security",
     "fs-extra": "^9.0.1",
     "ng-zorro-antd": "^9.3.0",
+    "node-7z": "^2.1.1",
     "path": "^0.12.7",
+    "request": "^2.88.2",
+    "request-progress": "^3.0.0",
     "rxjs": "~6.5.4",
+    "sudo-prompt": "^9.2.1",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
   },
@@ -46,6 +51,7 @@
     "@types/ajv": "^1.0.0",
     "@types/fs-extra": "^9.0.1",
     "@types/node": "12",
+    "@types/request": "^2.48.5",
     "clean-webpack-plugin": "^3.0.0",
     "codelyzer": "^6.0.0",
     "copy-webpack-plugin": "^6.0.2",
