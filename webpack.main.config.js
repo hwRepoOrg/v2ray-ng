@@ -6,6 +6,7 @@ const webpack = require('webpack');
 
 module.exports = {
   mode: process.env.NODE_ENV,
+  target: 'node',
   entry: path.resolve(__dirname, 'src/main/main.ts'),
   output: {
     filename: 'main.js',
