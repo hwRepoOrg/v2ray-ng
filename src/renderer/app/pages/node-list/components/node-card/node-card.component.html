@@ -1,6 +1,6 @@
 <nz-card class="node-card" [class.active]="activated">
   <div class="d-flex align-items-center mb-2">
-    <span class="name">{{ nodeConfig.name }}</span>
+    <span class="name" nz-tooltip [nzTooltipTitle]="nodeConfig.name">{{ nodeConfig.name }}</span>
     <span class="time"></span>
   </div>
   <p class="d-flex align-items-center">
