@@ -9,7 +9,7 @@
     </span>
     <nz-tag class="ml-auto" nzColor="#49aa19">{{ nodeConfig?.protocol }}</nz-tag>
   </p>
-  <p class="content text-right mb-0">
-    {{ utilsSrv?.getConfigByProtocol(nodeConfig)?.address }}:{{ utilsSrv?.getConfigByProtocol(nodeConfig)?.port }}
+  <p class="content text-right mb-0" nz-tooltip [nzTooltipTitle]="getAddress(nodeConfig)">
+    {{ getAddress(nodeConfig) }}
   </p>
 </nz-card>

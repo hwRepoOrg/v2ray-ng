@@ -26,4 +26,10 @@ export class NodeCardComponent {
   select() {
     this.vSelect.emit(this.nodeConfig);
   }
+
+  getAddress(nodeConfig: IConfigOutbound) {
+    return `${this.utilsSrv?.getConfigByProtocol(nodeConfig)?.address}:${
+      this.utilsSrv?.getConfigByProtocol(nodeConfig)?.port
+    }`;
+  }
 }
