@@ -184,6 +184,8 @@ export class ConfigService {
   }
 
   getSubscribeNodesByUrl(url: string) {
-    return this.http.get(url, { responseType: 'text' }).pipe(map((res) => atob(res)));
+    return this.http
+      .get(url, { responseType: 'text', params: { time: Date.now().toString() } })
+      .pipe(map((res) => atob(res)));
   }
 }
