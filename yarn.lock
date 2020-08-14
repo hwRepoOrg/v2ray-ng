@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"7zip-bin@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/7zip-bin/-/7zip-bin-5.0.3.tgz#bc5b5532ecafd923a61f2fb097e3b108c0106a3f"
+  integrity sha512-GLyWIFBbGvpKPGo55JyRZAo4lVbnBiD52cKlw/0Vt+wnmKvWJkpZvsjVoaIolyBXDeAQKSicRtqFNPem9w0WYA==
+
 "@angular-devkit/architect@0.901.8":
   version "0.901.8"
   resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.901.8.tgz#d2f5f4c16fba3ed61ee27c7fc72118421ea2b45d"
