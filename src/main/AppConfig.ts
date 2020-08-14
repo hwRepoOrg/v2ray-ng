@@ -105,7 +105,7 @@ export class AppConfig extends EventEmitter {
           protocol: 'freedom',
           tag: 'direct',
           settings: {
-            domainStrategy: 'UseIP',
+            domainStrategy: 'UseIPv4',
           },
         },
         { protocol: 'dns', tag: 'dns-out' },
@@ -152,4 +152,6 @@ export class AppConfig extends EventEmitter {
   public async setSubscribesConfig(list: ISubscribeConfig[]) {
     return await writeFile(this.subscribesConfigPath, JSON.stringify(list, null, 2));
   }
+
+  public setSystemProxy() {}
 }
