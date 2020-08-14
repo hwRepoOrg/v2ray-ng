@@ -1,5 +1,5 @@
 import { createCanvas, loadImage } from 'canvas';
-import { app, Menu, nativeImage, nativeTheme, shell, Tray } from 'electron';
+import { Menu, nativeImage, nativeTheme, shell, Tray } from 'electron';
 import { macOS } from 'electron-is';
 import { EventEmitter } from 'events';
 import fs from 'fs-extra';
