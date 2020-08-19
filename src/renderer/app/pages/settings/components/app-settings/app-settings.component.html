@@ -1,0 +1,24 @@
+<nz-descriptions nzTitle="核心配置" nzBordered nzSize="small" nzLayout="vertical">
+  <nz-descriptions-item nzTitle="mellow-core version">
+    <div class="d-flex align-items-center">
+      <span>{{ mellowVersion }}</span>
+      <button class="ml-auto" nz-button nzType="link" (click)="updateMellow()" [disabled]="mellowLoading">
+        <i nz-icon nzType="sync" [nzSpin]="mellowLoading"></i>
+        <span>更新mellow core</span>
+      </button>
+    </div>
+  </nz-descriptions-item>
+  <nz-descriptions-item nzTitle="v2ray-core version">
+    <div class="d-flex align-items-center">
+      <span>{{ v2rayVersion }}</span>
+      <button class="ml-auto" nz-button nzType="link" (click)="updateV2rayCore()">
+        <i nz-icon nzType="sync" [nzSpin]="v2rayLoading"></i>
+        <span>更新v2ray core</span>
+      </button>
+    </div>
+  </nz-descriptions-item>
+</nz-descriptions>
+
+<ng-template #progressTpl>
+  <nz-progress [nzPercent]="progress$ | async" nzStatus="active"></nz-progress>
+</ng-template>
