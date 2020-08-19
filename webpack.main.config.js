@@ -7,15 +7,18 @@ const webpack = require('webpack');
 module.exports = {
   mode: process.env.NODE_ENV,
   target: 'node',
+  node: {
+    __dirname: false,
+  },
   entry: path.resolve(__dirname, 'src/main/main.ts'),
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'dist/v2ray-ng/main'),
-    publicPath: path.resolve(__dirname, 'dist/v2ray-ng/main'),
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: path.resolve(__dirname, 'dist'),
   },
   watch: process.env.NODE_ENV === 'development',
   watchOptions: { ignored: /node_modules/ },
-  devtool: 'source-map',
+  devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',
   module: {
     rules: [
       {
@@ -30,19 +33,22 @@ module.exports = {
   },
   plugins: [
     new webpack.ProgressPlugin(),
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({
+      verbose: true,
+      cleanOnceBeforeBuildPatterns: ['**/*', '!renderer', '!renderer/**/*'],
+    }),
+    new webpack.NormalModuleReplacementPlugin(/environments\/environment/gi, (resource) => {
+      if (process.env.NODE_ENV === 'production') {
+        resource.request = `${resource.request}.prod`;
+      }
+    }),
     new CopyPlugin({
       patterns: [
         {
           from: path.resolve(__dirname, './src/main/assets'),
-          to: path.resolve(__dirname, './dist/v2ray-ng/main/assets'),
+          to: path.resolve(__dirname, './dist/assets'),
         },
       ],
-    }),
-    new webpack.NormalModuleReplacementPlugin(/environment\.ts$/, (resource) => {
-      if (process.env.NODE_ENV === 'production') {
-        resource.request = resource.request.replace(/environment\.ts$/, 'environment.prod.ts');
-      }
     }),
   ],
   externals: [nodeExternals()],

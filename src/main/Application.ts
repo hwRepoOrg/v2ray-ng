@@ -12,7 +12,7 @@ export class Application extends EventEmitter {
   public core: AppCore;
 
   private get mainWindowUrl(): string {
-    return environment.production ? '../renderer/index.html' : 'http://localhost:4204';
+    return environment.production ? `file://${__dirname}/renderer/index.html` : 'http://localhost:4204';
   }
 
   constructor() {

@@ -1,6 +1,7 @@
 {
   "name": "v2ray-ng",
   "productName": "V2ray-NG",
+  "main": "dist/main.js",
   "version": "0.0.0",
   "scripts": {
     "start:renderer": "ng serve --port=4204",

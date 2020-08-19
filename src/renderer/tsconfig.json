@@ -5,7 +5,7 @@
     "outDir": "./out-tsc/app",
     "target": "es2015",
     "lib": ["es2018", "dom"],
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": false,
     "downlevelIteration": true,
     "skipLibCheck": true,
