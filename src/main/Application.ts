@@ -2,12 +2,14 @@ import { app, BrowserWindow } from 'electron';
 import { EventEmitter } from 'events';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
+import { AppCore } from './AppCore';
 import { AppTray } from './AppTray';
 
 export class Application extends EventEmitter {
   public tray: AppTray;
   public config: AppConfig;
   public mainWindow?: BrowserWindow;
+  public core: AppCore;
 
   private get mainWindowUrl(): string {
     return environment.production ? '../renderer/index.html' : 'http://localhost:4204';
@@ -19,6 +21,7 @@ export class Application extends EventEmitter {
   }
 
   private init() {
+    this.core = new AppCore();
     this.tray = new AppTray();
     this.config = new AppConfig();
     this.initWindow();
