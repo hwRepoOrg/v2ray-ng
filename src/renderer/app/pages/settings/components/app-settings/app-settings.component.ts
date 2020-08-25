@@ -4,7 +4,7 @@ import { ElectronService } from '@renderer/services/electron.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { Subject } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { catchError, filter, map } from 'rxjs/operators';
 import { environment } from '../../../../../../environments/environment';
 
 @Component({
@@ -15,8 +15,10 @@ import { environment } from '../../../../../../environments/environment';
 export class AppSettingsComponent implements OnInit {
   public v2rayVersion: string;
   public mellowVersion: string;
+  public dlcUpdatedTime: string;
   public mellowLoading = false;
   public v2rayLoading = false;
+  public dlcLoading = false;
   public progress$ = new Subject<number>();
   private modalRef: NzModalRef<any>;
 
@@ -34,6 +36,7 @@ export class AppSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.getMellowCoreVersion();
     this.getV2rayCoreVersion();
+    this.getDLCUpdatedTime();
   }
 
   formatVersionStr(version: string) {
@@ -62,28 +65,48 @@ export class AppSettingsComponent implements OnInit {
       });
   }
 
-  getLatestVersion(repo: string, version: string) {
-    return this.http.get(`https://api.github.com/repos/${repo}/releases/latest`).pipe(
-      filter((res: any) => {
-        if (version === res.tag_name) {
-          this.msg.info('当前已是最新版本');
-          this.mellowLoading = false;
-          this.v2rayLoading = false;
+  getDLCUpdatedTime() {
+    this.es.app.core
+      .getDLCUpdatedTime()
+      .then((time) => {
+        if (time) {
+          this.dlcUpdatedTime = new Date(time).toLocaleDateString() + new Date(time).toLocaleTimeString();
         }
-        return version !== res.tag_name;
-      }),
-      map((res: any) => {
-        this.msg.info(`检测到最新版本${res.tag_name}，开始更新。更新完毕前请不要关闭窗口`);
-        this.updateProgress(0);
-        this.modalRef = this.modalSrv.create({
-          nzTitle: '更新进度',
-          nzContent: this.progressTpl,
-          nzFooter: null,
-          nzClosable: false,
-          nzMaskClosable: false,
-        });
       })
-    );
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }
+
+  getLatestVersion(repo: string, version: string) {
+    return this.http
+      .get(`https://api.github.com/repos/${repo}/releases/latest`, {
+        headers: {
+          Authorization: environment.github_token,
+        },
+      })
+      .pipe(
+        catchError(() => null),
+        filter((res: any) => {
+          if (!res || version === res.tag_name) {
+            this.msg.info('当前已是最新版本');
+            this.mellowLoading = false;
+            this.v2rayLoading = false;
+          }
+          return version !== res.tag_name;
+        }),
+        map((res: any) => {
+          this.msg.info(`检测到最新版本${res.tag_name}，开始更新。更新完毕前请不要关闭窗口`);
+          this.updateProgress(0);
+          this.modalRef = this.modalSrv.create({
+            nzTitle: '更新进度',
+            nzContent: this.progressTpl,
+            nzFooter: null,
+            nzClosable: false,
+            nzMaskClosable: false,
+          });
+        })
+      );
   }
 
   updateMellow() {
@@ -92,8 +115,8 @@ export class AppSettingsComponent implements OnInit {
       const sub = this.es.ipcRenderer.on('mellow-core-update-progress', (ev, progress: string | null | number) => {
         this.zone.run(() => {
           if (progress === null) {
-            this.modalRef.destroy();
             this.updateProgress(100);
+            this.modalRef.destroy();
             sub.removeAllListeners('mellow-core-update-progress');
             this.mellowLoading = false;
             this.msg.success(`更新成功`);
@@ -118,8 +141,8 @@ export class AppSettingsComponent implements OnInit {
       const sub = this.es.ipcRenderer.on('v2ray-core-update-progress', (_ev, progress: string | null | number) => {
         this.zone.run(() => {
           if (progress === null) {
-            this.modalRef.destroy();
             this.updateProgress(100);
+            this.modalRef.destroy();
             sub.removeAllListeners('v2ray-core-update-progress');
             this.v2rayLoading = false;
             this.msg.success('更新成功');
@@ -134,6 +157,31 @@ export class AppSettingsComponent implements OnInit {
         });
       });
       this.es.app.core.updateV2rayCore();
+    });
+  }
+
+  updateDlc() {
+    this.dlcLoading = true;
+    this.getLatestVersion('v2ray/domain-list-community', '').subscribe(() => {
+      const sub = this.es.ipcRenderer.on('dlc-update-progress', (_ev, progress: string | null | number) => {
+        this.zone.run(() => {
+          if (progress === null) {
+            this.updateProgress(100);
+            this.modalRef.destroy();
+            sub.removeAllListeners('dlc-update-progress');
+            this.dlcLoading = false;
+            this.msg.success('更新成功');
+            this.getDLCUpdatedTime();
+          } else if (typeof progress === 'string') {
+            sub.removeAllListeners('dlc-update-progress');
+            this.modalRef.destroy();
+            this.msg.error(`更新失败：${progress}`);
+          } else {
+            this.updateProgress(Math.round(progress * 100));
+          }
+        });
+      });
+      this.es.app.core.updateDLCData();
     });
   }
 

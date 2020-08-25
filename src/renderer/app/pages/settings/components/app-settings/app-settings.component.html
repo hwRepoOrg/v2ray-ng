@@ -1,4 +1,4 @@
-<nz-descriptions nzTitle="核心配置" nzBordered nzSize="small" nzLayout="vertical">
+<nz-descriptions nzTitle="核心配置" nzBordered nzSize="small" nzLayout="vertical" [nzColumn]="2">
   <nz-descriptions-item nzTitle="mellow-core version">
     <div class="d-flex align-items-center">
       <span>{{ mellowVersion }}</span>
@@ -14,6 +14,15 @@
       <button class="ml-auto" nz-button nzType="link" (click)="updateV2rayCore()">
         <i nz-icon nzType="sync" [nzSpin]="v2rayLoading"></i>
         <span>更新v2ray core</span>
+      </button>
+    </div>
+  </nz-descriptions-item>
+  <nz-descriptions-item nzTitle="domain list community" [nzSpan]="2">
+    <div class="d-flex align-items-center">
+      <span>{{ dlcUpdatedTime }}</span>
+      <button class="ml-auto" nz-button nzType="link" (click)="updateDlc()" [disabled]="dlcLoading">
+        <i nz-icon nzType="sync" [nzSpin]="mellowLoading"></i>
+        <span>更新dlc.dat</span>
       </button>
     </div>
   </nz-descriptions-item>

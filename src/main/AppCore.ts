@@ -1,7 +1,17 @@
 import node7zBin from '7zip-bin';
 import { ChildProcessWithoutNullStreams, execFile, spawn } from 'child_process';
 import { app } from 'electron';
-import { chmod, constants, createWriteStream, existsSync, mkdirSync, moveSync, pathExists, removeSync } from 'fs-extra';
+import {
+  chmod,
+  constants,
+  createWriteStream,
+  existsSync,
+  mkdirSync,
+  moveSync,
+  pathExists,
+  removeSync,
+  stat,
+} from 'fs-extra';
 import node7z from 'node-7z';
 import * as Path from 'path';
 import request from 'request';
@@ -12,6 +22,7 @@ export class AppCore {
   public corePath: string;
   public mellowCorePath: string;
   public v2rayCorePath: string;
+  public dlcPath: string;
   public v2rayCore: ChildProcessWithoutNullStreams;
   public mellowCore: ChildProcessWithoutNullStreams;
 
@@ -24,6 +35,7 @@ export class AppCore {
 
     this.mellowCorePath = Path.resolve(this.corePath, './mellow_core');
     this.v2rayCorePath = Path.resolve(this.corePath, './v2ray_core');
+    this.dlcPath = Path.resolve(this.corePath, './dlc.dat');
   }
 
   async getMellowCoreVersion(): Promise<string | null> {
@@ -42,6 +54,15 @@ export class AppCore {
     }
     await chmod(this.v2rayCorePath, constants.S_IXUSR);
     return await this.execute(`${this.v2rayCorePath}`, ['-version']);
+  }
+
+  async getDLCUpdatedTime() {
+    const isExists = await pathExists(this.dlcPath);
+    if (!isExists) {
+      return null;
+    }
+    const info = await stat(this.dlcPath);
+    return +info.mtime;
   }
 
   execute(command: string, args: string[]): Promise<string> {
@@ -129,6 +150,23 @@ export class AppCore {
         zipProgress.on('error', (err: Error) => {
           global.appInstance.mainWindow.webContents.send('v2ray-core-update-progress', err.message);
         });
+      }
+    });
+  }
+
+  updateDLCData() {
+    const url = `https://github.com/v2ray/domain-list-community/releases/latest/download/dlc.dat`;
+    const tempPath = Path.resolve(app.getPath('temp'), './dlc.dat');
+    this.progressDownload(url, tempPath).subscribe((state) => {
+      const webContents = global.appInstance.mainWindow.webContents;
+      if (state instanceof Error) {
+        console.log(state);
+        webContents.send('dlc-update-progress', state.message);
+      } else if (typeof state === 'number') {
+        webContents.send('dlc-update-progress', state);
+      } else if (state === null) {
+        moveSync(tempPath, this.dlcPath, { overwrite: true });
+        webContents.send('dlc-update-progress', state);
       }
     });
   }
