@@ -22,6 +22,15 @@ export class NodeListComponent implements OnInit {
   };
   @ViewChild('urlsSF', { read: SFComponent })
   urlsSF: SFComponent;
+  get loading() {
+    return this.cs.loading;
+  }
+  get localNodeList() {
+    return this.cs.localNodeList;
+  }
+  get subscribeList() {
+    return this.cs.subscribeList;
+  }
 
   constructor(public cs: ConfigService, private modalSrv: NzModalService) {}
 
@@ -40,10 +49,10 @@ export class NodeListComponent implements OnInit {
     let nodeList: IConfigOutbound[];
     let newNode: IConfigOutbound;
     if (nodeConfig.tag) {
-      nodeList = this.cs.localNodeList.map((node) => (node.tag === nodeConfig.tag ? nodeConfig : node));
+      nodeList = this.localNodeList.map((node) => (node.tag === nodeConfig.tag ? nodeConfig : node));
     } else {
       newNode = { ...nodeConfig, tag: `${Date.now()}${Math.round(Math.random() * 100000000)}` };
-      nodeList = [...this.cs.localNodeList, newNode];
+      nodeList = [...this.localNodeList, newNode];
     }
     this.cs.updateLocalNodeList(nodeList);
   }
@@ -66,10 +75,7 @@ export class NodeListComponent implements OnInit {
           label: '保存',
           disabled: () => !this.urlsSF?.valid,
           onClick: () => {
-            this.cs.updateLocalNodeList([
-              ...this.cs.localNodeList,
-              ...this.cs.getNodesFromUrls(this.urlsSF?.value.urls),
-            ]);
+            this.cs.updateLocalNodeList([...this.localNodeList, ...this.cs.getNodesFromUrls(this.urlsSF?.value.urls)]);
             modalRef.destroy();
           },
         },

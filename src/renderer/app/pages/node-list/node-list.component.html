@@ -33,18 +33,18 @@
     </ul>
   </nz-dropdown-menu>
 </div>
-<nz-spin [nzSpinning]="cs.loading">
+<nz-spin [nzSpinning]="loading">
   <nz-divider nzText="自定义节点列表" nzOrientation="left"></nz-divider>
   <div class="node-list">
     <v2ray-node-card
-      *ngFor="let node of cs.localNodeList"
+      *ngFor="let node of localNodeList"
       [nodeConfig]="node"
       (vEdit)="toggleDrawer($event)"
       (vSelect)="cs.setActivatedNode($event)"
       [activated]="node.active"
     ></v2ray-node-card>
   </div>
-  <ng-container *ngFor="let subscribe of cs.subscribeList">
+  <ng-container *ngFor="let subscribe of subscribeList">
     <nz-divider [nzText]="subscribe.title" nzOrientation="left"></nz-divider>
     <div class="node-list">
       <v2ray-node-card
