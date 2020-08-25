@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonsModule } from '@renderer/commons/commons.module';
-import { DelonABCModule } from '@renderer/delon-abc.module';
 import { TitleComponent } from '@renderer/layouts/title/title.component';
 import { NgZorroModule } from '@renderer/ng-zorro.module';
 import { HomeComponent } from './home/home.component';
@@ -17,7 +16,7 @@ import { SubscribeFormComponent } from './subscribe-list/subscribe-form/subscrib
 import { SubscribeListComponent } from './subscribe-list/subscribe-list.component';
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes), CommonsModule, NgZorroModule, DelonABCModule],
+  imports: [RouterModule.forRoot(routes), CommonsModule, NgZorroModule],
   exports: [RouterModule],
   declarations: [
     HomeComponent,

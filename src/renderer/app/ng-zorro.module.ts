@@ -8,7 +8,6 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
-import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -16,6 +15,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
@@ -48,7 +48,6 @@ const ANTD_MODULES = [
   NzInputModule,
   NzButtonModule,
   NzPopconfirmModule,
-  NzTableModule,
   NzDropDownModule,
   NzDividerModule,
   NzTabsModule,
@@ -58,7 +57,7 @@ const ANTD_MODULES = [
   NzSpinModule,
   NzDescriptionsModule,
   NzProgressModule,
-  NzEmptyModule,
+  NzModalModule,
 ];
 
 @NgModule({
