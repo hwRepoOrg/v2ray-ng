@@ -13,7 +13,24 @@
 </nz-drawer>
 
 <ng-template #urlsTpl>
-  <sf #urlsSF [schema]="urlsSchema" button="none"></sf>
+  <form nz-form>
+    <nz-row nzGutter="8">
+      <nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label [style.width.px]="100">urls</nz-form-label>
+          <nz-form-control>
+            <textarea
+              nz-input
+              [nzAutosize]="{ minRows: 4 }"
+              name="urls"
+              [(ngModel)]="urls"
+              placeholder="一行一个"
+            ></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+  </form>
 </ng-template>
 
 <div class="action-bar">

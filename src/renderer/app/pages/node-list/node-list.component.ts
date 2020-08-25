@@ -1,5 +1,4 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { SFComponent, SFSchema } from '@delon/form';
 import { ConfigService } from '@renderer/services/config.service';
 import { IConfigOutbound } from '@typing/config.interface';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -11,17 +10,9 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 })
 export class NodeListComponent implements OnInit {
   public drawerWidth = 785;
-  public drawerVisible = false;
+  public drawerVisible = true;
   public nodeConfig: IConfigOutbound = null;
-  public urlsSchema: SFSchema = {
-    type: 'object',
-    required: ['urls'],
-    properties: {
-      urls: { type: 'string', description: '一行一个', ui: { widget: 'textarea', autosize: { minRows: 5 } } },
-    },
-  };
-  @ViewChild('urlsSF', { read: SFComponent })
-  urlsSF: SFComponent;
+  public urls: string;
   get loading() {
     return this.cs.loading;
   }
@@ -58,6 +49,7 @@ export class NodeListComponent implements OnInit {
   }
 
   showUrlsForm(tpl: TemplateRef<any>) {
+    this.urls = '';
     const modalRef = this.modalSrv.create({
       nzTitle: '添加节点',
       nzWidth: 700,
@@ -73,9 +65,9 @@ export class NodeListComponent implements OnInit {
         {
           type: 'primary',
           label: '保存',
-          disabled: () => !this.urlsSF?.valid,
+          disabled: () => !this.urls,
           onClick: () => {
-            this.cs.updateLocalNodeList([...this.localNodeList, ...this.cs.getNodesFromUrls(this.urlsSF?.value.urls)]);
+            this.cs.updateLocalNodeList([...this.localNodeList, ...this.cs.getNodesFromUrls(this.urls)]);
             modalRef.destroy();
           },
         },
