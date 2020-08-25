@@ -1,3 +1,23 @@
-<sf #sf [schema]="schema" [button]="null" [formData]="record" (formSubmit)="formSubmit.emit(sf?.value)">
-  <button nz-button nzType="primary" type="submit" [disabled]="!sf.valid">保存</button>
-</sf>
+<form nz-form [formGroup]="formGroup" (ngSubmit)="formSubmit.emit(formGroup.value)">
+  <div class="d-flex mb-2">
+    <button class="ml-auto" nz-button nzType="primary" type="submit" [disabled]="!formGroup.valid">保存</button>
+  </div>
+  <nz-row nzGutter="8">
+    <nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label nzRequired>名称</nz-form-label>
+        <nz-form-control>
+          <input type="text" nz-input formControlName="title" />
+        </nz-form-control>
+      </nz-form-item>
+    </nz-col>
+    <nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label nzRequired>地址</nz-form-label>
+        <nz-form-control>
+          <textarea nz-input formControlName="url"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-col>
+  </nz-row>
+</form>
