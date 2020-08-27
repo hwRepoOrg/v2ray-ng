@@ -18,8 +18,6 @@ export class TitleComponent {
 
   constructor(private electronSrv: ElectronService) {}
 
-  toggleFullscreen() {}
-
   minimal() {}
 
   close() {

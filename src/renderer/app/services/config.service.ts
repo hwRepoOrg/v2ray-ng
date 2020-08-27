@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IConfigOutbound, ISubscribeConfig, IVmessShareConfig, VMESS_SHARE_NET } from '@typing/config.interface';
-import { from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 import { ElectronService } from './electron.service';
 
 @Injectable({ providedIn: 'root' })
@@ -75,7 +74,7 @@ export class ConfigService {
   }
 
   getActivatedNode() {
-    return from(this.es.app.config.getActivatedNode());
+    return this.es.send<IConfigOutbound>('/config/getActivatedNode');
   }
 
   getNodesFromUrls(configStr: string) {
@@ -103,31 +102,21 @@ export class ConfigService {
 
   getLocalNodeList() {
     this.loading = true;
-    this.es.app.config
-      .getNodeConfigList()
-      .then((list) => {
+    this.es
+      .send<IConfigOutbound[]>('/config/getNodeConfigList')
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe((list) => {
         this.localNodeList = list;
-      })
-      .catch((err) => {
-        this.es.log.error(err);
-      })
-      .finally(() => {
-        this.loading = false;
       });
   }
 
   updateLocalNodeList(list: IConfigOutbound[]) {
     this.loading = true;
-    this.es.app.config
-      .setNodeConfigList(list)
-      .then(() => {
+    this.es
+      .send('/config/setNodeConfigList', list)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe(() => {
         this.getLocalNodeList();
-      })
-      .catch((err) => {
-        this.es.log.error(err);
-      })
-      .finally(() => {
-        this.loading = false;
       });
   }
 
@@ -146,7 +135,7 @@ export class ConfigService {
           ),
         }))
       );
-      this.es.app.config.setRunningConfig(node).then(() => {
+      this.es.send('/config/setRunningConfig', node).subscribe(() => {
         this.getLocalNodeList();
         this.getSubscribeList();
       });
@@ -155,31 +144,21 @@ export class ConfigService {
 
   getSubscribeList() {
     this.loading = true;
-    this.es.app.config
-      .getSubscribesConfig()
-      .then((list) => {
+    this.es
+      .send<ISubscribeConfig[]>('/config/getSubscribesConfig')
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe((list) => {
         this.subscribeList = list;
-      })
-      .catch((err) => {
-        this.es.log.error(err);
-      })
-      .finally(() => {
-        this.loading = false;
       });
   }
 
   updateSubscribeList(list: ISubscribeConfig[]) {
     this.loading = true;
-    this.es.app.config
-      .setSubscribesConfig(list)
-      .then(() => {
+    this.es
+      .send('/config/setSubscribesConfig', list)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe(() => {
         this.getSubscribeList();
-      })
-      .catch((err) => {
-        this.es.log.error(err);
-      })
-      .finally(() => {
-        this.loading = false;
       });
   }
 

@@ -44,38 +44,23 @@ export class AppSettingsComponent implements OnInit {
   }
 
   getMellowCoreVersion() {
-    this.es.app.core
-      .getMellowCoreVersion()
-      .then((version) => {
-        this.mellowVersion = this.formatVersionStr(version);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+    this.es.send('/core/getMellowCoreVersion').subscribe((version) => {
+      this.mellowVersion = this.formatVersionStr(version);
+    });
   }
 
   getV2rayCoreVersion() {
-    this.es.app.core
-      .getV2rayCoreVersion()
-      .then((version) => {
-        this.v2rayVersion = this.formatVersionStr(`v${version.match(/V2Ray\s(.*)?\s\(V2F/)[1]}`);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+    this.es.send('/core/getV2rayCoreVersion').subscribe((version) => {
+      this.v2rayVersion = this.formatVersionStr(`v${version.match(/V2Ray\s(.*)?\s\(V2F/)[1]}`);
+    });
   }
 
   getDLCUpdatedTime() {
-    this.es.app.core
-      .getDLCUpdatedTime()
-      .then((time) => {
-        if (time) {
-          this.dlcUpdatedTime = new Date(time).toLocaleDateString() + new Date(time).toLocaleTimeString();
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+    this.es.send('/core/getDLCUpdatedTime').subscribe((time) => {
+      if (time) {
+        this.dlcUpdatedTime = new Date(time).toLocaleDateString() + new Date(time).toLocaleTimeString();
+      }
+    });
   }
 
   getLatestVersion(repo: string, version: string) {
@@ -131,7 +116,7 @@ export class AppSettingsComponent implements OnInit {
           }
         });
       });
-      this.es.app.core.updateMellowCore();
+      this.es.send('/core/updateMellowCore').subscribe();
     });
   }
 
@@ -156,7 +141,7 @@ export class AppSettingsComponent implements OnInit {
           }
         });
       });
-      this.es.app.core.updateV2rayCore();
+      this.es.send('/core/updateV2rayCore').subscribe();
     });
   }
 
@@ -181,7 +166,7 @@ export class AppSettingsComponent implements OnInit {
           }
         });
       });
-      this.es.app.core.updateDLCData();
+      this.es.send('/core/updateDLCData').subscribe();
     });
   }
 

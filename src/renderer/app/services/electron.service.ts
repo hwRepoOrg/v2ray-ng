@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as childProcess from 'child_process';
 import { ipcRenderer, remote, webFrame } from 'electron';
 import * as is from 'electron-is';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +13,6 @@ export class ElectronService {
   remote: typeof remote;
   childProcess: typeof childProcess;
   is: typeof is;
-  app: IApplication;
-  log: Console;
 
   get isElectron(): boolean {
     return !!(window && window.process && window.process.type);
@@ -26,8 +25,10 @@ export class ElectronService {
       this.remote = window.require('electron').remote;
       this.childProcess = window.require('child_process');
       this.is = this.remote.require('electron-is');
-      this.app = this.remote.getGlobal('appInstance');
-      this.log = this.remote.getGlobal('console');
     }
+  }
+
+  send<T = any>(channel: string, ...args: any[]): Observable<T> {
+    return from(this.ipcRenderer.invoke('/api', channel, ...args));
   }
 }

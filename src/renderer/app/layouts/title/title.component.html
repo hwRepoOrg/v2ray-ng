@@ -1,6 +1,5 @@
 <div class="title ml-auto" [class.mr-auto]="isMacOS">{{ title }}</div>
 <div class="actions ml-auto" *ngIf="!isMacOS">
   <a nz-icon nzType="minus" nzTheme="outline" (click)="minimal()"></a>
-  <a nz-icon nzType="fullscreen" nzTheme="outline" (click)="toggleFullscreen()"></a>
   <a nz-icon nzType="close" nzTheme="outline" (click)="close()"></a>
 </div>

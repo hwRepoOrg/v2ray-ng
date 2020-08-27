@@ -152,6 +152,4 @@ export class AppConfig extends EventEmitter {
   public async setSubscribesConfig(list: ISubscribeConfig[]) {
     return await writeFile(this.subscribesConfigPath, JSON.stringify(list, null, 2));
   }
-
-  public setSystemProxy() {}
 }

@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ElectronService } from '@renderer/services/electron.service';
 import { IConfigRoutingRule } from '@typing/config.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'v2ray-routing-form',
   templateUrl: './routing-form.component.html',
   styleUrls: ['./routing-form.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoutingFormComponent implements OnInit {
   public outboundTypeMap = new Map([
@@ -20,12 +20,7 @@ export class RoutingFormComponent implements OnInit {
   public routingFormGroup: FormGroup;
   public loading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private electronSrv: ElectronService,
-    private cdr: ChangeDetectorRef,
-    private msgSrv: NzMessageService
-  ) {
+  constructor(private fb: FormBuilder, private es: ElectronService, private msgSrv: NzMessageService) {
     this.routingFormGroup = this.fb.group({
       domainStrategy: ['IPIfNonMatch', [Validators.required]],
       rules: this.fb.array([]),
@@ -34,22 +29,19 @@ export class RoutingFormComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
-    this.electronSrv.app.config
-      .getRoutingConfig()
-      .then((routing) => {
+    this.es
+      .send('/config/getRoutingConfig')
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe((routing) => {
         this.routingFormGroup.patchValue(routing);
         routing.rules?.forEach((rule) => {
           (this.routingFormGroup.get('rules') as FormArray).push(this.genRuleFormGroup(rule));
         });
-      })
-      .finally(() => {
-        this.loading = false;
-        this.cdr.detectChanges();
       });
   }
 
   submit() {
-    this.electronSrv.app.config.setRoutingConfig(this.routingFormGroup.value).then(() => {
+    this.es.send('/config/setRoutingConfig', this.routingFormGroup.value).subscribe(() => {
       this.msgSrv.success('保存成功');
     });
   }

@@ -1,4 +1,4 @@
-<nz-descriptions nzTitle="核心配置" nzBordered nzSize="small" nzLayout="vertical" [nzColumn]="2">
+<nz-descriptions nzBordered nzSize="small" nzLayout="vertical" [nzColumn]="2">
   <nz-descriptions-item nzTitle="mellow-core version">
     <div class="d-flex align-items-center">
       <span>{{ mellowVersion }}</span>
@@ -21,7 +21,7 @@
     <div class="d-flex align-items-center">
       <span>{{ dlcUpdatedTime }}</span>
       <button class="ml-auto" nz-button nzType="link" (click)="updateDlc()" [disabled]="dlcLoading">
-        <i nz-icon nzType="sync" [nzSpin]="mellowLoading"></i>
+        <i nz-icon nzType="sync" [nzSpin]="dlcLoading"></i>
         <span>更新dlc.dat</span>
       </button>
     </div>

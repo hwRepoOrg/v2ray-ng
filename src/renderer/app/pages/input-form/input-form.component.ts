@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ElectronService } from '@renderer/services/electron.service';
 import { IConfigInbound } from '@typing/config.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'v2ray-input-form',
   templateUrl: './input-form.component.html',
   styleUrls: ['./input-form.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InputFormComponent implements OnInit {
   public configFormGroup: FormGroup;
@@ -17,12 +17,7 @@ export class InputFormComponent implements OnInit {
   }
   public loading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private electronSrv: ElectronService,
-    private cdr: ChangeDetectorRef,
-    private msgSrv: NzMessageService
-  ) {
+  constructor(private fb: FormBuilder, private es: ElectronService, private msgSrv: NzMessageService) {
     this.configFormGroup = this.fb.group({
       inbounds: this.fb.array([]),
     });
@@ -30,40 +25,24 @@ export class InputFormComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
-    this.electronSrv.app.config
-      .getInboundsConfig()
-      .then((inbounds) => {
+    this.es
+      .send('/config/getInboundsConfig')
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe((inbounds) => {
         inbounds.forEach((inbound) => {
           this.inboundsFormArray.push(this.genInboundFormGroup(inbound));
         });
-      })
-      .catch((err) => {
-        this.msgSrv.error(err.message);
-      })
-      .finally(() => {
-        this.loading = false;
-        this.cdr.detectChanges();
       });
   }
 
   public submit() {
-    this.electronSrv.app.config
-      .setInboundsConfig(this.inboundsFormArray.value)
-      .then(() => {
-        this.msgSrv.success('保存成功');
-      })
-      .catch((err) => {
-        this.msgSrv.error(err.message);
-      });
+    this.es.send('/config/setInboundsConfig', this.inboundsFormArray.value).subscribe(() => {
+      this.msgSrv.success('保存成功');
+    });
   }
 
   public add() {
     this.inboundsFormArray.push(this.genInboundFormGroup());
-  }
-
-  public setInboundSetting(inbound: FormGroup) {
-    inbound.removeControl('settings');
-    inbound.addControl('settings', this.genInboundSetting(inbound.get('protocol').value));
   }
 
   private genInboundFormGroup(defaultValues?: Partial<IConfigInbound>) {

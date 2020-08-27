@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { EventEmitter } from 'events';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
@@ -11,7 +11,7 @@ export class Application extends EventEmitter {
   public mainWindow?: BrowserWindow;
   public core: AppCore;
 
-  private get mainWindowUrl(): string {
+  private static get mainWindowUrl(): string {
     return environment.production ? `file://${__dirname}/renderer/index.html` : 'http://localhost:4204';
   }
 
@@ -24,12 +24,16 @@ export class Application extends EventEmitter {
     this.core = new AppCore();
     this.tray = new AppTray();
     this.config = new AppConfig();
+    ipcMain.handle('/api', async (event, path: string, ...args: any[]) => {
+      const [classStr, method] = path.replace(/^\//, '').split('/');
+      return await this[classStr][method].apply(this[classStr], args);
+    });
     this.initWindow();
   }
 
   initWindow() {
     this.mainWindow = this.genMainWindow();
-    this.mainWindow.loadURL(this.mainWindowUrl);
+    this.mainWindow.loadURL(Application.mainWindowUrl).then();
   }
 
   genMainWindow() {

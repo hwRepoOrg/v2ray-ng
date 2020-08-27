@@ -1,10 +1,11 @@
 <nz-spin [nzSpinning]="loading">
-  <div class="d-flex mb-2 justify-content-end">
+  <div class="d-flex mr-2 justify-content-end">
     <button nz-button nzType="primary" [disabled]="!routingFormGroup.valid" (click)="submit()">
       <span>保存</span>
     </button>
   </div>
-  <form nz-form [formGroup]="routingFormGroup">
+  <nz-divider nzText="路由配置" nzOrientation="left"></nz-divider>
+  <form nz-form [formGroup]="routingFormGroup" class="p-2 pt-0">
     <nz-form-item>
       <nz-form-label nzRequired>域名策略</nz-form-label>
       <nz-form-control>

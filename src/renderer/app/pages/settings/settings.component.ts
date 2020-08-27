@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./settings.component.less'],
 })
 export class SettingsComponent {
+  public activated = 0;
   constructor() {}
 }

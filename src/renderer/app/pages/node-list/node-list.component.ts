@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { ConfigService } from '@renderer/services/config.service';
 import { IConfigOutbound } from '@typing/config.interface';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -10,7 +10,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 })
 export class NodeListComponent implements OnInit {
   public drawerWidth = 785;
-  public drawerVisible = true;
+  public drawerVisible = false;
   public nodeConfig: IConfigOutbound = null;
   public urls: string;
   get loading() {

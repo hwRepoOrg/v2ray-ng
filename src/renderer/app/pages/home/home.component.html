@@ -6,7 +6,7 @@
         nz-menu-item
         routerLinkActive="ant-menu-item-selected"
         nz-tooltip
-        [nzTooltipTrigger]="menuCollapsed ? 'hover' : 'null'"
+        [nzTooltipTrigger]="menuCollapsed ? 'hover' : null"
         nzTooltipTitle="节点列表"
       >
         <a routerLink="/node-list"> <i nz-icon nzType="ordered-list" nzTheme="outline"></i><span>节点列表</span> </a>
@@ -15,18 +15,36 @@
         nz-menu-item
         routerLinkActive="ant-menu-item-selected"
         nz-tooltip
-        [nzTooltipTrigger]="menuCollapsed ? 'hover' : 'null'"
+        [nzTooltipTrigger]="menuCollapsed ? 'hover' : null"
         nzTooltipTitle="订阅管理"
       >
-        <a routerLink="/subscribe-list">
-          <i nz-icon nzType="unordered-list" nzTheme="outline"></i> <span>订阅管理</span>
+        <a routerLink="/subscribe-list"> <i nz-icon nzType="bell" nzTheme="outline"></i> <span>订阅管理</span> </a>
+      </li>
+      <li
+        nz-menu-item
+        routerLinkActive="ant-menu-item-selected"
+        nz-tooltip
+        [nzTooltipTrigger]="menuCollapsed ? 'hover' : null"
+        nzTooltipTitle="入站配置"
+      >
+        <a routerLink="/inbounds-settings">
+          <i nz-icon nzType="control" nzTheme="outline"></i> <span>入站配置</span>
         </a>
       </li>
       <li
         nz-menu-item
         routerLinkActive="ant-menu-item-selected"
         nz-tooltip
-        [nzTooltipTrigger]="menuCollapsed ? 'hover' : 'null'"
+        [nzTooltipTrigger]="menuCollapsed ? 'hover' : null"
+        nzTooltipTitle="路由配置"
+      >
+        <a routerLink="/routing-settings"> <i nz-icon nzType="cluster" nzTheme="outline"></i> <span>路由配置</span> </a>
+      </li>
+      <li
+        nz-menu-item
+        routerLinkActive="ant-menu-item-selected"
+        nz-tooltip
+        [nzTooltipTrigger]="menuCollapsed ? 'hover' : null"
         nzTooltipTitle="偏好设置"
       >
         <a routerLink="/settings">
@@ -46,6 +64,8 @@
     </div>
   </nz-sider>
   <nz-content>
-    <router-outlet></router-outlet>
+    <div class="pt-2">
+      <router-outlet></router-outlet>
+    </div>
   </nz-content>
 </nz-layout>
