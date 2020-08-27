@@ -99,6 +99,7 @@ export class AppConfig extends EventEmitter {
       log: { loglevel: 'debug' },
       inbounds,
       routing,
+      dns: { servers: ['114.114.114.114', '223.5.5.5'] },
       outbounds: [
         { ...node, tag: 'proxy', nodeTag: node.tag },
         {
