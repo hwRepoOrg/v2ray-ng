@@ -6,6 +6,7 @@ import * as Path from 'path';
 
 export class AppConfig extends EventEmitter {
   public configPath: string;
+  public guiConfigPath: string;
   public nodeListPath: string;
   public routingConfigPath: string;
   public inboundsConfigPath: string;
@@ -19,6 +20,7 @@ export class AppConfig extends EventEmitter {
       mkdirSync(this.configPath);
     }
     this.nodeListPath = Path.resolve(this.configPath, 'node-list.json');
+    this.guiConfigPath = Path.resolve(this.configPath, 'gui-config.json');
     this.routingConfigPath = Path.resolve(this.configPath, 'routing-config.json');
     this.inboundsConfigPath = Path.resolve(this.configPath, 'inbounds-config.json');
     this.runningConfigPath = Path.resolve(this.configPath, 'running-config.json');
@@ -152,5 +154,26 @@ export class AppConfig extends EventEmitter {
 
   public async setSubscribesConfig(list: ISubscribeConfig[]) {
     return await writeFile(this.subscribesConfigPath, JSON.stringify(list, null, 2));
+  }
+
+  public async getGuiConfig(keys?: string[]) {
+    const hasConfig = await pathExists(this.guiConfigPath);
+    if (!hasConfig) {
+      return {};
+    }
+    const config = JSON.parse((await readFile(this.guiConfigPath)).toString());
+    if (!keys.length) {
+      return config;
+    }
+    return keys.reduce((obj, key) => ({ ...obj, [key]: config[key] }), {});
+  }
+
+  public async setGuiConfig(obj: { [key: string]: any }) {
+    const hasConfig = await pathExists(this.guiConfigPath);
+    if (!hasConfig) {
+      return await writeFile(this.guiConfigPath, JSON.stringify(obj, null, 2));
+    }
+    const config = JSON.parse((await readFile(this.guiConfigPath)).toString());
+    return await writeFile(this.guiConfigPath, JSON.stringify({ ...config, ...obj }, null, 2));
   }
 }

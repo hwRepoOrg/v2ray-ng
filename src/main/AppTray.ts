@@ -17,27 +17,56 @@ export class AppTray extends EventEmitter {
   init() {
     this.getTrayImage(0, 0).then((image) => {
       this.tray = new Tray(image);
-      this.tray.setContextMenu(
-        Menu.buildFromTemplate([
-          { label: '节点选择' },
-          { label: '代理模式', submenu: [{ label: '全局' }, { label: '手动' }] },
-          { type: 'separator' },
-          {
-            label: '控制面板',
-            click: () => {
-              global.appInstance.showMainPanel();
-            },
-          },
-          {
-            label: '打开配置文件夹',
-            click: () => {
-              shell.openPath(global.appInstance.config.configPath);
-            },
-          },
-          { label: '退出', role: 'quit' },
-        ])
-      );
+      this.updateTrayContextMenu();
     });
+  }
+
+  updateTrayContextMenu() {
+    this.getTrayContextMenus().then((menu) => {
+      this.tray.setContextMenu(menu);
+    });
+  }
+
+  async getTrayContextMenus(): Promise<Menu> {
+    const config = global.appInstance.config;
+    const localNodeList = await config.getNodeConfigList();
+    const subscribeList = await config.getSubscribesConfig();
+    const { proxyMode, extensionMode } = await config.getGuiConfig(['proxyMode', 'extensionMode']);
+    return Menu.buildFromTemplate([
+      {
+        label: '节点选择',
+        submenu: [
+          ...localNodeList.map((node) => ({ label: node.name, checked: node.active })),
+          { type: 'separator' },
+          ...subscribeList.map((sub) => ({
+            label: sub.title,
+            submenu: sub.nodes.map((node) => ({ label: node.name, checked: node.active })),
+          })),
+        ],
+      },
+      {
+        label: '代理模式',
+        submenu: [
+          { label: '系统代理', checked: proxyMode === 'system' },
+          { label: '手动', checked: proxyMode === 'auto' },
+        ],
+      },
+      { label: '增强模式', checked: extensionMode },
+      { type: 'separator' },
+      {
+        label: '控制面板',
+        click: () => {
+          global.appInstance.showMainPanel();
+        },
+      },
+      {
+        label: '打开配置文件夹',
+        click: () => {
+          shell.openPath(global.appInstance.config.configPath);
+        },
+      },
+      { label: '退出', role: 'quit' },
+    ]);
   }
 
   async getTrayImage(upload: number, download: number) {

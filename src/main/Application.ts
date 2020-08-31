@@ -68,4 +68,15 @@ export class Application extends EventEmitter {
   quit() {
     app.quit();
   }
+
+  setSystemProxy() {
+    switch (process.platform) {
+      case 'darwin':
+        break;
+    }
+  }
+
+  private serMacOSSystemProsy() {
+
+  }
 }
