@@ -1,8 +1,9 @@
-import { IConfig, IConfigInbound, IConfigOutbound, IConfigRouting, ISubscribeConfig } from '@typing/config.interface';
+import { IConfig, IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
 import { app } from 'electron';
 import { EventEmitter } from 'events';
-import { existsSync, mkdirSync, pathExists, readFile, writeFile } from 'fs-extra';
+import { existsSync, mkdirSync, pathExists, readFile, writeFile, WriteFileOptions } from 'fs-extra';
 import * as Path from 'path';
+import { DEFAULT_CONFIG_TEMPLATE, DEFAULT_INBOUNDS, DEFAULT_ROUTING } from '../config';
 
 export class AppConfig extends EventEmitter {
   public configPath: string;
@@ -27,129 +28,22 @@ export class AppConfig extends EventEmitter {
     this.subscribesConfigPath = Path.resolve(this.configPath, 'subscribes-config.json');
   }
 
-  public async getNodeConfigList(): Promise<IConfigOutbound[]> {
-    const hasConfig = await pathExists(this.nodeListPath);
-    if (!hasConfig) {
-      return [];
-    } else {
-      return JSON.parse((await readFile(Path.resolve(this.nodeListPath))).toString());
-    }
-  }
-
-  public async setNodeConfigList(nodeList: IConfigOutbound[]) {
-    await writeFile(this.nodeListPath, JSON.stringify(nodeList, null, 2));
-  }
-
-  public async getRoutingConfig(): Promise<IConfigRouting> {
-    const hasConfig = await pathExists(this.routingConfigPath);
-    if (!hasConfig) {
-      return {
-        domainStrategy: 'IPIfNonMatch',
-        rules: [
-          { detail: true, type: 'field', network: 'udp', port: 53, outboundTag: 'dns-out' },
-          { type: 'field', ip: ['geoip:cn', 'geoip:private'], outboundTag: 'direct' },
-          {
-            type: 'field',
-            domain: ['geosite:cn', 'dlc:geolocation-cn'],
-            outboundTag: 'direct',
-          },
-          { type: 'field', domain: ['dlc:category-ads'], outboundTag: 'block' },
-          { type: 'field', domain: ['dlc:geolocation-!cn', 'dlc:speedtest'], outboundTag: 'proxy' },
-        ],
-      };
-    } else {
-      return JSON.parse((await readFile(this.routingConfigPath)).toString());
-    }
-  }
-
-  public async setRoutingConfig(routingConfig: IConfigRouting) {
-    await writeFile(this.routingConfigPath, JSON.stringify(routingConfig, null, 2));
-  }
-
-  public async getInboundsConfig(): Promise<IConfigInbound[]> {
-    const hasConfig = await pathExists(this.inboundsConfigPath);
-    if (!hasConfig) {
-      return [
-        {
-          tag: 'socks-inbound',
-          protocol: 'socks',
-          listen: '127.0.0.1',
-          port: 1080,
-          settings: { udp: true, ip: '127.0.0.1' },
-        },
-        {
-          tag: 'http(s)-inbound',
-          protocol: 'http',
-          listen: '127.0.0.1',
-          port: 1087,
-          sniffing: { enabled: true, destOverride: ['http', 'tls'] },
-        },
-      ];
-    } else {
-      return JSON.parse((await readFile(this.inboundsConfigPath)).toString());
-    }
-  }
-
-  public async setInboundsConfig(inboundsConfig: IConfigInbound[]) {
-    await writeFile(this.inboundsConfigPath, JSON.stringify(inboundsConfig, null, 2));
-  }
-
   public async setRunningConfig(node: IConfigOutbound): Promise<IConfig> {
-    const routing = await this.getRoutingConfig();
-    const inbounds = await this.getInboundsConfig();
+    const routing = await this.getConfigByPath(this.routingConfigPath, DEFAULT_ROUTING);
+    const inbounds = await this.getConfigByPath(this.inboundsConfigPath, DEFAULT_INBOUNDS);
     const config: IConfig = {
-      log: { loglevel: 'debug' },
+      ...DEFAULT_CONFIG_TEMPLATE,
       inbounds,
       routing,
-      dns: { servers: ['114.114.114.114', '223.5.5.5'] },
-      outbounds: [
-        { ...node, tag: 'proxy', nodeTag: node.tag },
-        {
-          protocol: 'freedom',
-          tag: 'direct',
-          settings: {
-            domainStrategy: 'UseIPv4',
-          },
-        },
-        { protocol: 'dns', tag: 'dns-out' },
-        {
-          tag: 'block',
-          protocol: 'blackhole',
-          settings: {
-            response: {
-              type: 'http',
-            },
-          },
-        },
-      ],
+      outbounds: [{ ...node, tag: 'proxy', nodeTag: node.tag }, ...DEFAULT_CONFIG_TEMPLATE.outbounds],
     };
     await writeFile(this.runningConfigPath, JSON.stringify(config, null, 2));
     return config;
   }
 
-  public async getRunningConfig(): Promise<IConfig | null> {
-    const hasConfig = await pathExists(this.runningConfigPath);
-    if (!hasConfig) {
-      return null;
-    }
-    return JSON.parse((await readFile(this.runningConfigPath)).toString());
-  }
-
   public async getActivatedNode(): Promise<IConfigOutbound | null> {
-    const hasConfig = await pathExists(this.runningConfigPath);
-    if (!hasConfig) {
-      return null;
-    }
-    const runningConfig = JSON.parse((await readFile(this.runningConfigPath)).toString()) as IConfig;
-    return runningConfig.outbounds.find((out) => out.tag === 'proxy');
-  }
-
-  public async getSubscribesConfig(): Promise<ISubscribeConfig[]> {
-    const hasConfig = await pathExists(this.subscribesConfigPath);
-    if (!hasConfig) {
-      return [];
-    }
-    return JSON.parse((await readFile(this.subscribesConfigPath)).toString());
+    const runningConfig = await this.getConfigByPath(this.runningConfigPath, null);
+    return runningConfig && runningConfig.outbounds.find((out) => out.tag === 'proxy');
   }
 
   public async setSubscribesConfig(list: ISubscribeConfig[]) {
@@ -157,11 +51,9 @@ export class AppConfig extends EventEmitter {
   }
 
   public async getGuiConfig(keys?: string[]) {
-    const hasConfig = await pathExists(this.guiConfigPath);
-    if (!hasConfig) {
-      return {};
-    }
-    const config = JSON.parse((await readFile(this.guiConfigPath)).toString());
+    const config = await this.getConfigByPath(this.guiConfigPath, { proxyMode: 'manual', extensionMode: false } as {
+      [key: string]: any;
+    });
     if (!keys.length) {
       return config;
     }
@@ -169,11 +61,20 @@ export class AppConfig extends EventEmitter {
   }
 
   public async setGuiConfig(obj: { [key: string]: any }) {
-    const hasConfig = await pathExists(this.guiConfigPath);
-    if (!hasConfig) {
-      return await writeFile(this.guiConfigPath, JSON.stringify(obj, null, 2));
-    }
-    const config = JSON.parse((await readFile(this.guiConfigPath)).toString());
+    const config = await this.getConfigByPath(this.guiConfigPath, obj);
     return await writeFile(this.guiConfigPath, JSON.stringify({ ...config, ...obj }, null, 2));
+  }
+
+  async getConfigByPath<T = any>(path: string, defaultValue?: T): Promise<T> {
+    const hasConfig = await pathExists(path);
+    if (!hasConfig) {
+      return defaultValue;
+    }
+    return JSON.parse((await readFile(path)).toString());
+  }
+
+  async writeConfigByPath(path: string, value: any, options?: string | WriteFileOptions) {
+    console.log(value);
+    return writeFile(path, JSON.stringify(value, null, 2), options);
   }
 }

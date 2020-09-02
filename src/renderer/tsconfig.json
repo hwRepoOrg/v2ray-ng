@@ -23,8 +23,8 @@
       "@renderer/*": ["./app/*"]
     }
   },
-  "files": ["./main.ts", "./polyfills.ts"],
-  "include": ["./", "../typings"],
+  "files": ["./main.ts", "./polyfills.ts", "../config.ts"],
+  "include": ["./", "../typings", "../environments"],
   "exclude": ["../main"],
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

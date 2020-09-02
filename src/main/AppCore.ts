@@ -18,6 +18,18 @@ import request from 'request';
 import progress from 'request-progress';
 import { Subject } from 'rxjs';
 
+function execute(command: string, args: string[]): Promise<string> {
+  return new Promise((resolve, reject) => {
+    execFile(command, args, (err, stdout) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+}
+
 export class AppCore {
   public corePath: string;
   public mellowCorePath: string;
@@ -25,6 +37,7 @@ export class AppCore {
   public dlcPath: string;
   public v2rayCore: ChildProcessWithoutNullStreams;
   public mellowCore: ChildProcessWithoutNullStreams;
+  private progressReq: request.Request;
 
   constructor() {
     this.corePath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
@@ -44,7 +57,7 @@ export class AppCore {
       return null;
     }
     await chmod(this.mellowCorePath, constants.S_IXUSR);
-    return await this.execute(`${this.mellowCorePath}`, ['-version']);
+    return await execute(`${this.mellowCorePath}`, ['-version']);
   }
 
   async getV2rayCoreVersion(): Promise<string | null> {
@@ -53,7 +66,7 @@ export class AppCore {
       return null;
     }
     await chmod(this.v2rayCorePath, constants.S_IXUSR);
-    return await this.execute(`${this.v2rayCorePath}`, ['-version']);
+    return await execute(`${this.v2rayCorePath}`, ['-version']);
   }
 
   async getDLCUpdatedTime() {
@@ -63,18 +76,6 @@ export class AppCore {
     }
     const info = await stat(this.dlcPath);
     return +info.mtime;
-  }
-
-  execute(command: string, args: string[]): Promise<string> {
-    return new Promise((resolve, reject) => {
-      execFile(command, args, (err, stdout) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(stdout);
-        }
-      });
-    });
   }
 
   updateMellowCore() {
@@ -173,7 +174,7 @@ export class AppCore {
 
   progressDownload(url: string, path: string) {
     const subject = new Subject<number | Error | null>();
-    progress(request(url, { method: 'get' }))
+    this.progressReq = progress(request(url, { method: 'get' }))
       .on('progress', (state: any) => {
         if (state) {
           subject.next(state.percent);
@@ -190,25 +191,26 @@ export class AppCore {
   }
 
   startV2rayCore() {
-    if (!this.v2rayCore) {
-      this.v2rayCore = spawn(this.v2rayCorePath, ['-c', global.appInstance.config.runningConfigPath], {
-        env: process.env,
-      });
-      this.v2rayCore.stdout.on('data', (data) => {
-        console.log(data.toString());
-      });
-      this.v2rayCore.stderr.on('data', (data) => {
-        console.log(data.toString());
-      });
-      this.v2rayCore.on('close', (code, signal) => {
-        console.log(`v2ray core stopped, code ${code} signal ${signal}`);
-        this.v2rayCore.removeAllListeners();
-      });
-      this.v2rayCore.on('err', (err) => {
-        console.log(err);
-        this.v2rayCore.removeAllListeners();
-      });
+    if (this.v2rayCore) {
+      this.stopV2rayCore();
     }
+    this.v2rayCore = spawn(this.v2rayCorePath, ['-c', global.appInstance.config.runningConfigPath], {
+      env: process.env,
+    });
+    this.v2rayCore.stdout.on('data', (data) => {
+      console.log(data.toString());
+    });
+    this.v2rayCore.stderr.on('data', (data) => {
+      console.log(data.toString());
+    });
+    this.v2rayCore.on('close', (code, signal) => {
+      console.log(`v2ray core stopped, code ${code} signal ${signal}`);
+      this.v2rayCore.removeAllListeners();
+    });
+    this.v2rayCore.on('err', (err) => {
+      console.log(err);
+      this.v2rayCore.removeAllListeners();
+    });
   }
 
   stopV2rayCore() {
@@ -218,6 +220,12 @@ export class AppCore {
         this.v2rayCore.kill('SIGTERM');
         this.v2rayCore = null;
       }
+    }
+  }
+
+  stopDownload() {
+    if (this.progressReq) {
+      this.progressReq.abort();
     }
   }
 }

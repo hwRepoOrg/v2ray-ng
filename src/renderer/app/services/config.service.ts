@@ -9,7 +9,16 @@ export class ConfigService {
   loading = false;
   subscribeList: ISubscribeConfig[] = [];
   localNodeList: IConfigOutbound[] = [];
-  constructor(public es: ElectronService, private http: HttpClient) {}
+  nodeListPath: string;
+  subscribesConfigPath: string;
+  inboundsConfigPath: string;
+  routingConfigPath: string;
+  constructor(public es: ElectronService, private http: HttpClient) {
+    this.nodeListPath = this.es.getRemoteProperty('appInstance', '.config.nodeListPath');
+    this.subscribesConfigPath = this.es.getRemoteProperty('appInstance', '.config.subscribesConfigPath');
+    this.inboundsConfigPath = this.es.getRemoteProperty('appInstance', '.config.inboundsConfigPath');
+    this.routingConfigPath = this.es.getRemoteProperty('appInstance', '.config.routingConfigPath');
+  }
 
   transformVmessShareConfig(vmessConfig: IVmessShareConfig): IConfigOutbound {
     for (const k in vmessConfig) {
@@ -110,7 +119,7 @@ export class ConfigService {
   getLocalNodeList() {
     this.loading = true;
     this.es
-      .send<IConfigOutbound[]>('/config/getNodeConfigList')
+      .send<IConfigOutbound[]>('/config/getConfigByPath', this.nodeListPath, [])
       .pipe(finalize(() => (this.loading = false)))
       .subscribe((list) => {
         this.localNodeList = list;
@@ -120,7 +129,7 @@ export class ConfigService {
   updateLocalNodeList(list: IConfigOutbound[]) {
     this.loading = true;
     this.es
-      .send('/config/setNodeConfigList', list)
+      .send('/config/writeConfigByPath', this.nodeListPath, list)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe(() => {
         this.getLocalNodeList();
@@ -152,7 +161,7 @@ export class ConfigService {
   getSubscribeList() {
     this.loading = true;
     this.es
-      .send<ISubscribeConfig[]>('/config/getSubscribesConfig')
+      .send<ISubscribeConfig[]>('/config/getConfigByPath', this.subscribesConfigPath, [])
       .pipe(finalize(() => (this.loading = false)))
       .subscribe((list) => {
         this.subscribeList = list;
@@ -162,7 +171,7 @@ export class ConfigService {
   updateSubscribeList(list: ISubscribeConfig[]) {
     this.loading = true;
     this.es
-      .send('/config/setSubscribesConfig', list)
+      .send('/config/writeConfigByPath', this.subscribesConfigPath, list)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe(() => {
         this.getSubscribeList();

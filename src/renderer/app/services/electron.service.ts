@@ -31,4 +31,15 @@ export class ElectronService {
   send<T = any>(channel: string, ...args: any[]): Observable<T> {
     return from(this.ipcRenderer.invoke('/api', channel, ...args));
   }
+
+  getRemoteProperty(name: string, str?: string) {
+    let res;
+    try {
+      // tslint:disable-next-line: no-eval
+      res = eval(`this.remote.getGlobal('${name}')${str}`);
+    } catch (e) {
+      console.log(e);
+    }
+    return res;
+  }
 }

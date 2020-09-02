@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ConfigService } from '@renderer/services/config.service';
 import { ElectronService } from '@renderer/services/electron.service';
 import { IConfigInbound } from '@typing/config.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { finalize } from 'rxjs/operators';
+import { DEFAULT_INBOUNDS } from '../../../../config';
 
 @Component({
   selector: 'v2ray-input-form',
@@ -17,7 +19,12 @@ export class InputFormComponent implements OnInit {
   }
   public loading = false;
 
-  constructor(private fb: FormBuilder, private es: ElectronService, private msgSrv: NzMessageService) {
+  constructor(
+    private fb: FormBuilder,
+    private es: ElectronService,
+    private msgSrv: NzMessageService,
+    private cs: ConfigService
+  ) {
     this.configFormGroup = this.fb.group({
       inbounds: this.fb.array([]),
     });
@@ -26,7 +33,7 @@ export class InputFormComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.es
-      .send('/config/getInboundsConfig')
+      .send('/config/getConfigByPath', this.cs.inboundsConfigPath, DEFAULT_INBOUNDS)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe((inbounds) => {
         inbounds.forEach((inbound) => {
@@ -36,9 +43,11 @@ export class InputFormComponent implements OnInit {
   }
 
   public submit() {
-    this.es.send('/config/setInboundsConfig', this.inboundsFormArray.value).subscribe(() => {
-      this.msgSrv.success('保存成功');
-    });
+    this.es
+      .send('/config/writeConfigByPath', this.cs.inboundsConfigPath, this.inboundsFormArray.value)
+      .subscribe(() => {
+        this.msgSrv.success('保存成功');
+      });
   }
 
   public add() {

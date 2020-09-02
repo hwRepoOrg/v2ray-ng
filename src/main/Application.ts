@@ -24,9 +24,14 @@ export class Application extends EventEmitter {
     this.core = new AppCore();
     this.tray = new AppTray();
     this.config = new AppConfig();
-    ipcMain.handle('/api', async (event, path: string, ...args: any[]) => {
+    ipcMain.handle('/api', async (_event, path: string, ...args: any[]) => {
       const [classStr, method] = path.replace(/^\//, '').split('/');
-      return await this[classStr][method].apply(this[classStr], args);
+      if (this[classStr][method]) {
+        console.log(classStr, method);
+        return await this[classStr][method].apply(this[classStr], args);
+      } else {
+        throw new Error('method not found');
+      }
     });
     this.initWindow();
   }
@@ -76,7 +81,5 @@ export class Application extends EventEmitter {
     }
   }
 
-  private serMacOSSystemProsy() {
-
-  }
+  private serMacOSSystemProsy() {}
 }

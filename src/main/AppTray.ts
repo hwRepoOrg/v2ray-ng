@@ -1,3 +1,4 @@
+import { IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
 import { createCanvas, loadImage } from 'canvas';
 import { Menu, nativeImage, nativeTheme, shell, Tray } from 'electron';
 import { macOS } from 'electron-is';
@@ -29,8 +30,8 @@ export class AppTray extends EventEmitter {
 
   async getTrayContextMenus(): Promise<Menu> {
     const config = global.appInstance.config;
-    const localNodeList = await config.getNodeConfigList();
-    const subscribeList = await config.getSubscribesConfig();
+    const localNodeList = await config.getConfigByPath(config.nodeListPath, [] as IConfigOutbound[]);
+    const subscribeList = await config.getConfigByPath(config.subscribesConfigPath, [] as ISubscribeConfig[]);
     const { proxyMode, extensionMode } = await config.getGuiConfig(['proxyMode', 'extensionMode']);
     return Menu.buildFromTemplate([
       {
@@ -47,11 +48,11 @@ export class AppTray extends EventEmitter {
       {
         label: '代理模式',
         submenu: [
-          { label: '系统代理', checked: proxyMode === 'system' },
-          { label: '手动', checked: proxyMode === 'auto' },
+          { label: '系统代理', type: 'radio', checked: proxyMode === 'system' },
+          { label: '手动', type: 'radio', checked: proxyMode === 'manual' },
         ],
       },
-      { label: '增强模式', checked: extensionMode },
+      { label: '增强模式', checked: extensionMode, type: 'checkbox' },
       { type: 'separator' },
       {
         label: '控制面板',
