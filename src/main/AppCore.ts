@@ -31,24 +31,18 @@ function execute(command: string, args: string[]): Promise<string> {
 }
 
 export class AppCore {
-  public corePath: string;
-  public mellowCorePath: string;
-  public v2rayCorePath: string;
-  public dlcPath: string;
+  private corePath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
+  private mellowCorePath = Path.resolve(this.corePath, './mellow_core');
+  private v2rayCorePath = Path.resolve(this.corePath, './v2ray_core');
+  private dlcPath = Path.resolve(this.corePath, './dlc.dat');
+  private progressReq: request.Request;
   public v2rayCore: ChildProcessWithoutNullStreams;
   public mellowCore: ChildProcessWithoutNullStreams;
-  private progressReq: request.Request;
 
   constructor() {
-    this.corePath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
-
     if (!existsSync(this.corePath)) {
       mkdirSync(this.corePath);
     }
-
-    this.mellowCorePath = Path.resolve(this.corePath, './mellow_core');
-    this.v2rayCorePath = Path.resolve(this.corePath, './v2ray_core');
-    this.dlcPath = Path.resolve(this.corePath, './dlc.dat');
   }
 
   async getMellowCoreVersion(): Promise<string | null> {

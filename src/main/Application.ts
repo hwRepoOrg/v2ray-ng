@@ -1,11 +1,10 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
-import { EventEmitter } from 'events';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
 import { AppCore } from './AppCore';
 import { AppTray } from './AppTray';
 
-export class Application extends EventEmitter {
+export class Application {
   public tray: AppTray;
   public config: AppConfig;
   public mainWindow?: BrowserWindow;
@@ -16,7 +15,6 @@ export class Application extends EventEmitter {
   }
 
   constructor() {
-    super();
     this.init();
   }
 
@@ -81,5 +79,5 @@ export class Application extends EventEmitter {
     }
   }
 
-  private serMacOSSystemProsy() {}
+  private setMacOSSystemProsy() {}
 }

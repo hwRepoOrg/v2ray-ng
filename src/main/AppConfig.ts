@@ -1,31 +1,22 @@
 import { IConfig, IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
 import { app } from 'electron';
-import { EventEmitter } from 'events';
 import { existsSync, mkdirSync, pathExists, readFile, writeFile, WriteFileOptions } from 'fs-extra';
 import * as Path from 'path';
 import { DEFAULT_CONFIG_TEMPLATE, DEFAULT_INBOUNDS, DEFAULT_ROUTING } from '../config';
 
-export class AppConfig extends EventEmitter {
-  public configPath: string;
-  public guiConfigPath: string;
-  public nodeListPath: string;
-  public routingConfigPath: string;
-  public inboundsConfigPath: string;
-  public runningConfigPath: string;
-  public subscribesConfigPath: string;
+export class AppConfig {
+  public configPath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
+  public guiConfigPath: string = Path.resolve(this.configPath, 'gui-config.json');
+  public nodeListPath: string = Path.resolve(this.configPath, 'node-list.json');
+  public routingConfigPath = Path.resolve(this.configPath, 'routing-config.json');
+  public inboundsConfigPath = Path.resolve(this.configPath, 'inbounds-config.json');
+  public runningConfigPath = Path.resolve(this.configPath, 'running-config.json');
+  public subscribesConfigPath = Path.resolve(this.configPath, 'subscribes-config.json');
 
   constructor() {
-    super();
-    this.configPath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
     if (!existsSync(this.configPath)) {
       mkdirSync(this.configPath);
     }
-    this.nodeListPath = Path.resolve(this.configPath, 'node-list.json');
-    this.guiConfigPath = Path.resolve(this.configPath, 'gui-config.json');
-    this.routingConfigPath = Path.resolve(this.configPath, 'routing-config.json');
-    this.inboundsConfigPath = Path.resolve(this.configPath, 'inbounds-config.json');
-    this.runningConfigPath = Path.resolve(this.configPath, 'running-config.json');
-    this.subscribesConfigPath = Path.resolve(this.configPath, 'subscribes-config.json');
   }
 
   public async setRunningConfig(node: IConfigOutbound): Promise<IConfig> {
