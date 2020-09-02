@@ -19,14 +19,15 @@ export class Application {
   }
 
   private init() {
-    this.core = new AppCore();
-    this.tray = new AppTray();
     this.config = new AppConfig();
+    this.config.on('initialed', () => {
+      this.tray = new AppTray();
+      this.core = new AppCore();
+    });
     ipcMain.handle('/api', async (_event, path: string, ...args: any[]) => {
       const [classStr, method] = path.replace(/^\//, '').split('/');
       if (this[classStr][method]) {
-        console.log(classStr, method);
-        return await this[classStr][method].apply(this[classStr], args);
+        return this[classStr][method].apply(this[classStr], args);
       } else {
         throw new Error('method not found');
       }
@@ -71,13 +72,4 @@ export class Application {
   quit() {
     app.quit();
   }
-
-  setSystemProxy() {
-    switch (process.platform) {
-      case 'darwin':
-        break;
-    }
-  }
-
-  private setMacOSSystemProsy() {}
 }

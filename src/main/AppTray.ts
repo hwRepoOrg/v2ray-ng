@@ -1,7 +1,8 @@
 import { IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
 import { createCanvas, loadImage } from 'canvas';
-import { Menu, nativeImage, nativeTheme, shell, Tray } from 'electron';
+import { app, Menu, MenuItemConstructorOptions, nativeImage, nativeTheme, shell, Tray } from 'electron';
 import { macOS } from 'electron-is';
+import log from 'electron-log';
 import { EventEmitter } from 'events';
 import fs from 'fs-extra';
 import dogColorful from './assets/dog-colorful.png';
@@ -32,24 +33,32 @@ export class AppTray extends EventEmitter {
     const config = global.appInstance.config;
     const localNodeList = await config.getConfigByPath(config.nodeListPath, [] as IConfigOutbound[]);
     const subscribeList = await config.getConfigByPath(config.subscribesConfigPath, [] as ISubscribeConfig[]);
-    const { proxyMode, extensionMode } = await config.getGuiConfig(['proxyMode', 'extensionMode']);
+    const { extensionMode } = await config.getGuiConfig(['extensionMode']);
+    const activated = await global.appInstance.config.getActivatedNode();
     return Menu.buildFromTemplate([
       {
         label: '节点选择',
         submenu: [
-          ...localNodeList.map((node) => ({ label: node.name, checked: node.active })),
+          ...localNodeList.map<MenuItemConstructorOptions>((node) => ({
+            label: node.name,
+            type: 'radio',
+            checked: node.tag === (activated && activated.nodeTag),
+            click: () => {
+              global.appInstance.config.setRunningConfig(node).then();
+            },
+          })),
           { type: 'separator' },
           ...subscribeList.map((sub) => ({
             label: sub.title,
-            submenu: sub.nodes.map((node) => ({ label: node.name, checked: node.active })),
+            submenu: sub.nodes.map<MenuItemConstructorOptions>((node) => ({
+              label: node.name,
+              type: 'radio',
+              checked: node.tag === (activated && activated.nodeTag),
+              click: () => {
+                global.appInstance.config.setRunningConfig(node).then();
+              },
+            })),
           })),
-        ],
-      },
-      {
-        label: '代理模式',
-        submenu: [
-          { label: '系统代理', type: 'radio', checked: proxyMode === 'system' },
-          { label: '手动', type: 'radio', checked: proxyMode === 'manual' },
         ],
       },
       { label: '增强模式', checked: extensionMode, type: 'checkbox' },
@@ -64,6 +73,12 @@ export class AppTray extends EventEmitter {
         label: '打开配置文件夹',
         click: () => {
           shell.openPath(global.appInstance.config.configPath);
+        },
+      },
+      {
+        label: '查看日志',
+        click: () => {
+          shell.openPath(log.transports.file.getFile().path);
         },
       },
       { label: '退出', role: 'quit' },

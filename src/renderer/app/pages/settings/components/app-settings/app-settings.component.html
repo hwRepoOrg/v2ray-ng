@@ -29,5 +29,10 @@
 </nz-descriptions>
 
 <ng-template #progressTpl>
-  <nz-progress [nzPercent]="progress$ | async" nzStatus="active"></nz-progress>
+  <div class="d-flex">
+    <nz-progress class="col" [nzPercent]="progress$ | async" nzStatus="active"></nz-progress>
+    <a nz-popconfirm nzPopconfirmTitle="确认停止更新吗？" (nzOnConfirm)="stopDownload()">
+      <i nz-icon nzType="close"></i>
+    </a>
+  </div>
 </ng-template>

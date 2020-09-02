@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ElectronService } from '@renderer/services/electron.service';
+import { IpcRenderer } from 'electron';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { Subject } from 'rxjs';
@@ -21,6 +22,7 @@ export class AppSettingsComponent implements OnInit {
   public dlcLoading = false;
   public progress$ = new Subject<number>();
   private modalRef: NzModalRef<any>;
+  private sub: IpcRenderer;
 
   @ViewChild('progressTpl', { read: TemplateRef })
   progressTpl: TemplateRef<any>;
@@ -97,25 +99,7 @@ export class AppSettingsComponent implements OnInit {
   updateMellow() {
     this.mellowLoading = true;
     this.getLatestVersion('mellow-io/go-tun2socks', this.mellowVersion).subscribe(() => {
-      const sub = this.es.ipcRenderer.on('mellow-core-update-progress', (ev, progress: string | null | number) => {
-        this.zone.run(() => {
-          if (progress === null) {
-            this.updateProgress(100);
-            this.modalRef.destroy();
-            sub.removeAllListeners('mellow-core-update-progress');
-            this.mellowLoading = false;
-            this.msg.success(`更新成功`);
-            this.getMellowCoreVersion();
-          } else if (typeof progress === 'string') {
-            sub.removeAllListeners('mellow-core-update-progress');
-            this.modalRef.destroy();
-            this.msg.error(`更新失败：${progress}`);
-            this.mellowLoading = false;
-          } else {
-            this.updateProgress(Math.round(progress * 100));
-          }
-        });
-      });
+      this.listenProgress(() => this.getMellowCoreVersion());
       this.es.send('/core/updateMellowCore').subscribe();
     });
   }
@@ -123,24 +107,7 @@ export class AppSettingsComponent implements OnInit {
   updateV2rayCore() {
     this.v2rayLoading = true;
     this.getLatestVersion('v2ray/v2ray-core', this.v2rayVersion).subscribe(() => {
-      const sub = this.es.ipcRenderer.on('v2ray-core-update-progress', (_ev, progress: string | null | number) => {
-        this.zone.run(() => {
-          if (progress === null) {
-            this.updateProgress(100);
-            this.modalRef.destroy();
-            sub.removeAllListeners('v2ray-core-update-progress');
-            this.v2rayLoading = false;
-            this.msg.success('更新成功');
-            this.getV2rayCoreVersion();
-          } else if (typeof progress === 'string') {
-            sub.removeAllListeners('v2ray-core-update-progress');
-            this.modalRef.destroy();
-            this.msg.error(`更新失败：${progress}`);
-          } else {
-            this.updateProgress(Math.round(progress * 100));
-          }
-        });
-      });
+      this.listenProgress(() => this.getV2rayCoreVersion());
       this.es.send('/core/updateV2rayCore').subscribe();
     });
   }
@@ -148,29 +115,57 @@ export class AppSettingsComponent implements OnInit {
   updateDlc() {
     this.dlcLoading = true;
     this.getLatestVersion('v2ray/domain-list-community', '').subscribe(() => {
-      const sub = this.es.ipcRenderer.on('dlc-update-progress', (_ev, progress: string | null | number) => {
-        this.zone.run(() => {
-          if (progress === null) {
-            this.updateProgress(100);
-            this.modalRef.destroy();
-            sub.removeAllListeners('dlc-update-progress');
-            this.dlcLoading = false;
-            this.msg.success('更新成功');
-            this.getDLCUpdatedTime();
-          } else if (typeof progress === 'string') {
-            sub.removeAllListeners('dlc-update-progress');
-            this.modalRef.destroy();
-            this.msg.error(`更新失败：${progress}`);
-          } else {
-            this.updateProgress(Math.round(progress * 100));
-          }
-        });
-      });
+      this.listenProgress(() => this.getDLCUpdatedTime());
       this.es.send('/core/updateDLCData').subscribe();
+    });
+  }
+
+  listenProgress(success?: () => any, error?: (err: string) => any) {
+    if (this.sub) {
+      this.sub.removeAllListeners('update-progress');
+    }
+    this.sub = this.es.ipcRenderer.on('update-progress', (_ev, progress: string | null | number) => {
+      this.zone.run(() => {
+        if (progress === null) {
+          this.updateProgress(100);
+          this.modalRef.destroy();
+          this.sub.removeAllListeners('update-progress');
+          this.dlcLoading = false;
+          this.mellowLoading = false;
+          this.v2rayLoading = false;
+          this.msg.success('更新成功');
+          if (success) {
+            success();
+          }
+        } else if (typeof progress === 'string') {
+          this.sub.removeAllListeners('update-progress');
+          this.modalRef.destroy();
+          this.msg.error(`更新失败：${progress}`);
+          this.dlcLoading = false;
+          this.mellowLoading = false;
+          this.v2rayLoading = false;
+          if (error) {
+            error(progress);
+          }
+        } else {
+          this.updateProgress(Math.round(progress * 100));
+        }
+      });
     });
   }
 
   updateProgress(progress: number) {
     this.progress$.next(progress);
+  }
+
+  stopDownload() {
+    this.es.send('/core/stopDownload').subscribe(() => {
+      if (this.sub) {
+        this.sub.removeAllListeners('update-progress');
+      }
+      if (this.modalRef) {
+        this.modalRef.destroy();
+      }
+    });
   }
 }

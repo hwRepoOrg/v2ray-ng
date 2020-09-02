@@ -1,10 +1,11 @@
 import { IConfig, IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
 import { app } from 'electron';
+import { EventEmitter } from 'events';
 import { existsSync, mkdirSync, pathExists, readFile, writeFile, WriteFileOptions } from 'fs-extra';
 import * as Path from 'path';
 import { DEFAULT_CONFIG_TEMPLATE, DEFAULT_INBOUNDS, DEFAULT_ROUTING } from '../config';
 
-export class AppConfig {
+export class AppConfig extends EventEmitter {
   public configPath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
   public guiConfigPath: string = Path.resolve(this.configPath, 'gui-config.json');
   public nodeListPath: string = Path.resolve(this.configPath, 'node-list.json');
@@ -14,9 +15,13 @@ export class AppConfig {
   public subscribesConfigPath = Path.resolve(this.configPath, 'subscribes-config.json');
 
   constructor() {
+    super();
     if (!existsSync(this.configPath)) {
       mkdirSync(this.configPath);
     }
+    setTimeout(() => {
+      this.emit('initialed');
+    }, 30);
   }
 
   public async setRunningConfig(node: IConfigOutbound): Promise<IConfig> {
@@ -29,6 +34,13 @@ export class AppConfig {
       outbounds: [{ ...node, tag: 'proxy', nodeTag: node.tag }, ...DEFAULT_CONFIG_TEMPLATE.outbounds],
     };
     await writeFile(this.runningConfigPath, JSON.stringify(config, null, 2));
+    const { extensionMode } = await this.getGuiConfig(['extensionMode']);
+    if (!extensionMode) {
+      global.appInstance.core.startV2rayCore();
+    }
+    if (global.appInstance.tray) {
+      global.appInstance.tray.updateTrayContextMenu();
+    }
     return config;
   }
 
@@ -38,11 +50,14 @@ export class AppConfig {
   }
 
   public async setSubscribesConfig(list: ISubscribeConfig[]) {
-    return await writeFile(this.subscribesConfigPath, JSON.stringify(list, null, 2));
+    await writeFile(this.subscribesConfigPath, JSON.stringify(list, null, 2));
+    if (global.appInstance.tray) {
+      global.appInstance.tray.updateTrayContextMenu();
+    }
   }
 
   public async getGuiConfig(keys?: string[]) {
-    const config = await this.getConfigByPath(this.guiConfigPath, { proxyMode: 'manual', extensionMode: false } as {
+    const config = await this.getConfigByPath(this.guiConfigPath, { extensionMode: false } as {
       [key: string]: any;
     });
     if (!keys.length) {

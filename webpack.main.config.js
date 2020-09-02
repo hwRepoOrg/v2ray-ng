@@ -48,7 +48,7 @@ module.exports = {
           from: path.resolve(__dirname, './src/main/assets'),
           to: path.resolve(__dirname, './dist/assets'),
         },
-        movePlatformFiles(),
+        ...movePlatformFiles(),
       ],
     }),
   ],
@@ -61,20 +61,26 @@ module.exports = {
 function movePlatformFiles() {
   switch (process.env.PLATFORM) {
     case 'win':
-      return {
-        from: path.resolve(__dirname, './src/assets/win32'),
-        to: path.resolve(__dirname, './dist/assets/core'),
-      };
+      return [
+        {
+          from: path.resolve(__dirname, './src/assets/win32'),
+          to: path.resolve(__dirname, './dist/assets/core'),
+        },
+      ];
     case 'linux':
-      return {
-        from: path.resolve(__dirname, './src/assets/linux'),
-        to: path.resolve(__dirname, './dist/assets/core'),
-      };
+      return [
+        {
+          from: path.resolve(__dirname, './src/assets/linux'),
+          to: path.resolve(__dirname, './dist/assets/core'),
+        },
+      ];
     case 'darwin':
-    default:
-      return {
-        from: path.resolve(__dirname, './src/assets/darwin'),
-        to: path.resolve(__dirname, './dist/assets/core'),
-      };
+      return [
+        {
+          from: path.resolve(__dirname, './src/assets/darwin'),
+          to: path.resolve(__dirname, './dist/assets/core'),
+        },
+      ];
   }
+  return [];
 }

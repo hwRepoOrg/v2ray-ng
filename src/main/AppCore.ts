@@ -9,6 +9,7 @@ import {
   mkdirSync,
   moveSync,
   pathExists,
+  pathExistsSync,
   removeSync,
   stat,
 } from 'fs-extra';
@@ -43,6 +44,15 @@ export class AppCore {
     if (!existsSync(this.corePath)) {
       mkdirSync(this.corePath);
     }
+    pathExists(global.appInstance.config.runningConfigPath).then((flag) => {
+      if (flag) {
+        global.appInstance.config.getGuiConfig(['extensionMode']).then(({ extensionMode }) => {
+          if (!extensionMode) {
+            this.startV2rayCore();
+          }
+        });
+      }
+    });
   }
 
   async getMellowCoreVersion(): Promise<string | null> {
@@ -90,12 +100,12 @@ export class AppCore {
     this.progressDownload(url, tempPath).subscribe((state) => {
       if (state instanceof Error) {
         console.log(state);
-        global.appInstance.mainWindow.webContents.send('mellow-core-update-progress', state.message);
+        global.appInstance.mainWindow.webContents.send('update-progress', state.message);
       } else if (typeof state === 'number') {
-        global.appInstance.mainWindow.webContents.send('mellow-core-update-progress', state);
+        global.appInstance.mainWindow.webContents.send('update-progress', state);
       } else if (state === null) {
         moveSync(tempPath, this.mellowCorePath, { overwrite: true });
-        global.appInstance.mainWindow.webContents.send('mellow-core-update-progress', null);
+        global.appInstance.mainWindow.webContents.send('update-progress', null);
       }
     });
   }
@@ -120,16 +130,16 @@ export class AppCore {
     this.progressDownload(url, tempPath).subscribe((state) => {
       if (state instanceof Error) {
         console.log(state);
-        global.appInstance.mainWindow.webContents.send('v2ray-core-update-progress', state.message);
+        global.appInstance.mainWindow.webContents.send('update-progress', state.message);
       } else if (typeof state === 'number') {
-        global.appInstance.mainWindow.webContents.send('v2ray-core-update-progress', state / 2);
+        global.appInstance.mainWindow.webContents.send('update-progress', state / 2);
       } else if (state === null) {
         const zipProgress = node7z.extract(tempPath, folderPath, {
           $bin: node7zBin.path7za,
           $progress: true,
         });
         zipProgress.on('progress', (p: any) => {
-          global.appInstance.mainWindow.webContents.send('v2ray-core-update-progress', p.percent / 2 / 100 + 0.5);
+          global.appInstance.mainWindow.webContents.send('update-progress', p.percent / 2 / 100 + 0.5);
         });
         zipProgress.on('end', () => {
           moveSync(Path.resolve(folderPath, './v2ray'), Path.resolve(this.v2rayCorePath), { overwrite: true });
@@ -140,10 +150,10 @@ export class AppCore {
           moveSync(Path.resolve(folderPath, './geoip.dat'), Path.resolve(this.corePath, './geoip.dat'), {
             overwrite: true,
           });
-          global.appInstance.mainWindow.webContents.send('v2ray-core-update-progress', null);
+          global.appInstance.mainWindow.webContents.send('update-progress', null);
         });
         zipProgress.on('error', (err: Error) => {
-          global.appInstance.mainWindow.webContents.send('v2ray-core-update-progress', err.message);
+          global.appInstance.mainWindow.webContents.send('update-progress', err.message);
         });
       }
     });
@@ -156,12 +166,12 @@ export class AppCore {
       const webContents = global.appInstance.mainWindow.webContents;
       if (state instanceof Error) {
         console.log(state);
-        webContents.send('dlc-update-progress', state.message);
+        webContents.send('update-progress', state.message);
       } else if (typeof state === 'number') {
-        webContents.send('dlc-update-progress', state);
+        webContents.send('update-progress', state);
       } else if (state === null) {
         moveSync(tempPath, this.dlcPath, { overwrite: true });
-        webContents.send('dlc-update-progress', state);
+        webContents.send('update-progress', state);
       }
     });
   }
@@ -185,6 +195,10 @@ export class AppCore {
   }
 
   startV2rayCore() {
+    const flag = pathExistsSync(this.v2rayCorePath);
+    if (!flag) {
+      return;
+    }
     if (this.v2rayCore) {
       this.stopV2rayCore();
     }
