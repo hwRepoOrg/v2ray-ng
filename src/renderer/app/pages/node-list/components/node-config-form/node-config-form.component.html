@@ -28,6 +28,7 @@
         <nz-form-control>
           <nz-select formControlName="protocol" (ngModelChange)="setSettingsGroup($event)">
             <nz-option nzLabel="vmess" nzValue="vmess"></nz-option>
+            <nz-option nzLabel="vless" nzValue="vless"></nz-option>
             <nz-option nzLabel="shadowsocks" nzValue="shadowsocks"></nz-option>
           </nz-select>
         </nz-form-control>
@@ -109,32 +110,91 @@
                   <input
                     type="text"
                     nz-input
-                    [formControl]="
-                      nodeConfigFormGroup
-                        .get('settings')
-                        .get('vnext')
-                        ['controls'][0].get('users')
-                        ['controls'][0].get('id')
-                    "
+                    [formControl]="settings.get('vnext')['controls'][0].get('users')['controls'][0].get('id')"
                   />
                 </nz-form-control>
               </nz-form-item>
             </nz-col>
-            <nz-col nzSpan="12">
+            <nz-col nzSpan="8">
               <nz-form-item>
                 <nz-form-label>alertId</nz-form-label>
                 <nz-form-control>
                   <nz-input-number
                     [nzMin]="0"
                     [nzStep]="1"
-                    [formControl]="
-                      nodeConfigFormGroup
-                        .get('settings')
-                        .get('vnext')
-                        ['controls'][0].get('users')
-                        ['controls'][0].get('alertId')
-                    "
+                    [formControl]="settings.get('vnext')['controls'][0].get('users')['controls'][0].get('alertId')"
                   ></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+            </nz-col>
+            <nz-col nzSpan="6">
+              <nz-form-item>
+                <nz-form-label [style.width]="'auto'">用户等级</nz-form-label>
+                <nz-form-control>
+                  <nz-input-number
+                    [nzMin]="0"
+                    [nzStep]="1"
+                    [formControl]="settings.get('vnext')['controls'][0].get('users')['controls'][0].get('level')"
+                  ></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+            </nz-col>
+            <nz-col nzSpan="10">
+              <nz-form-item>
+                <nz-form-label [style.width]="'auto'">加密方式</nz-form-label>
+                <nz-form-control>
+                  <nz-select
+                    [formControl]="settings.get('vnext')['controls'][0].get('users')['controls'][0].get('security')"
+                  >
+                    <nz-option nzValue="auto" nzLabel="auto"></nz-option>
+                    <nz-option nzValue="aes-128-gcm" nzLabel="aes-128-gcm"></nz-option>
+                    <nz-option nzValue="chacha20-poly1305" nzLabel="chacha20-poly1305"></nz-option>
+                    <nz-option nzValue="none" nzLabel="none"></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </nz-col>
+          </ng-container>
+          <ng-container *ngSwitchCase="'vless'">
+            <nz-col nzSpan="24">
+              <nz-form-item>
+                <nz-form-label nzRequired>服务器地址</nz-form-label>
+                <nz-form-control>
+                  <nz-input-group [nzAddOnAfter]="addressAddOnAfter">
+                    <input type="text" nz-input [formControl]="settings.get('vnext')['controls'][0].get('address')" />
+                    <ng-template #addressAddOnAfter>
+                      <nz-input-number
+                        [nzMin]="1"
+                        [nzMax]="99999"
+                        [nzStep]="1"
+                        [formControl]="settings.get('vnext')['controls'][0].get('port')"
+                      ></nz-input-number>
+                    </ng-template>
+                  </nz-input-group>
+                </nz-form-control>
+              </nz-form-item>
+            </nz-col>
+            <nz-col nzSpan="24">
+              <nz-form-item>
+                <nz-form-label nzRequired>id</nz-form-label>
+                <nz-form-control>
+                  <input
+                    type="text"
+                    nz-input
+                    [formControl]="settings.get('vnext')['controls'][0].get('users')['controls'][0].get('id')"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+            </nz-col>
+            <nz-col nzSpan="12">
+              <nz-form-item>
+                <nz-form-label>加密方式</nz-form-label>
+                <nz-form-control>
+                  <nz-select
+                    [formControl]="settings.get('vnext')['controls'][0].get('users')['controls'][0].get('encryption')"
+                  >
+                    <nz-option nzValue="none" nzLabel="none"></nz-option>
+                  </nz-select>
                 </nz-form-control>
               </nz-form-item>
             </nz-col>
@@ -145,13 +205,7 @@
                   <nz-input-number
                     [nzMin]="0"
                     [nzStep]="1"
-                    [formControl]="
-                      nodeConfigFormGroup
-                        .get('settings')
-                        .get('vnext')
-                        ['controls'][0].get('users')
-                        ['controls'][0].get('alertId')
-                    "
+                    [formControl]="settings.get('vnext')['controls'][0].get('users')['controls'][0].get('level')"
                   ></nz-input-number>
                 </nz-form-control>
               </nz-form-item>

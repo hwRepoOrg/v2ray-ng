@@ -91,7 +91,7 @@ export class NodeConfigFormComponent implements OnInit {
     }
   }
 
-  getSettingsGroup(protocol: 'shadowsocks' | 'vmess') {
+  getSettingsGroup(protocol: 'shadowsocks' | 'vmess' | 'vless') {
     switch (protocol) {
       case 'shadowsocks':
         return this.fb.group({
@@ -114,7 +114,24 @@ export class NodeConfigFormComponent implements OnInit {
                 this.fb.group({
                   id: [, [Validators.required]],
                   alertId: 0,
-                  security: ['none', [Validators.required]],
+                  security: ['auto', [Validators.required]],
+                  level: [0],
+                }),
+              ]),
+            }),
+          ]),
+        });
+      case 'vless':
+        return this.fb.group({
+          vnext: this.fb.array([
+            this.fb.group({
+              address: [, [Validators.required]],
+              port: [443, [Validators.required]],
+              users: this.fb.array([
+                this.fb.group({
+                  id: [, [Validators.required]],
+                  encryption: ['none', [Validators.required]],
+                  level: [0],
                 }),
               ]),
             }),
