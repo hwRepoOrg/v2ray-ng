@@ -12,6 +12,13 @@ export class ConfigService {
   constructor(public es: ElectronService, private http: HttpClient) {}
 
   transformVmessShareConfig(vmessConfig: IVmessShareConfig): IConfigOutbound {
+    for (const k in vmessConfig) {
+      if (vmessConfig.hasOwnProperty(k)) {
+        if (vmessConfig[k] === '') {
+          vmessConfig[k] = null;
+        }
+      }
+    }
     return {
       name: vmessConfig.ps ?? '',
       protocol: 'vmess',
