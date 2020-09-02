@@ -40,3 +40,8 @@ declare module '*.webp' {
   const src: string;
   export default src;
 }
+
+declare interface IEnvironment {
+  production: boolean;
+  github_token: string;
+}

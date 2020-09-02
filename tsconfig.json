@@ -27,6 +27,7 @@
   },
   "include": [
     "src/main",
+    "src/environments",
     "src/typings",
     "src/renderer/app/interfaces/form-schema.interface.ts",
     "src/typings/subscribe.interface.ts",
