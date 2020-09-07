@@ -19,7 +19,8 @@
   "build": {
     "appId": "com.mrhuangjser.v2ray-ng",
     "mac": {
-      "icon": "src/main/assets/dog-colorful.tiff"
+      "icon": "src/main/assets/dog-colorful.tiff",
+      "target": "dmg"
     },
     "dmg": {
       "icon": "src/main/assets/dog-colorful.tiff"
