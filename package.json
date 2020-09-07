@@ -1,7 +1,7 @@
 {
   "name": "v2ray-ng",
   "productName": "V2ray-NG",
-  "main": "dist/main.js",
+  "main": "v2ray-ng/main.js",
   "version": "0.0.0",
   "scripts": {
     "start:renderer": "ng serve --port=4204",
@@ -11,9 +11,20 @@
     "start:app": "./node_modules/.bin/electron --inspect-brk=5858 ./dist/v2ray-ng/main/main.js",
     "lint:style": "stylelint \"src/**/*.less\" --syntax less --fix",
     "lint-staged": "lint-staged",
-    "electron-rebuild": "./node_modules/.bin/electron-rebuild"
+    "electron-rebuild": "./node_modules/.bin/electron-rebuild",
+    "build:mac": "cross-env NODE_ENV=production PLATFORM=darwin webpack --config webpack.main.config.js && ng build && electron-builder -m",
+    "build:win": "cross-env NODE_ENV=production PLATFORM=win32 webpack --config webpack.main.config.js && ng build && electron-builder -w"
   },
   "private": true,
+  "build": {
+    "appId": "com.mrhuangjser.v2ray-ng",
+    "mac": {
+      "icon": "src/main/assets/dog-colorful.tiff"
+    },
+    "dmg": {
+      "icon": "src/main/assets/dog-colorful.tiff"
+    }
+  },
   "dependencies": {
     "7zip-bin": "^5.0.3",
     "@angular/animations": "~9.1.11",
@@ -27,7 +38,6 @@
     "@delon/util": "~9.5.3",
     "ajv": "^6.12.3",
     "canvas": "^2.6.1",
-    "electron": "^9.0.3",
     "electron-is": "^3.0.0",
     "electron-log": "^4.2.2",
     "fs": "^0.0.1-security",
@@ -43,6 +53,7 @@
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
+    "electron": "^9.0.3",
     "@angular-devkit/build-angular": "~0.901.8",
     "@angular/cli": "~9.1.8",
     "@angular/compiler-cli": "~9.1.11",
@@ -54,6 +65,7 @@
     "codelyzer": "^6.0.0",
     "copy-webpack-plugin": "^6.0.2",
     "cross-env": "^7.0.2",
+    "electron-builder": "^22.8.0",
     "electron-rebuild": "^1.11.0",
     "file-loader": "^6.0.0",
     "husky": "^4.2.5",

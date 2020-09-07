@@ -45,7 +45,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "sourceMap": false,
-            "outputPath": "dist/renderer",
+            "outputPath": "v2ray-ng/renderer",
             "index": "src/renderer/index.html",
             "main": "src/renderer/main.ts",
             "polyfills": "src/renderer/polyfills.ts",

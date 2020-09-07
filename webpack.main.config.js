@@ -13,8 +13,8 @@ module.exports = {
   entry: path.resolve(__dirname, 'src/main/main.ts'),
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'v2ray-ng'),
+    publicPath: path.resolve(__dirname, 'v2ray-ng'),
   },
   watch: process.env.NODE_ENV === 'development',
   watchOptions: { ignored: /node_modules/ },
@@ -46,7 +46,7 @@ module.exports = {
       patterns: [
         {
           from: path.resolve(__dirname, './src/main/assets'),
-          to: path.resolve(__dirname, './dist/assets'),
+          to: path.resolve(__dirname, './v2ray-ng/assets'),
         },
         ...movePlatformFiles(),
       ],
@@ -64,21 +64,21 @@ function movePlatformFiles() {
       return [
         {
           from: path.resolve(__dirname, './src/assets/win32'),
-          to: path.resolve(__dirname, './dist/assets/core'),
+          to: path.resolve(__dirname, './v2ray-ng/assets/core'),
         },
       ];
     case 'linux':
       return [
         {
           from: path.resolve(__dirname, './src/assets/linux'),
-          to: path.resolve(__dirname, './dist/assets/core'),
+          to: path.resolve(__dirname, './v2ray-ng/assets/core'),
         },
       ];
     case 'darwin':
       return [
         {
           from: path.resolve(__dirname, './src/assets/darwin'),
-          to: path.resolve(__dirname, './dist/assets/core'),
+          to: path.resolve(__dirname, './v2ray-ng/assets/core'),
         },
       ];
   }

@@ -4,7 +4,7 @@
     "baseUrl": "./",
     "module": "CommonJS",
     "importHelpers": true,
-    "outDir": "./dist/v2ray-ng/main",
+    "outDir": "v2ray-ng/v2ray-ng/main",
     "target": "esnext",
     "lib": ["es2018", "esnext"],
     "sourceMap": true,
