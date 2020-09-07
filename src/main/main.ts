@@ -25,11 +25,16 @@ function init() {
     app.on('window-all-closed', () => {
       app.dock.hide();
     });
+    app.on('quit', () => {
+      if (global.appInstance) {
+        global.appInstance.quit();
+      }
+    });
   });
 }
 
 try {
   init();
 } catch (err) {
-  console.error(err.message);
+  console.log(err);
 }

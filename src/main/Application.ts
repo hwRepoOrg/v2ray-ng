@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
 import { AppCore } from './AppCore';
@@ -70,6 +70,6 @@ export class Application {
   }
 
   quit() {
-    app.quit();
+    this.core.stop();
   }
 }

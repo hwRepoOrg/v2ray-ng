@@ -57,7 +57,7 @@ export class AppConfig extends EventEmitter {
   }
 
   public async getGuiConfig(keys?: string[]) {
-    const config = await this.getConfigByPath(this.guiConfigPath, { extensionMode: false } as {
+    const config = await this.getConfigByPath(this.guiConfigPath, { extensionMode: false, enabled: false } as {
       [key: string]: any;
     });
     if (!keys.length) {
@@ -80,7 +80,6 @@ export class AppConfig extends EventEmitter {
   }
 
   async writeConfigByPath(path: string, value: any, options?: string | WriteFileOptions) {
-    console.log(value);
     return writeFile(path, JSON.stringify(value, null, 2), options);
   }
 }

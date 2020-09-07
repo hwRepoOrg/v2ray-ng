@@ -1,13 +1,11 @@
 import { IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
 import { createCanvas, loadImage } from 'canvas';
-import { app, Menu, MenuItemConstructorOptions, nativeImage, nativeTheme, shell, Tray } from 'electron';
+import { Menu, MenuItemConstructorOptions, nativeImage, nativeTheme, shell, Tray } from 'electron';
 import { macOS } from 'electron-is';
 import log from 'electron-log';
 import { EventEmitter } from 'events';
 import fs from 'fs-extra';
-import dogColorful from './assets/dog-colorful.png';
-import dogDark from './assets/dog-dark.png';
-import dogLight from './assets/dog-light.png';
+import * as Path from 'path';
 
 export class AppTray extends EventEmitter {
   public tray?: Tray;
@@ -30,12 +28,25 @@ export class AppTray extends EventEmitter {
   }
 
   async getTrayContextMenus(): Promise<Menu> {
-    const config = global.appInstance.config;
+    const { config, core } = global.appInstance;
     const localNodeList = await config.getConfigByPath(config.nodeListPath, [] as IConfigOutbound[]);
     const subscribeList = await config.getConfigByPath(config.subscribesConfigPath, [] as ISubscribeConfig[]);
-    const { extensionMode } = await config.getGuiConfig(['extensionMode']);
+    const { extensionMode, enabled } = await config.getGuiConfig(['extensionMode', 'enabled']);
     const activated = await global.appInstance.config.getActivatedNode();
     return Menu.buildFromTemplate([
+      {
+        label: '开启v2ray',
+        type: 'checkbox',
+        checked: enabled,
+        click: (ev) => {
+          config.setGuiConfig({ enabled: ev.checked });
+          if (ev.checked) {
+            core.start();
+          } else {
+            core.stop();
+          }
+        },
+      },
       {
         label: '节点选择',
         submenu: [
@@ -88,12 +99,18 @@ export class AppTray extends EventEmitter {
   async getTrayImage(upload: number, download: number) {
     if (macOS()) {
       if (nativeTheme.shouldUseDarkColors) {
-        return nativeImage.createFromBuffer(fs.readFileSync(dogDark), { scaleFactor: 8.5 });
+        return nativeImage.createFromBuffer(fs.readFileSync(Path.resolve(__dirname, './assets/dog-dark.png')), {
+          scaleFactor: 8.5,
+        });
       } else {
-        return nativeImage.createFromBuffer(fs.readFileSync(dogLight), { scaleFactor: 8.5 });
+        return nativeImage.createFromBuffer(fs.readFileSync(Path.resolve(__dirname, './assets/dog-light.png')), {
+          scaleFactor: 8.5,
+        });
       }
     }
-    return nativeImage.createFromBuffer(fs.readFileSync(dogColorful), { scaleFactor: 8.5 });
+    return nativeImage.createFromBuffer(fs.readFileSync(Path.resolve(__dirname, './assets/dog-colorful.png')), {
+      scaleFactor: 8.5,
+    });
   }
 
   formatSpeedText(speed: number) {

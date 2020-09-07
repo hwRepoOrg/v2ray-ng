@@ -44,15 +44,14 @@ export class AppCore {
     if (!existsSync(this.corePath)) {
       mkdirSync(this.corePath);
     }
-    pathExists(global.appInstance.config.runningConfigPath).then((flag) => {
-      if (flag) {
-        global.appInstance.config.getGuiConfig(['extensionMode']).then(({ extensionMode }) => {
-          if (!extensionMode) {
-            this.startV2rayCore();
-          }
-        });
-      }
-    });
+    global.appInstance.config
+      .getGuiConfig(['enabled'])
+      .then(({ enabled }) => enabled && pathExists(global.appInstance.config.runningConfigPath))
+      .then((flag) => {
+        if (flag) {
+          this.start();
+        }
+      });
   }
 
   async getMellowCoreVersion(): Promise<string | null> {
@@ -213,7 +212,6 @@ export class AppCore {
     });
     this.v2rayCore.on('close', (code, signal) => {
       console.log(`v2ray core stopped, code ${code} signal ${signal}`);
-      this.v2rayCore.removeAllListeners();
     });
     this.v2rayCore.on('err', (err) => {
       console.log(err);
@@ -234,6 +232,20 @@ export class AppCore {
   stopDownload() {
     if (this.progressReq) {
       this.progressReq.abort();
+    }
+  }
+
+  async start() {
+    this.stop();
+    const { extensionMode } = await global.appInstance.config.getGuiConfig(['extensionMode']);
+    if (!extensionMode) {
+      this.startV2rayCore();
+    }
+  }
+
+  stop() {
+    if (this.v2rayCore) {
+      this.stopV2rayCore();
     }
   }
 }
