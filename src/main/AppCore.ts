@@ -1,4 +1,3 @@
-import node7zBin from '7zip-bin';
 import { ChildProcessWithoutNullStreams, execFile, spawn } from 'child_process';
 import { app } from 'electron';
 import {
@@ -133,26 +132,29 @@ export class AppCore {
       } else if (typeof state === 'number') {
         global.appInstance.mainWindow.webContents.send('update-progress', state / 2);
       } else if (state === null) {
-        const zipProgress = node7z.extract(tempPath, folderPath, {
-          $bin: node7zBin.path7za,
-          $progress: true,
-        });
-        zipProgress.on('progress', (p: any) => {
-          global.appInstance.mainWindow.webContents.send('update-progress', p.percent / 2 / 100 + 0.5);
-        });
-        zipProgress.on('end', () => {
-          moveSync(Path.resolve(folderPath, './v2ray'), Path.resolve(this.v2rayCorePath), { overwrite: true });
-          moveSync(Path.resolve(folderPath, './v2ctl'), Path.resolve(this.corePath, './v2ctl'), { overwrite: true });
-          moveSync(Path.resolve(folderPath, './geosite.dat'), Path.resolve(this.corePath, './geosite.dat'), {
-            overwrite: true,
+        const p7zPath = getPath();
+        chmod(p7zPath, constants.S_IXUSR).then(() => {
+          const zipProgress = node7z.extract(tempPath, folderPath, {
+            $bin: p7zPath,
+            $progress: true,
           });
-          moveSync(Path.resolve(folderPath, './geoip.dat'), Path.resolve(this.corePath, './geoip.dat'), {
-            overwrite: true,
+          zipProgress.on('progress', (p: any) => {
+            global.appInstance.mainWindow.webContents.send('update-progress', p.percent / 2 / 100 + 0.5);
           });
-          global.appInstance.mainWindow.webContents.send('update-progress', null);
-        });
-        zipProgress.on('error', (err: Error) => {
-          global.appInstance.mainWindow.webContents.send('update-progress', err.message);
+          zipProgress.on('end', () => {
+            moveSync(Path.resolve(folderPath, './v2ray'), Path.resolve(this.v2rayCorePath), { overwrite: true });
+            moveSync(Path.resolve(folderPath, './v2ctl'), Path.resolve(this.corePath, './v2ctl'), { overwrite: true });
+            moveSync(Path.resolve(folderPath, './geosite.dat'), Path.resolve(this.corePath, './geosite.dat'), {
+              overwrite: true,
+            });
+            moveSync(Path.resolve(folderPath, './geoip.dat'), Path.resolve(this.corePath, './geoip.dat'), {
+              overwrite: true,
+            });
+            global.appInstance.mainWindow.webContents.send('update-progress', null);
+          });
+          zipProgress.on('error', (err: Error) => {
+            global.appInstance.mainWindow.webContents.send('update-progress', err.message);
+          });
         });
       }
     });
@@ -247,5 +249,19 @@ export class AppCore {
     if (this.v2rayCore) {
       this.stopV2rayCore();
     }
+  }
+}
+
+function getPath() {
+  if (process.env.USE_SYSTEM_7ZA === 'true') {
+    return '7za';
+  }
+
+  if (process.platform === 'darwin') {
+    return Path.join(__dirname, 'assets', '7zip-bin', 'mac', '7za');
+  } else if (process.platform === 'win32') {
+    return Path.join(__dirname, 'assets', '7zip-bin', 'win', process.arch, '7za.exe');
+  } else {
+    return Path.join(__dirname, 'assets', '7zip-bin', 'linux', process.arch, '7za');
   }
 }
