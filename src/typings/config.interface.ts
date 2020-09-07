@@ -7,7 +7,8 @@ export type OutboundProtocolType =
   | 'mtporoto'
   | 'shadowsocks'
   | 'socks'
-  | 'vmess';
+  | 'vmess'
+  | 'vless';
 
 export type ProtocolType = InboundProtocolType & OutboundProtocolType;
 

@@ -45,17 +45,6 @@
     }
   },
   "dependencies": {
-    "electron-is": "^3.0.0",
-    "electron-log": "^4.2.2",
-    "fs-extra": "^9.0.1",
-    "node-7z": "^2.1.1",
-    "request": "^2.88.2",
-    "request-progress": "^3.0.0",
-    "sudo-prompt": "^9.2.1",
-    "tslib": "^1.10.0",
-    "rxjs": "~6.5.4",
-    "ng-zorro-antd": "^9.3.0",
-    "zone.js": "~0.10.2",
     "@angular/animations": "~9.1.11",
     "@angular/common": "~9.1.11",
     "@angular/compiler": "~9.1.11",
@@ -65,7 +54,18 @@
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
     "@delon/util": "~9.5.3",
-    "ajv": "^6.12.3"
+    "ajv": "^6.12.3",
+    "electron-is": "^3.0.0",
+    "electron-log": "^4.2.2",
+    "fs-extra": "^9.0.1",
+    "ng-zorro-antd": "^9.3.0",
+    "node-7z": "^2.1.1",
+    "request": "^2.88.2",
+    "request-progress": "^3.0.0",
+    "rxjs": "~6.5.4",
+    "sudo-prompt": "^9.2.1",
+    "tslib": "^1.10.0",
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.901.8",
