@@ -13,7 +13,7 @@ export class TitleComponent {
     return this.electronSrv.remote.getGlobal('appInstance');
   }
   public get isMacOS() {
-    return this.electronSrv.is.macOS();
+    return this.electronSrv.remote.process.platform === 'darwin';
   }
 
   constructor(private electronSrv: ElectronService) {}

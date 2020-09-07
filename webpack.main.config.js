@@ -8,7 +8,9 @@ module.exports = {
   mode: process.env.NODE_ENV,
   target: 'node',
   node: {
+    global: false,
     __dirname: false,
+    process: false,
   },
   entry: path.resolve(__dirname, 'src/main/main.ts'),
   output: {
@@ -52,7 +54,9 @@ module.exports = {
       ],
     }),
   ],
-  externals: [nodeExternals()],
+  externals: {
+    electron: 'commonjs2 electron',
+  },
   resolve: {
     extensions: ['.ts', '.js'],
   },

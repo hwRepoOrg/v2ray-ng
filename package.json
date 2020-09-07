@@ -12,14 +12,18 @@
     "lint:style": "stylelint \"src/**/*.less\" --syntax less --fix",
     "lint-staged": "lint-staged",
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
-    "build:mac": "cross-env NODE_ENV=production PLATFORM=darwin webpack --config webpack.main.config.js && ng build && electron-builder -m",
-    "build:win": "cross-env NODE_ENV=production PLATFORM=win32 webpack --config webpack.main.config.js && ng build && electron-builder -w"
+    "build:main": "cross-env NODE_ENV=production PLATFORM=darwin webpack --config webpack.main.config.js",
+    "build:renderer": "ng build",
+    "build:mac": "npm-run-all -p build:main build:renderer && electron-builder -m",
+    "build:win": "npm-run-all -p build:main build:renderer && electron-builder -w",
+    "build:linux": "npm-run-all -p build:main build:renderer && electron-builder -l"
   },
   "private": true,
   "build": {
     "appId": "com.mrhuangjser.v2ray-ng",
     "files": [
       "v2ray-ng/**/*",
+      "!node_modules",
       "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
       "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
       "!**/node_modules/*.d.ts",
@@ -41,7 +45,17 @@
     }
   },
   "dependencies": {
-    "7zip-bin": "^5.0.3",
+    "electron-is": "^3.0.0",
+    "electron-log": "^4.2.2",
+    "fs-extra": "^9.0.1",
+    "node-7z": "^2.1.1",
+    "request": "^2.88.2",
+    "request-progress": "^3.0.0",
+    "sudo-prompt": "^9.2.1",
+    "tslib": "^1.10.0",
+    "rxjs": "~6.5.4",
+    "ng-zorro-antd": "^9.3.0",
+    "zone.js": "~0.10.2",
     "@angular/animations": "~9.1.11",
     "@angular/common": "~9.1.11",
     "@angular/compiler": "~9.1.11",
@@ -51,20 +65,7 @@
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
     "@delon/util": "~9.5.3",
-    "ajv": "^6.12.3",
-    "electron-is": "^3.0.0",
-    "electron-log": "^4.2.2",
-    "fs": "^0.0.1-security",
-    "fs-extra": "^9.0.1",
-    "ng-zorro-antd": "^9.3.0",
-    "node-7z": "^2.1.1",
-    "path": "^0.12.7",
-    "request": "^2.88.2",
-    "request-progress": "^3.0.0",
-    "rxjs": "~6.5.4",
-    "sudo-prompt": "^9.2.1",
-    "tslib": "^1.10.0",
-    "zone.js": "~0.10.2"
+    "ajv": "^6.12.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.901.8",
