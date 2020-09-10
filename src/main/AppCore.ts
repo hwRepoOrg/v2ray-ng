@@ -54,20 +54,7 @@ export class AppCore {
       .then((flag) => {
         if (flag && environment.production) {
           global.appInstance.clearSystemProxy();
-          this.start()
-            .then(() => this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS))
-            .then((inbounds) => {
-              inbounds.forEach((inbound) => {
-                if (inbound.systemProxy) {
-                  switch (inbound.protocol) {
-                    case 'socks':
-                    case 'http':
-                      this.config.setSystemProxy(true, inbound.protocol, inbound.port);
-                      break;
-                  }
-                }
-              });
-            });
+          this.start();
         } else {
           global.appInstance.config.setGuiConfig({ enabled: false });
         }
@@ -259,10 +246,22 @@ export class AppCore {
   }
 
   async start() {
+    global.appInstance.clearSystemProxy();
     this.stop();
     const { extensionMode } = await global.appInstance.config.getGuiConfig(['extensionMode']);
     if (!extensionMode) {
       this.startV2rayCore();
+    }
+    const inbounds = await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS);
+    while (inbounds.length) {
+      const inbound = inbounds.pop();
+      if (inbound.systemProxy) {
+        switch (inbound.protocol) {
+          case 'socks':
+          case 'http':
+            await this.config.setSystemProxy(true, inbound.protocol, inbound.port);
+        }
+      }
     }
   }
 

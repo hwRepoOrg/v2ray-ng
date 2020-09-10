@@ -147,8 +147,11 @@ export class Application {
         ];
         break;
     }
+
     while (cmds.length) {
-      await execShell(cmds.pop());
+      const cmd = cmds.pop();
+      console.log(cmd);
+      await execShell(cmd);
     }
   }
 }
