@@ -53,6 +53,9 @@ export class Application {
                 global.appInstance.closeMainPanel();
               },
             },
+            { label: 'copy', role: 'copy' },
+            { label: 'paste', role: 'paste' },
+            { label: 'cut', role: 'cut' },
             {
               label: '退出',
               type: 'normal',
