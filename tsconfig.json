@@ -1,11 +1,11 @@
 {
   "$schema": "https://schemastore.azurewebsites.net/schemas/json/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "module": "CommonJS",
     "importHelpers": true,
     "outDir": "v2ray-ng/v2ray-ng/main",
-    "target": "esnext",
+    "target": "es2018",
     "lib": ["es2018", "esnext"],
     "sourceMap": true,
     "declaration": false,
@@ -20,9 +20,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "paths": {
-      "@typing/*": ["src/typings/*"],
-      "@main/*": ["src/main/*"],
-      "@renderer/*": ["src/renderer/app/*"]
+      "@typing/*": ["./typings/*"],
+      "@main/*": ["./main/*"],
+      "@renderer/*": ["./renderer/app/*"]
     }
   },
   "files": ["./src/main/main.ts", "./src/config.ts"],
