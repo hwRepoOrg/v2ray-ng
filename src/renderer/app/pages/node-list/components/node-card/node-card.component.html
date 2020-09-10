@@ -4,9 +4,10 @@
     <span class="time"></span>
   </div>
   <p class="d-flex align-items-center">
-    <span *ngIf="showEdit">
+    <ng-container *ngIf="showEdit">
       <a nz-icon nzType="edit" (click)="emitEdit($event)"></a>
-    </span>
+      <a nz-icon nzType="delete" class="ml-2" (click)="emitDelete($event)"></a>
+    </ng-container>
     <nz-tag class="ml-auto" nzColor="#49aa19">{{ nodeConfig?.protocol }}</nz-tag>
   </p>
   <p class="content text-right mb-0" nz-tooltip [nzTooltipTitle]="getAddress(nodeConfig)">

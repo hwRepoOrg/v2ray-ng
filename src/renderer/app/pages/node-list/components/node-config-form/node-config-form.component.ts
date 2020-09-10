@@ -61,6 +61,7 @@ export class NodeConfigFormComponent implements OnInit {
 
   initNodeConfigFormGroup(nodeConfig: IConfigOutbound) {
     this.nodeConfigFormGroup = this.fb.group({
+      tag: [nodeConfig?.tag],
       name: [nodeConfig?.name],
       protocol: [nodeConfig?.protocol ?? 'shadowsocks', [Validators.required]],
       settings: this.getSettingsGroup((nodeConfig?.protocol as any) ?? 'shadowsocks'),
@@ -78,16 +79,6 @@ export class NodeConfigFormComponent implements OnInit {
     });
     if (nodeConfig) {
       this.nodeConfigFormGroup.patchValue(nodeConfig);
-      if (nodeConfig?.settings?.servers[0]) {
-        (this.nodeConfigFormGroup.get('settings').get('servers') as FormArray).controls[0].patchValue(
-          nodeConfig?.settings?.servers[0]
-        );
-      }
-      if (nodeConfig?.settings?.vnext[0]) {
-        (this.nodeConfigFormGroup.get('settings').get('vnext') as FormArray).controls[0].patchValue(
-          nodeConfig?.settings?.vnext[0]
-        );
-      }
     }
   }
 

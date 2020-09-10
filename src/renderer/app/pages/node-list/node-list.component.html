@@ -53,6 +53,7 @@
       *ngFor="let node of localNodeList"
       [nodeConfig]="node"
       (vEdit)="toggleDrawer($event)"
+      (vDelete)="deleteNode($event)"
       (vSelect)="cs.setActivatedNode($event)"
       [activated]="node.active"
     ></v2ray-node-card>

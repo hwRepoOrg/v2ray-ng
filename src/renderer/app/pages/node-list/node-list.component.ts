@@ -74,4 +74,8 @@ export class NodeListComponent implements OnInit {
       ],
     });
   }
+
+  deleteNode(node: IConfigOutbound) {
+    this.cs.updateLocalNodeList(this.localNodeList.filter((item) => item.tag !== node.tag));
+  }
 }
