@@ -1,5 +1,5 @@
 import { exec, execSync } from 'child_process';
-import { BrowserWindow, ipcMain, Menu } from 'electron';
+import { BrowserWindow, ipcMain, Menu, MenuItem } from 'electron';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
 import { AppCore } from './AppCore';
@@ -53,9 +53,7 @@ export class Application {
                 global.appInstance.closeMainPanel();
               },
             },
-            { label: 'copy', role: 'copy' },
-            { label: 'paste', role: 'paste' },
-            { label: 'cut', role: 'cut' },
+            { label: 'edit', role: 'editMenu' },
             {
               label: '退出',
               type: 'normal',
@@ -63,6 +61,7 @@ export class Application {
             },
           ],
         },
+        ...(!environment.production ? [{ label: 'view', role: 'viewMenu' } as MenuItem] : []),
       ])
     );
   }
