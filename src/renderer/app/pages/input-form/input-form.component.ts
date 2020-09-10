@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConfigService } from '@renderer/services/config.service';
 import { ElectronService } from '@renderer/services/electron.service';
-import { IConfigInbound } from '@typing/config.interface';
+import { IConfigInbound, InboundProtocolType } from '@typing/config.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { finalize } from 'rxjs/operators';
 import { DEFAULT_INBOUNDS } from '../../../../config';
@@ -56,6 +56,7 @@ export class InputFormComponent implements OnInit {
 
   private genInboundFormGroup(defaultValues?: Partial<IConfigInbound>) {
     return this.fb.group({
+      systemProxy: [defaultValues?.systemProxy],
       tag: [defaultValues?.tag ?? 'default-inbound', [Validators.required]],
       port: [defaultValues?.port ?? 1080, [Validators.required]],
       listen: [defaultValues?.listen ?? '127.0.0.1'],
@@ -68,15 +69,14 @@ export class InputFormComponent implements OnInit {
     });
   }
 
-  private genInboundSetting(protocol: 'socks' | 'http', defaultValue?: any) {
+  private genInboundSetting(protocol: InboundProtocolType, defaultValue?: any) {
     switch (protocol) {
       case 'socks':
         return this.fb.group({
           auth: [defaultValue?.auth ?? 'noauth'],
           accounts: this.fb.array(
-            defaultValue?.accounts?.map((account) => this.fb.group({ user: [account.user], pass: [account.pass] })) ?? [
-              this.fb.group({ user: [], pass: [] }),
-            ]
+            defaultValue?.accounts?.map((account) => this.fb.group({ user: [account.user], pass: [account.pass] })) ??
+              (defaultValue?.auth === 'password' ? [this.fb.group({ user: [], pass: [] })] : [])
           ),
           udp: [defaultValue?.udp],
           ip: [defaultValue?.ip ?? '127.0.0.1'],
@@ -85,14 +85,30 @@ export class InputFormComponent implements OnInit {
       case 'http':
         return this.fb.group({
           timeout: [defaultValue?.timeout ?? 0],
+          auth: [defaultValue?.auth ?? false],
           accounts: this.fb.array(
-            defaultValue?.accounts?.map((account) => this.fb.group({ user: [account.user], pass: [account.pass] })) ?? [
-              this.fb.group({ user: [], pass: [] }),
-            ]
+            defaultValue?.accounts?.map((account) => this.fb.group({ user: [account.user], pass: [account.pass] })) ??
+              (defaultValue?.auth ? [this.fb.group({ user: [], pass: [] })] : [])
           ),
           allowTransparent: [defaultValue?.allowTransparent ?? false],
           userLevel: [defaultValue?.userLevel ?? 0],
         });
     }
+  }
+
+  public setSystemProxy(inbound: IConfigInbound) {
+    console.log(inbound);
+    this.es.send('/config/setSystemProxy', true, inbound.protocol, inbound.port).subscribe((res) => {
+      console.log(res);
+    });
+  }
+
+  addAccount(fb: FormGroup) {
+    (fb.get('accounts') as FormArray).clear();
+    (fb.get('accounts') as FormArray).push(this.fb.group({ user: [], pass: [] }));
+  }
+
+  clearAccount(fb: FormGroup) {
+    (fb.get('accounts') as FormArray).clear();
   }
 }

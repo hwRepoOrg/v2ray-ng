@@ -13,14 +13,17 @@
         <nz-collapse-panel
           *ngFor="let inbound of inboundsFormArray?.controls; let i = index"
           [nzExtra]="inboundCardExtra"
-          [formGroupName]="i.toString()"
+          [formGroup]="inbound"
           [nzHeader]="inbound.get('tag').value"
         >
           <ng-template #inboundCardExtra>
-            <button nz-button nzType="link" (click)="inboundsFormArray.removeAt(i)">
-              <i nz-icon nzType="delete"></i>
-              <span>删除</span>
-            </button>
+            <div (click)="$event.stopPropagation(); $event.preventDefault()">
+              <nz-switch nzSize="small" formControlName="systemProxy" nzCheckedChildren="开启系统代理"></nz-switch>
+              <button nz-button nzType="link" (click)="inboundsFormArray.removeAt(i)">
+                <i nz-icon nzType="delete"></i>
+                <span>删除</span>
+              </button>
+            </div>
           </ng-template>
           <nz-row nzGutter="8">
             <nz-col nzSpan="24">
@@ -87,7 +90,14 @@
                   <nz-form-item>
                     <nz-form-label>auth</nz-form-label>
                     <nz-form-control>
-                      <nz-select [formControl]="inbound.get('settings').get('auth')">
+                      <nz-select
+                        [formControl]="inbound.get('settings').get('auth')"
+                        (ngModelChange)="
+                          $event === 'password'
+                            ? addAccount(inbound.get('settings'))
+                            : clearAccount(inbound.get('settings'))
+                        "
+                      >
                         <nz-option nzLabel="noauth" nzValue="noauth"></nz-option>
                         <nz-option nzLabel="password" nzValue="password"></nz-option>
                       </nz-select>
@@ -162,7 +172,33 @@
                     </nz-form-control>
                   </nz-form-item>
                 </nz-col>
-                <ng-container *ngIf="inbound.get('settings').get('accounts')['controls'].length">
+                <nz-col nzSpan="8">
+                  <nz-form-item>
+                    <nz-form-label>userLevel</nz-form-label>
+                    <nz-form-control>
+                      <nz-input-number [formControl]="inbound.get('settings').get('userLevel')"></nz-input-number>
+                    </nz-form-control>
+                  </nz-form-item>
+                </nz-col>
+                <nz-col nzSpan="8">
+                  <nz-form-item>
+                    <nz-form-label>auth</nz-form-label>
+                    <nz-form-control>
+                      <nz-switch
+                        [formControl]="inbound.get('settings').get('auth')"
+                        (ngModelChange)="
+                          $event ? addAccount(inbound.get('settings')) : clearAccount(inbound.get('settings'))
+                        "
+                      ></nz-switch>
+                    </nz-form-control>
+                  </nz-form-item>
+                </nz-col>
+                <ng-container
+                  *ngIf="
+                    inbound.get('settings').get('auth').value &&
+                    inbound.get('settings').get('accounts')['controls'].length
+                  "
+                >
                   <nz-col nzSpan="8">
                     <nz-form-item>
                       <nz-form-label>user</nz-form-label>
@@ -188,14 +224,6 @@
                     </nz-form-item>
                   </nz-col>
                 </ng-container>
-                <nz-col nzSpan="8">
-                  <nz-form-item>
-                    <nz-form-label>userLevel</nz-form-label>
-                    <nz-form-control>
-                      <nz-input-number [formControl]="inbound.get('settings').get('userLevel')"></nz-input-number>
-                    </nz-form-control>
-                  </nz-form-item>
-                </nz-col>
               </ng-container>
             </ng-container>
           </nz-row>

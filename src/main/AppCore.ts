@@ -17,6 +17,9 @@ import * as Path from 'path';
 import request from 'request';
 import progress from 'request-progress';
 import { Subject } from 'rxjs';
+import { DEFAULT_INBOUNDS } from '../config';
+import { environment } from '../environments/environment';
+import { AppConfig } from './AppConfig';
 
 function execute(command: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -35,20 +38,38 @@ export class AppCore {
   private mellowCorePath = Path.resolve(this.corePath, './mellow_core');
   private v2rayCorePath = Path.resolve(this.corePath, './v2ray_core');
   private dlcPath = Path.resolve(this.corePath, './dlc.dat');
+  private config: AppConfig;
   private progressReq: request.Request;
   public v2rayCore: ChildProcessWithoutNullStreams;
   public mellowCore: ChildProcessWithoutNullStreams;
 
   constructor() {
+    this.config = global.appInstance.config;
     if (!existsSync(this.corePath)) {
       mkdirSync(this.corePath);
     }
-    global.appInstance.config
+    this.config
       .getGuiConfig(['enabled'])
-      .then(({ enabled }) => enabled && pathExists(global.appInstance.config.runningConfigPath))
+      .then(({ enabled }) => enabled && pathExists(this.config.runningConfigPath))
       .then((flag) => {
-        if (flag) {
-          this.start();
+        if (flag && environment.production) {
+          global.appInstance.clearSystemProxy();
+          this.start()
+            .then(() => this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS))
+            .then((inbounds) => {
+              inbounds.forEach((inbound) => {
+                if (inbound.systemProxy) {
+                  switch (inbound.protocol) {
+                    case 'socks':
+                    case 'http':
+                      this.config.setSystemProxy(true, inbound.protocol, inbound.port);
+                      break;
+                  }
+                }
+              });
+            });
+        } else {
+          global.appInstance.config.setGuiConfig({ enabled: false });
         }
       });
   }

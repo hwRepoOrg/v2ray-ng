@@ -39,6 +39,7 @@ export class AppConfig extends EventEmitter {
       global.appInstance.core.startV2rayCore();
     }
     if (global.appInstance.tray) {
+      await this.setGuiConfig({ enabled: true });
       global.appInstance.tray.updateTrayContextMenu();
     }
     return config;
@@ -81,5 +82,12 @@ export class AppConfig extends EventEmitter {
 
   async writeConfigByPath(path: string, value: any, options?: string | WriteFileOptions) {
     return writeFile(path, JSON.stringify(value, null, 2), options);
+  }
+
+  async setSystemProxy(...args: [boolean, 'socks' | 'http', number]) {
+    switch (process.platform) {
+      case 'darwin':
+        return global.appInstance.setMacOSSystemProxy(...args);
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, Event } from 'electron';
 import * as log from 'electron-log';
 import { Application } from './Application';
 
@@ -19,16 +19,17 @@ async function makeSingleInstance() {
 
 function init() {
   makeSingleInstance().then(() => {
+    app.dock.hide();
     app.on('ready', () => {
       global.appInstance = new Application();
-    });
-    app.on('window-all-closed', () => {
-      app.dock.hide();
     });
     app.on('quit', () => {
       if (global.appInstance) {
         global.appInstance.quit();
       }
+    });
+    app.on('window-all-closed', (ev: Event) => {
+      ev.preventDefault();
     });
   });
 }

@@ -1,4 +1,4 @@
-export type InboundProtocolType = 'dokodemo' | 'http' | 'mtporoto' | 'shadowsocks' | 'socks' | 'vmess';
+export type InboundProtocolType = 'dokodemo' | 'http' | 'mtporoto' | 'shadowsocks' | 'socks' | 'vmess' | 'vless';
 export type OutboundProtocolType =
   | 'blackhole'
   | 'dns'
@@ -155,6 +155,7 @@ export interface IConfigQUICSetting {
 }
 
 export interface IConfigInbound {
+  systemProxy?: boolean;
   port: number;
   listen: string;
   protocol: InboundProtocolType;
