@@ -1,42 +1,25 @@
-import { ChildProcessWithoutNullStreams, execFile, spawn } from 'child_process';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { app } from 'electron';
-import {
-  chmod,
-  constants,
-  createWriteStream,
-  existsSync,
-  mkdirSync,
-  moveSync,
-  pathExists,
-  pathExistsSync,
-  removeSync,
-  stat,
-} from 'fs-extra';
-import node7z from 'node-7z';
+import { existsSync, mkdirSync, pathExists } from 'fs-extra';
 import * as Path from 'path';
 import request from 'request';
-import progress from 'request-progress';
-import { Subject } from 'rxjs';
 import { DEFAULT_INBOUNDS } from '../config';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
-
-function execute(command: string, args: string[]): Promise<string> {
-  return new Promise((resolve, reject) => {
-    execFile(command, args, (err, stdout) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(stdout);
-      }
-    });
-  });
-}
+import {
+  execShell,
+  getDLCUpdatedTime,
+  getMellowCoreVersion,
+  getV2rayCoreVersion,
+  updateDLCData,
+  updateMellowCore,
+  updateV2rayCore,
+} from './utils';
 
 export class AppCore {
   private corePath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
   private mellowCorePath = Path.resolve(this.corePath, './mellow_core');
-  private v2rayCorePath = Path.resolve(this.corePath, './v2ray_core');
+  private v2rayCorePath = Path.resolve(this.corePath, './v2ray');
   private dlcPath = Path.resolve(this.corePath, './dlc.dat');
   private config: AppConfig;
   private progressReq: request.Request;
@@ -53,163 +36,47 @@ export class AppCore {
       .then(({ enabled }) => enabled && pathExists(this.config.runningConfigPath))
       .then((flag) => {
         if (flag && environment.production) {
-          global.appInstance.clearSystemProxy();
-          this.start();
+          global.appInstance.clearSystemProxy().then(() => {
+            this.start();
+          });
         } else {
           global.appInstance.config.setGuiConfig({ enabled: false });
         }
       });
   }
 
-  async getMellowCoreVersion(): Promise<string | null> {
-    const isExists = await pathExists(this.mellowCorePath);
-    if (!isExists) {
-      return null;
+  async getCoreInfo(type: 'mellow' | 'v2ray' | 'dlc') {
+    switch (type) {
+      case 'mellow':
+        return await await getMellowCoreVersion(this.mellowCorePath);
+      case 'v2ray':
+        return await getV2rayCoreVersion(this.v2rayCorePath);
+      case 'dlc':
+        return await getDLCUpdatedTime(this.dlcPath);
     }
-    await chmod(this.mellowCorePath, constants.S_IXUSR);
-    return await execute(`${this.mellowCorePath}`, ['-version']);
   }
 
-  async getV2rayCoreVersion(): Promise<string | null> {
-    const isExists = await pathExists(this.v2rayCorePath);
-    if (!isExists) {
-      return null;
-    }
-    await chmod(this.v2rayCorePath, constants.S_IXUSR);
-    return await execute(`${this.v2rayCorePath}`, ['-version']);
-  }
-
-  async getDLCUpdatedTime() {
-    const isExists = await pathExists(this.dlcPath);
-    if (!isExists) {
-      return null;
-    }
-    const info = await stat(this.dlcPath);
-    return +info.mtime;
-  }
-
-  updateMellowCore() {
-    let url = `https://github.com/mellow-io/go-tun2socks/releases/latest/download/`;
-    switch (process.platform) {
-      case 'darwin':
-        url = `${url}core-darwin-10.6-amd64`;
+  async updateCore(type: 'mellow' | 'v2ray' | 'dlc') {
+    switch (type) {
+      case 'mellow':
+        this.progressReq = await updateMellowCore(this.mellowCorePath);
         break;
-      case 'win32':
-        url = `${url}core-windows-4.0-amd64.exe`;
+      case 'v2ray':
+        this.progressReq = await updateV2rayCore(this.corePath);
         break;
-      case 'linux':
-        url = `${url}core-linux-amd64`;
+      case 'dlc':
+        this.progressReq = await updateDLCData(this.dlcPath);
         break;
     }
-    const tempPath = Path.resolve(app.getPath('temp'), './mellow-core');
-    removeSync(tempPath);
-    this.progressDownload(url, tempPath).subscribe((state) => {
-      if (state instanceof Error) {
-        console.log(state);
-        global.appInstance.mainWindow.webContents.send('update-progress', state.message);
-      } else if (typeof state === 'number') {
-        global.appInstance.mainWindow.webContents.send('update-progress', state);
-      } else if (state === null) {
-        moveSync(tempPath, this.mellowCorePath, { overwrite: true });
-        global.appInstance.mainWindow.webContents.send('update-progress', null);
-      }
-    });
   }
 
-  updateV2rayCore() {
-    let url = `https://github.com/v2ray/v2ray-core/releases/latest/download/`;
-    switch (process.platform) {
-      case 'darwin':
-        url = `${url}v2ray-macos-64.zip`;
-        break;
-      case 'win32':
-        url = `${url}v2ray-windows-64.zip`;
-        break;
-      case 'linux':
-        url = `${url}v2ray-linux-64.zip`;
-        break;
-    }
-    const tempPath = Path.resolve(app.getPath('temp'), './v2ray-core.zip');
-    const folderPath = tempPath.replace(/\.zip$/, '');
-    removeSync(tempPath);
-    removeSync(folderPath);
-    this.progressDownload(url, tempPath).subscribe((state) => {
-      if (state instanceof Error) {
-        console.log(state);
-        global.appInstance.mainWindow.webContents.send('update-progress', state.message);
-      } else if (typeof state === 'number') {
-        global.appInstance.mainWindow.webContents.send('update-progress', state / 2);
-      } else if (state === null) {
-        const p7zPath = getPath();
-        chmod(p7zPath, constants.S_IXUSR).then(() => {
-          const zipProgress = node7z.extract(tempPath, folderPath, {
-            $bin: p7zPath,
-            $progress: true,
-          });
-          zipProgress.on('progress', (p: any) => {
-            global.appInstance.mainWindow.webContents.send('update-progress', p.percent / 2 / 100 + 0.5);
-          });
-          zipProgress.on('end', () => {
-            moveSync(Path.resolve(folderPath, './v2ray'), Path.resolve(this.v2rayCorePath), { overwrite: true });
-            moveSync(Path.resolve(folderPath, './v2ctl'), Path.resolve(this.corePath, './v2ctl'), { overwrite: true });
-            moveSync(Path.resolve(folderPath, './geosite.dat'), Path.resolve(this.corePath, './geosite.dat'), {
-              overwrite: true,
-            });
-            moveSync(Path.resolve(folderPath, './geoip.dat'), Path.resolve(this.corePath, './geoip.dat'), {
-              overwrite: true,
-            });
-            global.appInstance.mainWindow.webContents.send('update-progress', null);
-          });
-          zipProgress.on('error', (err: Error) => {
-            global.appInstance.mainWindow.webContents.send('update-progress', err.message);
-          });
-        });
-      }
-    });
-  }
-
-  updateDLCData() {
-    const url = `https://github.com/v2ray/domain-list-community/releases/latest/download/dlc.dat`;
-    const tempPath = Path.resolve(app.getPath('temp'), './dlc.dat');
-    this.progressDownload(url, tempPath).subscribe((state) => {
-      const webContents = global.appInstance.mainWindow.webContents;
-      if (state instanceof Error) {
-        console.log(state);
-        webContents.send('update-progress', state.message);
-      } else if (typeof state === 'number') {
-        webContents.send('update-progress', state);
-      } else if (state === null) {
-        moveSync(tempPath, this.dlcPath, { overwrite: true });
-        webContents.send('update-progress', state);
-      }
-    });
-  }
-
-  progressDownload(url: string, path: string) {
-    const subject = new Subject<number | Error | null>();
-    this.progressReq = progress(request(url, { method: 'get' }))
-      .on('progress', (state: any) => {
-        if (state) {
-          subject.next(state.percent);
-        }
-      })
-      .on('error', (err: Error) => {
-        subject.next(err);
-      })
-      .on('end', () => {
-        subject.next(null);
-      })
-      .pipe(createWriteStream(path, { flags: 'w' }));
-    return subject;
-  }
-
-  startV2rayCore() {
-    const flag = pathExistsSync(this.v2rayCorePath);
+  async startV2rayCore(cb?: () => void) {
+    const flag = await pathExists(this.v2rayCorePath);
     if (!flag) {
       return;
     }
     if (this.v2rayCore) {
-      this.stopV2rayCore();
+      await this.stopV2rayCore();
     }
     this.v2rayCore = spawn(this.v2rayCorePath, ['-c', global.appInstance.config.runningConfigPath], {
       env: process.env,
@@ -229,17 +96,28 @@ export class AppCore {
     });
   }
 
-  stopV2rayCore() {
+  async stopV2rayCore() {
     if (this.v2rayCore) {
-      if (process.platform === 'win32') {
-      } else {
-        this.v2rayCore.kill('SIGTERM');
-        this.v2rayCore = null;
+      await global.appInstance.clearSystemProxy();
+      switch (process.platform) {
+        case 'win32':
+          break;
+        case 'darwin':
+        case 'linux':
+          this.v2rayCore.kill('SIGTERM');
+          this.v2rayCore = null;
+          break;
       }
     }
   }
 
-  stopDownload() {
+  async startMellowCore() {}
+
+  async stopMellowCore() {
+    execShell(`route delete default`);
+  }
+
+  async stopDownload() {
     if (this.progressReq) {
       this.progressReq.abort();
     }
@@ -250,38 +128,15 @@ export class AppCore {
     this.stop();
     const { extensionMode } = await global.appInstance.config.getGuiConfig(['extensionMode']);
     if (!extensionMode) {
-      this.startV2rayCore();
+      await this.startV2rayCore();
     }
     const inbounds = await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS);
-    while (inbounds.length) {
-      const inbound = inbounds.pop();
-      if (inbound.systemProxy) {
-        switch (inbound.protocol) {
-          case 'socks':
-          case 'http':
-            await this.config.setSystemProxy(true, inbound.protocol, inbound.port);
-        }
-      }
-    }
+    inbounds.forEach((inbound) => this.config.setSystemProxy(true, inbound.protocol as any, inbound.port));
   }
 
-  stop() {
+  async stop() {
     if (this.v2rayCore) {
-      this.stopV2rayCore();
+      await this.stopV2rayCore();
     }
-  }
-}
-
-function getPath() {
-  if (process.env.USE_SYSTEM_7ZA === 'true') {
-    return '7za';
-  }
-
-  if (process.platform === 'darwin') {
-    return Path.join(__dirname, 'assets', '7zip-bin', 'mac', '7za');
-  } else if (process.platform === 'win32') {
-    return Path.join(__dirname, 'assets', '7zip-bin', 'win', process.arch, '7za.exe');
-  } else {
-    return Path.join(__dirname, 'assets', '7zip-bin', 'linux', process.arch, '7za');
   }
 }

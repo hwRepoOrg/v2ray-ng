@@ -4,6 +4,7 @@ import { EventEmitter } from 'events';
 import { existsSync, mkdirSync, pathExists, readFile, writeFile, WriteFileOptions } from 'fs-extra';
 import * as Path from 'path';
 import { DEFAULT_CONFIG_TEMPLATE, DEFAULT_INBOUNDS, DEFAULT_ROUTING } from '../config';
+import { setMacOSSystemProxy } from './utils';
 
 export class AppConfig extends EventEmitter {
   public configPath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
@@ -34,10 +35,7 @@ export class AppConfig extends EventEmitter {
       outbounds: [{ ...node, tag: 'proxy', nodeTag: node.tag }, ...DEFAULT_CONFIG_TEMPLATE.outbounds],
     };
     await writeFile(this.runningConfigPath, JSON.stringify(config, null, 2));
-    const { extensionMode } = await this.getGuiConfig(['extensionMode']);
-    if (!extensionMode) {
-      global.appInstance.core.startV2rayCore();
-    }
+    await global.appInstance.core.start();
     if (global.appInstance.tray) {
       await this.setGuiConfig({ enabled: true });
       global.appInstance.tray.updateTrayContextMenu();
@@ -84,10 +82,10 @@ export class AppConfig extends EventEmitter {
     return writeFile(path, JSON.stringify(value, null, 2), options);
   }
 
-  async setSystemProxy(...args: [boolean, 'socks' | 'http', number]) {
+  setSystemProxy(...args: [boolean, 'socks' | 'http', number]) {
     switch (process.platform) {
       case 'darwin':
-        return global.appInstance.setMacOSSystemProxy(...args);
+        return setMacOSSystemProxy(...args);
     }
   }
 }

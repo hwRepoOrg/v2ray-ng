@@ -37,38 +37,62 @@ export class ConfigService {
           {
             address: vmessConfig.add,
             port: +vmessConfig.port,
-            users: [{ id: vmessConfig.id, alertId: vmessConfig.aid }],
+            users: [
+              {
+                id: vmessConfig.id,
+                security: 'auto',
+                alterId: +vmessConfig.aid,
+                level: 0,
+                encryption: null,
+                flow: null,
+              },
+            ],
           },
         ],
       },
       streamSettings: {
         network: VMESS_SHARE_NET[vmessConfig.net],
         security: (vmessConfig.tls as any) ?? 'none',
-        httpSettings: {
-          path: vmessConfig.path ?? null,
-          host: (vmessConfig.host as any) ?? null,
-        },
-        kcpSettings: {
-          header: {
-            type: (vmessConfig.type as any) ?? null,
-          },
-        },
-        tcpSettings: {
-          header: {
-            type: vmessConfig.type as any,
-          },
-        },
-        wsSettings: {
-          path: vmessConfig.path,
-          headers: {
-            Host: vmessConfig.host,
-          },
-        },
-        quicSettings: {
-          header: {
-            type: vmessConfig.type as any,
-          },
-        },
+        httpSettings:
+          VMESS_SHARE_NET[vmessConfig.net] === 'http'
+            ? {
+                path: vmessConfig.path ?? null,
+                host: (vmessConfig.host as any) ?? null,
+              }
+            : null,
+        kcpSettings:
+          VMESS_SHARE_NET[vmessConfig.net] === 'kcp'
+            ? {
+                header: {
+                  type: (vmessConfig.type as any) ?? null,
+                },
+              }
+            : null,
+        tcpSettings:
+          VMESS_SHARE_NET[vmessConfig.net] === 'tcp'
+            ? {
+                header: {
+                  type: vmessConfig.type as any,
+                },
+              }
+            : null,
+        wsSettings:
+          VMESS_SHARE_NET[vmessConfig.net] === 'ws'
+            ? {
+                path: vmessConfig.path,
+                headers: {
+                  Host: vmessConfig.host,
+                },
+              }
+            : null,
+        quicSettings:
+          VMESS_SHARE_NET[vmessConfig.net] === 'quic'
+            ? {
+                header: {
+                  type: vmessConfig.type as any,
+                },
+              }
+            : null,
       },
     };
   }

@@ -104,7 +104,7 @@ export class NodeConfigFormComponent implements OnInit {
               users: this.fb.array([
                 this.fb.group({
                   id: [, [Validators.required]],
-                  alertId: 0,
+                  alterId: 0,
                   security: ['auto', [Validators.required]],
                   level: [0],
                 }),

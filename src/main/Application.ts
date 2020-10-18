@@ -1,16 +1,16 @@
-import { exec, execSync } from 'child_process';
+import { IConfigInbound } from '@typing/config.interface';
 import { BrowserWindow, ipcMain, Menu, MenuItem } from 'electron';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
 import { AppCore } from './AppCore';
 import { AppTray } from './AppTray';
+import { setMacOSSystemProxy } from './utils';
 
 export class Application {
   public tray: AppTray;
   public config: AppConfig;
   public mainWindow?: BrowserWindow;
   public core: AppCore;
-  private activeNet: string;
 
   private static get mainWindowUrl(): string {
     return environment.production ? `file://${__dirname}/renderer/index.html` : 'http://localhost:4204';
@@ -103,70 +103,17 @@ export class Application {
     }
   }
 
-  quit() {
-    this.clearSystemProxy();
+  async quit() {
+    await this.clearSystemProxy();
     this.core.stop();
   }
 
-  clearSystemProxy() {
+  async clearSystemProxy() {
+    const inbounds = await this.config.getConfigByPath<IConfigInbound[]>(this.config.inboundsConfigPath);
     switch (process.platform) {
       case 'darwin':
-        if (this.activeNet) {
-          execSync(`networksetup -setsocksfirewallproxystate "${this.activeNet}" off`);
-          execSync(`networksetup -setsecurewebproxystate "${this.activeNet}" off`);
-          execSync(`networksetup -setwebproxystate "${this.activeNet}" off`);
-        }
+        inbounds.forEach((inbound) => setMacOSSystemProxy(false, inbound.protocol as 'socks' | 'http'));
         break;
     }
   }
-
-  async setMacOSSystemProxy(status: boolean, type: 'socks' | 'http', port: number) {
-    const stdout = await execShell(`networksetup -listnetworkserviceorder | grep 'Hardware Port'`);
-    let netList = stdout
-      .split('\n')
-      .filter((s) => !!s)
-      .map((s) => [s.match(/Hardware\sPort:\s(.+)?,/)[1], s.match(/Device:\s(.+)?\)$/)[1]]);
-    let activeNet = null;
-    while (netList.length) {
-      const net = netList.pop();
-      const isActive = (await execShell(`ifconfig ${net[1]} 2>/dev/null | grep 'status: active'`)).replace(/\s/g, '')
-        .length;
-      if (isActive) {
-        activeNet = net;
-        this.activeNet = activeNet[0];
-        netList = [];
-      }
-    }
-    let cmds = [];
-    switch (type) {
-      case 'socks':
-        cmds = [`networksetup -setsocksfirewallproxy "${activeNet[0]}" ${status ? `"127.0.0.1" ${port}` : 'off'}`];
-        break;
-      case 'http':
-        cmds = [
-          `networksetup -setwebproxy "${activeNet[0]}" ${status ? `"127.0.0.1" ${port}` : 'off'}`,
-          `networksetup -setsecurewebproxy "${activeNet[0]}" ${status ? `"127.0.0.1" ${port}` : 'off'}`,
-        ];
-        break;
-    }
-
-    while (cmds.length) {
-      const cmd = cmds.pop();
-      console.log(cmd);
-      await execShell(cmd);
-    }
-  }
-}
-
-function execShell(cmd: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    exec(cmd, (error, stdout, stderr) => {
-      if (error) {
-        console.log(error.message);
-        resolve('');
-      } else {
-        resolve(stdout ?? stderr);
-      }
-    });
-  });
 }

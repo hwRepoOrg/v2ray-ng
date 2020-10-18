@@ -4,7 +4,7 @@ import { ElectronService } from '@renderer/services/electron.service';
 import { IpcRenderer } from 'electron';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
-import { Subject } from 'rxjs';
+import { Subject, zip } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
 import { environment } from '../../../../../../environments/environment';
 
@@ -36,33 +36,28 @@ export class AppSettingsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getMellowCoreVersion();
-    this.getV2rayCoreVersion();
-    this.getDLCUpdatedTime();
-  }
-
-  formatVersionStr(version: string) {
-    return version.replace(/(\n|\s)/g, '');
-  }
-
-  getMellowCoreVersion() {
-    this.es.send('/core/getMellowCoreVersion').subscribe((version) => {
-      this.mellowVersion = this.formatVersionStr(version);
-    });
-  }
-
-  getV2rayCoreVersion() {
-    this.es.send('/core/getV2rayCoreVersion').subscribe((version) => {
-      this.v2rayVersion = this.formatVersionStr(`v${version.match(/V2Ray\s(.*)?\s\(V2F/)[1]}`);
-    });
-  }
-
-  getDLCUpdatedTime() {
-    this.es.send('/core/getDLCUpdatedTime').subscribe((time) => {
-      if (time) {
-        this.dlcUpdatedTime = new Date(time).toLocaleDateString() + new Date(time).toLocaleTimeString();
+    zip(this.getCoreVersion('mellow'), this.getCoreVersion('v2ray'), this.getCoreVersion('dlc')).subscribe(
+      ([mellowVersion, v2rayVersion, dlcUpdateTime]) => {
+        this.mellowVersion = mellowVersion;
+        this.v2rayVersion = v2rayVersion;
+        this.dlcUpdatedTime = dlcUpdateTime;
       }
-    });
+    );
+  }
+
+  formatVersionStr(version: string, type: 'mellow' | 'v2ray' | 'dlc') {
+    switch (type) {
+      case 'mellow':
+        return version.replace(/(\n|\s)/g, '');
+      case 'v2ray':
+        return `v${version.match(/V2Ray\s(.*)?\s\(V2F/)[1]}`.replace(/\n|\s/g, '');
+      case 'dlc':
+        return `${new Date(version).toLocaleDateString()} ${new Date(version).toLocaleTimeString()}`;
+    }
+  }
+
+  getCoreVersion(type: 'mellow' | 'v2ray' | 'dlc') {
+    return this.es.send('/core/getCoreInfo', type).pipe(map((res) => this.formatVersionStr(res, type)));
   }
 
   getLatestVersion(repo: string, version: string) {
@@ -99,24 +94,24 @@ export class AppSettingsComponent implements OnInit {
   updateMellow() {
     this.mellowLoading = true;
     this.getLatestVersion('mellow-io/go-tun2socks', this.mellowVersion).subscribe(() => {
-      this.listenProgress(() => this.getMellowCoreVersion());
-      this.es.send('/core/updateMellowCore').subscribe();
+      this.listenProgress(() => this.getCoreVersion('mellow').subscribe((version) => (this.mellowVersion = version)));
+      this.es.send('/core/updateCore', 'mellow').subscribe();
     });
   }
 
   updateV2rayCore() {
     this.v2rayLoading = true;
-    this.getLatestVersion('v2ray/v2ray-core', this.v2rayVersion).subscribe(() => {
-      this.listenProgress(() => this.getV2rayCoreVersion());
-      this.es.send('/core/updateV2rayCore').subscribe();
+    this.getLatestVersion('v2fly/v2ray-core', this.v2rayVersion).subscribe(() => {
+      this.listenProgress(() => this.getCoreVersion('v2ray').subscribe((version) => (this.v2rayVersion = version)));
+      this.es.send('/core/updateCore', 'v2ray').subscribe();
     });
   }
 
   updateDlc() {
     this.dlcLoading = true;
     this.getLatestVersion('v2ray/domain-list-community', '').subscribe(() => {
-      this.listenProgress(() => this.getDLCUpdatedTime());
-      this.es.send('/core/updateDLCData').subscribe();
+      this.listenProgress(() => this.getCoreVersion('dlc').subscribe((version) => (this.dlcUpdatedTime = version)));
+      this.es.send('/core/updateCore', 'dlc').subscribe();
     });
   }
 

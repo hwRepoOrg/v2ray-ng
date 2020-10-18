@@ -4,7 +4,7 @@ import { ConfigService } from '@renderer/services/config.service';
 import { ElectronService } from '@renderer/services/electron.service';
 import { IConfigInbound, InboundProtocolType } from '@typing/config.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap } from 'rxjs/operators';
 import { DEFAULT_INBOUNDS } from '../../../../config';
 
 @Component({
@@ -45,8 +45,14 @@ export class InputFormComponent implements OnInit {
   public submit() {
     this.es
       .send('/config/writeConfigByPath', this.cs.inboundsConfigPath, this.inboundsFormArray.value)
-      .subscribe(() => {
+      .pipe(switchMap(() => this.es.send('/config/getGuiConfig', ['enabled'])))
+      .subscribe(({ enabled }) => {
         this.msgSrv.success('保存成功');
+        if (enabled) {
+          this.inboundsFormArray.value.forEach((inbound) => {
+            this.setSystemProxy(inbound);
+          });
+        }
       });
   }
 

@@ -4,15 +4,16 @@ export const DEFAULT_INBOUNDS: IConfigInbound[] = [
   {
     tag: 'socks-inbound',
     protocol: 'socks',
-    listen: '127.0.0.1',
+    listen: '0.0.0.0',
     port: 1080,
-    settings: { udp: true, ip: '127.0.0.1' },
+    settings: { auth: 'noauth', udp: true, ip: '127.0.0.1' },
   },
   {
     tag: 'http(s)-inbound',
     protocol: 'http',
-    listen: '127.0.0.1',
+    listen: '0.0.0.0',
     port: 1087,
+    settings: { accounts: null, allowTransparent: false },
     sniffing: { enabled: true, destOverride: ['http', 'tls'] },
   },
 ];
