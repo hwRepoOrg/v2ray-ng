@@ -155,6 +155,9 @@ export class AppSettingsComponent implements OnInit {
 
   stopDownload() {
     this.es.send('/core/stopDownload').subscribe(() => {
+      this.mellowLoading = false;
+      this.v2rayLoading = false;
+      this.dlcLoading = false;
       if (this.sub) {
         this.sub.removeAllListeners('update-progress');
       }

@@ -1,5 +1,5 @@
 import { IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
-import { Menu, MenuItemConstructorOptions, nativeImage, nativeTheme, shell, Tray } from 'electron';
+import { dialog, Menu, MenuItemConstructorOptions, nativeImage, nativeTheme, shell, Tray } from 'electron';
 import { macOS } from 'electron-is';
 import log from 'electron-log';
 import { EventEmitter } from 'events';
@@ -54,7 +54,7 @@ export class AppTray extends EventEmitter {
             type: 'radio',
             checked: node.tag === (activated && activated.nodeTag),
             click: () => {
-              global.appInstance.config.setRunningConfig(node).then();
+              config.setRunningConfig(node).then();
             },
           })),
           { type: 'separator' },
@@ -65,13 +65,37 @@ export class AppTray extends EventEmitter {
               type: 'radio',
               checked: node.tag === (activated && activated.nodeTag),
               click: () => {
-                global.appInstance.config.setRunningConfig(node).then();
+                config.setRunningConfig(node).then();
               },
             })),
           })),
         ],
       },
-      { label: '增强模式', checked: extensionMode, type: 'checkbox' },
+      {
+        label: '增强模式',
+        checked: extensionMode,
+        type: 'checkbox',
+        click: async (ev) => {
+          // const guiConfig = await config.getGuiConfig(['enabled']);
+          // await config.setGuiConfig({ extensionMode: ev.checked });
+          // if (guiConfig.enabled) {
+          //   if (ev.checked) {
+          //     try {
+          //       await core.stopV2rayCore();
+          //       await core.start();
+          //     } catch (e) {
+          //       dialog.showErrorBox('增强模式开启失败', e.message);
+          //       await config.setGuiConfig({ extensionMode: false });
+          //       await core.start();
+          //       await this.getTrayContextMenus();
+          //     }
+          //   } else {
+          //     await core.stopMellowCore();
+          //     await core.start();
+          //   }
+          // }
+        },
+      },
       { type: 'separator' },
       {
         label: '控制面板',

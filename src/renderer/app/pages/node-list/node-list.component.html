@@ -55,7 +55,7 @@
       (vEdit)="toggleDrawer($event)"
       (vDelete)="deleteNode($event)"
       (vSelect)="cs.setActivatedNode($event)"
-      [activated]="node.active"
+      [activated]="cs.activatedNode?.nodeTag === node.tag"
     ></v2ray-node-card>
   </div>
   <ng-container *ngFor="let subscribe of subscribeList">
@@ -65,7 +65,7 @@
         *ngFor="let node of subscribe.nodes"
         [nodeConfig]="node"
         (vSelect)="cs.setActivatedNode($event)"
-        [activated]="node.active"
+        [activated]="cs.activatedNode?.nodeTag === node.tag"
         [showEdit]="false"
       ></v2ray-node-card>
     </div>

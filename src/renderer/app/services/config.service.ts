@@ -13,11 +13,13 @@ export class ConfigService {
   subscribesConfigPath: string;
   inboundsConfigPath: string;
   routingConfigPath: string;
+  activatedNode: IConfigOutbound | null;
   constructor(public es: ElectronService, private http: HttpClient) {
     this.nodeListPath = this.es.getRemoteProperty('appInstance', '.config.nodeListPath');
     this.subscribesConfigPath = this.es.getRemoteProperty('appInstance', '.config.subscribesConfigPath');
     this.inboundsConfigPath = this.es.getRemoteProperty('appInstance', '.config.inboundsConfigPath');
     this.routingConfigPath = this.es.getRemoteProperty('appInstance', '.config.routingConfigPath');
+    this.getActivatedNode().subscribe((node) => (this.activatedNode = node));
   }
 
   transformVmessShareConfig(vmessConfig: IVmessShareConfig): IConfigOutbound {
@@ -176,6 +178,7 @@ export class ConfigService {
         }))
       );
       this.es.send('/config/setRunningConfig', node).subscribe(() => {
+        this.activatedNode = node;
         this.getLocalNodeList();
         this.getSubscribeList();
       });

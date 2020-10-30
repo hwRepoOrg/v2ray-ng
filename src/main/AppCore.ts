@@ -1,26 +1,33 @@
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import { app } from 'electron';
-import { existsSync, mkdirSync, pathExists } from 'fs-extra';
+import { ChildProcessWithoutNullStreams, execSync, spawn } from 'child_process';
+import * as defaultGateway from 'default-gateway';
+import * as log from 'electron-log';
+import { pathExists } from 'fs-extra';
+import * as ip from 'ip';
 import * as Path from 'path';
 import request from 'request';
+import * as sudoExec from 'sudo-prompt';
 import { DEFAULT_INBOUNDS } from '../config';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
 import {
+  execFile,
   execShell,
   getDLCUpdatedTime,
   getMellowCoreVersion,
   getV2rayCoreVersion,
+  setExecutable,
   updateDLCData,
   updateMellowCore,
   updateV2rayCore,
 } from './utils';
 
+const TUN_ADDR = '10.255.0.2';
+const TUN_GW = '10.255.0.1';
+
 export class AppCore {
-  private corePath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
-  private mellowCorePath = Path.resolve(this.corePath, './mellow_core');
-  private v2rayCorePath = Path.resolve(this.corePath, './v2ray');
-  private dlcPath = Path.resolve(this.corePath, './dlc.dat');
+  private mellowCorePath: string;
+  private v2rayCorePath: string;
+  private dlcPath: string;
   private config: AppConfig;
   private progressReq: request.Request;
   public v2rayCore: ChildProcessWithoutNullStreams;
@@ -28,14 +35,18 @@ export class AppCore {
 
   constructor() {
     this.config = global.appInstance.config;
-    if (!existsSync(this.corePath)) {
-      mkdirSync(this.corePath);
-    }
+    this.mellowCorePath = Path.resolve(this.config.configPath, './mellow_core');
+    this.v2rayCorePath = Path.resolve(this.config.configPath, './v2ray');
+    this.dlcPath = Path.resolve(this.config.configPath, './dlc.dat');
+    this.init();
+  }
+
+  init() {
     this.config
       .getGuiConfig(['enabled'])
       .then(({ enabled }) => enabled && pathExists(this.config.runningConfigPath))
-      .then((flag) => {
-        if (flag && environment.production) {
+      .then((res) => {
+        if (res && environment.production) {
           global.appInstance.clearSystemProxy().then(() => {
             this.start();
           });
@@ -48,7 +59,7 @@ export class AppCore {
   async getCoreInfo(type: 'mellow' | 'v2ray' | 'dlc') {
     switch (type) {
       case 'mellow':
-        return await await getMellowCoreVersion(this.mellowCorePath);
+        return await getMellowCoreVersion(this.mellowCorePath);
       case 'v2ray':
         return await getV2rayCoreVersion(this.v2rayCorePath);
       case 'dlc':
@@ -62,7 +73,7 @@ export class AppCore {
         this.progressReq = await updateMellowCore(this.mellowCorePath);
         break;
       case 'v2ray':
-        this.progressReq = await updateV2rayCore(this.corePath);
+        this.progressReq = await updateV2rayCore(this.config.configPath);
         break;
       case 'dlc':
         this.progressReq = await updateDLCData(this.dlcPath);
@@ -76,7 +87,7 @@ export class AppCore {
       return;
     }
     if (this.v2rayCore) {
-      await this.stopV2rayCore();
+      await this.stop();
     }
     this.v2rayCore = spawn(this.v2rayCorePath, ['-c', global.appInstance.config.runningConfigPath], {
       env: process.env,
@@ -98,7 +109,6 @@ export class AppCore {
 
   async stopV2rayCore() {
     if (this.v2rayCore) {
-      await global.appInstance.clearSystemProxy();
       switch (process.platform) {
         case 'win32':
           break;
@@ -113,9 +123,7 @@ export class AppCore {
 
   async startMellowCore() {}
 
-  async stopMellowCore() {
-    execShell(`route delete default`);
-  }
+  async stopMellowCore() {}
 
   async stopDownload() {
     if (this.progressReq) {
@@ -124,19 +132,34 @@ export class AppCore {
   }
 
   async start() {
-    global.appInstance.clearSystemProxy();
-    this.stop();
-    const { extensionMode } = await global.appInstance.config.getGuiConfig(['extensionMode']);
-    if (!extensionMode) {
-      await this.startV2rayCore();
+    try {
+      global.appInstance.clearSystemProxy();
+      this.stop();
+      const { extensionMode } = await global.appInstance.config.getGuiConfig(['extensionMode']);
+      if (!extensionMode) {
+        await this.startV2rayCore();
+      } else {
+        await this.startMellowCore();
+      }
+      const inbounds = await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS);
+      inbounds.forEach((inbound) => this.config.setSystemProxy(true, inbound.protocol as any, inbound.port));
+    } catch (e) {
+      console.error(e);
     }
-    const inbounds = await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS);
-    inbounds.forEach((inbound) => this.config.setSystemProxy(true, inbound.protocol as any, inbound.port));
   }
 
   async stop() {
-    if (this.v2rayCore) {
-      await this.stopV2rayCore();
+    try {
+      await global.appInstance.clearSystemProxy();
+      if (this.v2rayCore) {
+        await this.stopV2rayCore();
+      }
+      const { extensionMode } = await this.config.getGuiConfig(['extensionMode']);
+      if (extensionMode) {
+        await this.stopMellowCore();
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 }

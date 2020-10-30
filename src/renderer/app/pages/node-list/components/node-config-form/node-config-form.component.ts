@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { JsonToObjectPipe } from '@renderer/commons/pipes/json-to-object.pipe';
 import { IConfigOutbound } from '@typing/config.interface';
 
@@ -200,5 +200,29 @@ export class NodeConfigFormComponent implements OnInit {
 
   setHeadersValue(control: AbstractControl, value: string) {
     control.patchValue(this.jto.transform(value, true));
+  }
+
+  submit() {
+    const value: IConfigOutbound = this.nodeConfigFormGroup.value;
+    const { network } = value.streamSettings;
+    if (network !== 'domainsocket') {
+      delete value.streamSettings.dsSettings;
+    }
+    if (network !== 'http') {
+      delete value.streamSettings.httpSettings;
+    }
+    if (network !== 'kcp') {
+      delete value.streamSettings.kcpSettings;
+    }
+    if (network !== 'quic') {
+      delete value.streamSettings.quicSettings;
+    }
+    if (network !== 'tcp') {
+      delete value.streamSettings.tcpSettings;
+    }
+    if (network !== 'ws') {
+      delete value.streamSettings.wsSettings;
+    }
+    this.whenSubmit.emit(value);
   }
 }

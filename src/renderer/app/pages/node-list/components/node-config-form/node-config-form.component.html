@@ -1,10 +1,5 @@
 <div class="d-flex justify-content-end mb-3">
-  <button
-    nz-button
-    nzType="primary"
-    [disabled]="!nodeConfigFormGroup.valid"
-    (click)="whenSubmit.emit(nodeConfigFormGroup.value)"
-  >
+  <button nz-button nzType="primary" [disabled]="!nodeConfigFormGroup.valid" (click)="submit()">
     保存
   </button>
   <button nz-button nz-popconfirm nzPopconfirmTitle="确认重置吗？" (nzOnConfirm)="initNodeConfigFormGroup(nodeConfig)">

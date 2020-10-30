@@ -1,7 +1,7 @@
 import { execFileSync, execSync } from 'child_process';
 import { app } from 'electron';
-import { chmodSync, constants, fstat } from 'fs';
-import { createWriteStream, moveSync, pathExists, pathExistsSync, removeSync, statSync } from 'fs-extra';
+import { chmodSync, constants } from 'fs';
+import { createWriteStream, moveSync, pathExists, removeSync, statSync } from 'fs-extra';
 import * as Path from 'path';
 import request from 'request';
 import progress from 'request-progress';
@@ -32,6 +32,11 @@ export function execShell(cmd: string): string {
   }
 }
 
+export function execFile(file: string, args: any[]) {
+  console.log(file, args);
+  return execFileSync(file, args).toString();
+}
+
 export function setExecutable(filePath: string) {
   switch (process.platform) {
     case 'linux':
@@ -42,7 +47,9 @@ export function setExecutable(filePath: string) {
 }
 
 function progressDownload(url: string) {
-  return progress(request(url, { method: 'get' }));
+  return progress(
+    request(url, { method: 'get', proxy: global.appInstance.core.v2rayCore ? 'http://127.0.0.1:1087' : null })
+  );
 }
 
 export function setMacOSSystemProxy(status: boolean, type?: 'socks' | 'http', port?: number) {
@@ -76,27 +83,27 @@ export function setMacOSSystemProxy(status: boolean, type?: 'socks' | 'http', po
 }
 
 export async function getMellowCoreVersion(path: string) {
-  const isExists = pathExists(path);
+  const isExists = await pathExists(path);
   if (!isExists) {
-    return null;
+    return '';
   }
   setExecutable(path);
   return execFileSync(`${path}`, ['-version']).toString();
 }
 
 export async function getV2rayCoreVersion(path: string) {
-  const isExists = pathExists(path);
+  const isExists = await pathExists(path);
   if (!isExists) {
-    return null;
+    return '';
   }
   setExecutable(path);
   return execFileSync(`${path}`, ['-version']).toString();
 }
 
 export async function getDLCUpdatedTime(path: string) {
-  const isExists = pathExists(path);
+  const isExists = await pathExists(path);
   if (!isExists) {
-    return null;
+    return '';
   }
   const info = statSync(path);
   return +info.mtime;
