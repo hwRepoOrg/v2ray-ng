@@ -68,21 +68,21 @@ function movePlatformFiles() {
       return [
         {
           from: path.resolve(__dirname, './src/assets/win32'),
-          to: path.resolve(__dirname, './v2ray-ng/assets/core'),
+          to: path.resolve(__dirname, './v2ray-ng/assets'),
         },
       ];
     case 'linux':
       return [
         {
           from: path.resolve(__dirname, './src/assets/linux'),
-          to: path.resolve(__dirname, './v2ray-ng/assets/core'),
+          to: path.resolve(__dirname, './v2ray-ng/assets'),
         },
       ];
     case 'darwin':
       return [
         {
           from: path.resolve(__dirname, './src/assets/darwin'),
-          to: path.resolve(__dirname, './v2ray-ng/assets/core'),
+          to: path.resolve(__dirname, './v2ray-ng/assets'),
         },
       ];
   }
