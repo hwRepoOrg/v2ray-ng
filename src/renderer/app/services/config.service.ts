@@ -19,7 +19,7 @@ export class ConfigService {
     this.subscribesConfigPath = this.es.getRemoteProperty('appInstance', '.config.subscribesConfigPath');
     this.inboundsConfigPath = this.es.getRemoteProperty('appInstance', '.config.inboundsConfigPath');
     this.routingConfigPath = this.es.getRemoteProperty('appInstance', '.config.routingConfigPath');
-    this.getActivatedNode().subscribe((node) => (this.activatedNode = node));
+    this.getActivatedNode();
   }
 
   transformVmessShareConfig(vmessConfig: IVmessShareConfig): IConfigOutbound {
@@ -116,7 +116,9 @@ export class ConfigService {
   }
 
   getActivatedNode() {
-    return this.es.send<IConfigOutbound>('/config/getActivatedNode');
+    this.es.send<IConfigOutbound>('/config/getActivatedNode').subscribe((node) => {
+      this.activatedNode = node;
+    });
   }
 
   getNodesFromUrls(configStr: string) {
@@ -178,7 +180,7 @@ export class ConfigService {
         }))
       );
       this.es.send('/config/setRunningConfig', node).subscribe(() => {
-        this.activatedNode = node;
+        this.getActivatedNode();
         this.getLocalNodeList();
         this.getSubscribeList();
       });

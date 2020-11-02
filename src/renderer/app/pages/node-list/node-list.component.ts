@@ -26,6 +26,7 @@ export class NodeListComponent implements OnInit {
   constructor(public cs: ConfigService, private modalSrv: NzModalService) {}
 
   ngOnInit() {
+    this.cs.getActivatedNode();
     this.cs.getLocalNodeList();
     this.cs.getSubscribeList();
   }
