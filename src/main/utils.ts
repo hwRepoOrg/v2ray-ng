@@ -82,6 +82,8 @@ export function setMacOSSystemProxy(status: boolean, type?: 'socks' | 'http', po
     });
 }
 
+export function setWinSystemProxy(status: boolean, type: 'socks' | 'http', port?: number) {}
+
 export async function getMellowCoreVersion(path: string) {
   const isExists = await pathExists(path);
   if (!isExists) {

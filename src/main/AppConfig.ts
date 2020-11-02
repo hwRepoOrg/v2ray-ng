@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import { existsSync, mkdirSync, pathExists, readFile, writeFile, WriteFileOptions } from 'fs-extra';
 import * as Path from 'path';
 import { DEFAULT_CONFIG_TEMPLATE, DEFAULT_INBOUNDS, DEFAULT_ROUTING } from '../config';
-import { setMacOSSystemProxy } from './utils';
+import { setMacOSSystemProxy, setWinSystemProxy } from './utils';
 
 export class AppConfig extends EventEmitter {
   public configPath = Path.resolve(app.getPath('appData'), 'v2ray-ng');
@@ -86,6 +86,8 @@ export class AppConfig extends EventEmitter {
     switch (process.platform) {
       case 'darwin':
         return setMacOSSystemProxy(...args);
+      case 'win32':
+        return setWinSystemProxy(...args);
     }
   }
 }
