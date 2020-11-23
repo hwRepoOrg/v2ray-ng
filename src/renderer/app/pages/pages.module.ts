@@ -16,7 +16,7 @@ import { SubscribeFormComponent } from './subscribe-list/subscribe-form/subscrib
 import { SubscribeListComponent } from './subscribe-list/subscribe-list.component';
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true }), CommonsModule, NgZorroModule],
+  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' }), CommonsModule, NgZorroModule],
   exports: [RouterModule],
   declarations: [
     HomeComponent,

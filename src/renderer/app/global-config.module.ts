@@ -19,7 +19,7 @@ const zorroProvides = [{ provide: NZ_CONFIG, useValue: ngZorroConfig }];
 
 @NgModule({})
 export class GlobalConfigModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<GlobalConfigModule> {
     return {
       ngModule: GlobalConfigModule,
       providers: [...zorroProvides],
