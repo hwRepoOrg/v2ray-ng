@@ -86,7 +86,7 @@
     "codelyzer": "^6.0.0",
     "copy-webpack-plugin": "^6.0.2",
     "cross-env": "^7.0.2",
-    "electron": "^9.0.3",
+    "electron": "^11.0.2",
     "electron-builder": "^22.8.0",
     "electron-rebuild": "^1.11.0",
     "file-loader": "^6.0.0",
