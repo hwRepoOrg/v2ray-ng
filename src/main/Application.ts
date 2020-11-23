@@ -112,7 +112,9 @@ export class Application {
     const inbounds = await this.config.getConfigByPath<IConfigInbound[]>(this.config.inboundsConfigPath);
     switch (process.platform) {
       case 'darwin':
-        inbounds.forEach((inbound) => setMacOSSystemProxy(false, inbound.protocol as 'socks' | 'http'));
+        inbounds
+          .filter((item) => item.systemProxy)
+          .forEach((inbound) => setMacOSSystemProxy(false, inbound.protocol as 'socks' | 'http'));
         break;
     }
   }

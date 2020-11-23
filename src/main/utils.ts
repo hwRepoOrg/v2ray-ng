@@ -1,5 +1,6 @@
 import { execFileSync, execSync } from 'child_process';
 import { app } from 'electron';
+import extract from 'extract-zip';
 import { chmodSync, constants } from 'fs';
 import { createWriteStream, moveSync, pathExists, removeSync, statSync } from 'fs-extra';
 import * as Path from 'path';
@@ -109,33 +110,6 @@ function onError(err: Error) {
   removeSync(tempPath);
 }
 
-export async function updateMellowCore(path: string) {
-  let url = `https://github.com/mellow-io/go-tun2socks/releases/latest/download/`;
-  switch (process.platform) {
-    case 'darwin':
-      url = `${url}core-darwin-10.6-amd64`;
-      break;
-    case 'win32':
-      url = `${url}core-windows-4.0-amd64.exe`;
-      break;
-    case 'linux':
-      url = `${url}core-linux-amd64`;
-      break;
-  }
-  tempPath = Path.resolve(app.getPath('temp'), './mellow-core');
-  removeSync(tempPath);
-  const progressReq = progressDownload(url);
-  progressReq
-    .on('progress', onProgress)
-    .on('error', onError)
-    .on('end', () => {
-      moveSync(tempPath, path, { overwrite: true });
-      global.appInstance.mainWindow.webContents.send('update-progress', null);
-    })
-    .pipe(createWriteStream(tempPath, { flags: 'w' }));
-  return progressReq;
-}
-
 export async function updateV2rayCore(path: string) {
   let url = `https://github.com/v2fly/v2ray-core/releases/latest/download/`;
   switch (process.platform) {
@@ -156,15 +130,16 @@ export async function updateV2rayCore(path: string) {
     .on('progress', onProgress)
     .on('error', onError)
     .on('end', () => {
-      try {
-        execSync(`7z x ${tempPath} -o${Path.resolve(path)} v2ray${process.platform === 'win32' ? '.exe' : ''} -aoa`);
-        execSync(`7z x ${tempPath} -o${Path.resolve(path)} v2ctl${process.platform === 'win32' ? '.exe' : ''} -aoa`);
-        execSync(`7z x ${tempPath} -o${Path.resolve(path)} geosite.dat -aoa`);
-        global.appInstance.mainWindow.webContents.send('update-progress', null);
-      } catch (e) {
-        global.appInstance.mainWindow.webContents.send('update-progress', e.message);
-      }
-      removeSync(tempPath);
+      extract(tempPath, { dir: Path.resolve(path) })
+        .then(() => {
+          global.appInstance.mainWindow.webContents.send('update-progress', null);
+        })
+        .catch((err) => {
+          global.appInstance.mainWindow.webContents.send('update-progress', err.message);
+        })
+        .finally(() => {
+          removeSync(tempPath);
+        });
     })
     .pipe(createWriteStream(tempPath, { flags: 'w' }));
   return progressReq;

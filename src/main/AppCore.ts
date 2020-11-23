@@ -5,17 +5,9 @@ import request from 'request';
 import { DEFAULT_INBOUNDS } from '../config';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
-import {
-  getDLCUpdatedTime,
-  getMellowCoreVersion,
-  getV2rayCoreVersion,
-  updateDLCData,
-  updateMellowCore,
-  updateV2rayCore,
-} from './utils';
+import { getDLCUpdatedTime, getV2rayCoreVersion, updateDLCData, updateV2rayCore } from './utils';
 
 export class AppCore {
-  private mellowCorePath: string;
   private v2rayCorePath: string;
   private dlcPath: string;
   private config: AppConfig;
@@ -25,7 +17,6 @@ export class AppCore {
 
   constructor() {
     this.config = global.appInstance.config;
-    this.mellowCorePath = Path.resolve(this.config.configPath, './mellow_core');
     this.v2rayCorePath = Path.resolve(this.config.configPath, './v2ray');
     this.dlcPath = Path.resolve(this.config.configPath, './dlc.dat');
     this.init();
@@ -46,10 +37,8 @@ export class AppCore {
       });
   }
 
-  async getCoreInfo(type: 'mellow' | 'v2ray' | 'dlc') {
+  async getCoreInfo(type: 'v2ray' | 'dlc') {
     switch (type) {
-      case 'mellow':
-        return await getMellowCoreVersion(this.mellowCorePath);
       case 'v2ray':
         return await getV2rayCoreVersion(this.v2rayCorePath);
       case 'dlc':
@@ -57,11 +46,8 @@ export class AppCore {
     }
   }
 
-  async updateCore(type: 'mellow' | 'v2ray' | 'dlc') {
+  async updateCore(type: 'v2ray' | 'dlc') {
     switch (type) {
-      case 'mellow':
-        this.progressReq = await updateMellowCore(this.mellowCorePath);
-        break;
       case 'v2ray':
         this.progressReq = await updateV2rayCore(this.config.configPath);
         break;
@@ -71,7 +57,7 @@ export class AppCore {
     }
   }
 
-  async startV2rayCore(cb?: () => void) {
+  async startV2rayCore() {
     const flag = await pathExists(this.v2rayCorePath);
     if (!flag) {
       return;
@@ -120,7 +106,7 @@ export class AppCore {
   async start() {
     try {
       global.appInstance.clearSystemProxy();
-      this.stop();
+      await this.stop();
       await this.startV2rayCore();
       const inbounds = await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS);
       inbounds

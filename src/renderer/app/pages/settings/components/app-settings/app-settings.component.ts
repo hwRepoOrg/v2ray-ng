@@ -15,9 +15,7 @@ import { environment } from '../../../../../../environments/environment';
 })
 export class AppSettingsComponent implements OnInit {
   public v2rayVersion: string;
-  public mellowVersion: string;
   public dlcUpdatedTime: string;
-  public mellowLoading = false;
   public v2rayLoading = false;
   public dlcLoading = false;
   public progress$ = new Subject<number>();
@@ -36,19 +34,14 @@ export class AppSettingsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    zip(this.getCoreVersion('mellow'), this.getCoreVersion('v2ray'), this.getCoreVersion('dlc')).subscribe(
-      ([mellowVersion, v2rayVersion, dlcUpdateTime]) => {
-        this.mellowVersion = mellowVersion;
-        this.v2rayVersion = v2rayVersion;
-        this.dlcUpdatedTime = dlcUpdateTime;
-      }
-    );
+    zip(this.getCoreVersion('v2ray'), this.getCoreVersion('dlc')).subscribe(([v2rayVersion, dlcUpdateTime]) => {
+      this.v2rayVersion = v2rayVersion;
+      this.dlcUpdatedTime = dlcUpdateTime;
+    });
   }
 
-  formatVersionStr(version: string, type: 'mellow' | 'v2ray' | 'dlc') {
+  formatVersionStr(version: string, type: 'v2ray' | 'dlc') {
     switch (type) {
-      case 'mellow':
-        return version.replace(/(\n|\s)/g, '');
       case 'v2ray':
         return `v${version.match(/V2Ray\s(.*)?\s\(V2F/)[1]}`.replace(/\n|\s/g, '');
       case 'dlc':
@@ -56,7 +49,7 @@ export class AppSettingsComponent implements OnInit {
     }
   }
 
-  getCoreVersion(type: 'mellow' | 'v2ray' | 'dlc') {
+  getCoreVersion(type: 'v2ray' | 'dlc') {
     return this.es.send('/core/getCoreInfo', type).pipe(map((res) => this.formatVersionStr(res, type)));
   }
 
@@ -72,7 +65,6 @@ export class AppSettingsComponent implements OnInit {
         filter((res: any) => {
           if (!res || version === res.tag_name) {
             this.msg.info('当前已是最新版本');
-            this.mellowLoading = false;
             this.v2rayLoading = false;
           }
           return version !== res.tag_name;
@@ -89,14 +81,6 @@ export class AppSettingsComponent implements OnInit {
           });
         })
       );
-  }
-
-  updateMellow() {
-    this.mellowLoading = true;
-    this.getLatestVersion('mellow-io/go-tun2socks', this.mellowVersion).subscribe(() => {
-      this.listenProgress(() => this.getCoreVersion('mellow').subscribe((version) => (this.mellowVersion = version)));
-      this.es.send('/core/updateCore', 'mellow').subscribe();
-    });
   }
 
   updateV2rayCore() {
@@ -126,7 +110,6 @@ export class AppSettingsComponent implements OnInit {
           this.modalRef.destroy();
           this.sub.removeAllListeners('update-progress');
           this.dlcLoading = false;
-          this.mellowLoading = false;
           this.v2rayLoading = false;
           this.msg.success('更新成功');
           if (success) {
@@ -137,7 +120,6 @@ export class AppSettingsComponent implements OnInit {
           this.modalRef.destroy();
           this.msg.error(`更新失败：${progress}`);
           this.dlcLoading = false;
-          this.mellowLoading = false;
           this.v2rayLoading = false;
           if (error) {
             error(progress);
@@ -155,7 +137,6 @@ export class AppSettingsComponent implements OnInit {
 
   stopDownload() {
     this.es.send('/core/stopDownload').subscribe(() => {
-      this.mellowLoading = false;
       this.v2rayLoading = false;
       this.dlcLoading = false;
       if (this.sub) {
