@@ -1,5 +1,5 @@
 import { IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
-import { dialog, Menu, MenuItemConstructorOptions, nativeImage, nativeTheme, shell, Tray } from 'electron';
+import { Menu, MenuItemConstructorOptions, nativeImage, nativeTheme, shell, Tray } from 'electron';
 import { macOS } from 'electron-is';
 import log from 'electron-log';
 import { EventEmitter } from 'events';
@@ -30,7 +30,7 @@ export class AppTray extends EventEmitter {
     const { config, core } = global.appInstance;
     const localNodeList = await config.getConfigByPath(config.nodeListPath, [] as IConfigOutbound[]);
     const subscribeList = await config.getConfigByPath(config.subscribesConfigPath, [] as ISubscribeConfig[]);
-    const { extensionMode, enabled } = await config.getGuiConfig(['extensionMode', 'enabled']);
+    const { enabled } = await config.getGuiConfig(['extensionMode', 'enabled']);
     const activated = await global.appInstance.config.getActivatedNode();
     return Menu.buildFromTemplate([
       {
@@ -70,31 +70,6 @@ export class AppTray extends EventEmitter {
             })),
           })),
         ],
-      },
-      {
-        label: '增强模式',
-        checked: extensionMode,
-        type: 'checkbox',
-        click: async (ev) => {
-          // const guiConfig = await config.getGuiConfig(['enabled']);
-          // await config.setGuiConfig({ extensionMode: ev.checked });
-          // if (guiConfig.enabled) {
-          //   if (ev.checked) {
-          //     try {
-          //       await core.stopV2rayCore();
-          //       await core.start();
-          //     } catch (e) {
-          //       dialog.showErrorBox('增强模式开启失败', e.message);
-          //       await config.setGuiConfig({ extensionMode: false });
-          //       await core.start();
-          //       await this.getTrayContextMenus();
-          //     }
-          //   } else {
-          //     await core.stopMellowCore();
-          //     await core.start();
-          //   }
-          // }
-        },
       },
       { type: 'separator' },
       {

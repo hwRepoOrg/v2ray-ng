@@ -8,20 +8,6 @@ import progress from 'request-progress';
 
 let tempPath: string;
 
-function getPath() {
-  if (process.env.USE_SYSTEM_7ZA === 'true') {
-    return '7za';
-  }
-
-  if (process.platform === 'darwin') {
-    return Path.join(__dirname, 'assets', '7zip-bin', 'mac', '7za');
-  } else if (process.platform === 'win32') {
-    return Path.join(__dirname, 'assets', '7zip-bin', 'win', process.arch, '7za.exe');
-  } else {
-    return Path.join(__dirname, 'assets', '7zip-bin', 'linux', process.arch, '7za');
-  }
-}
-
 export function execShell(cmd: string): string {
   console.log(cmd);
   try {
@@ -171,23 +157,9 @@ export async function updateV2rayCore(path: string) {
     .on('error', onError)
     .on('end', () => {
       try {
-        const p7zPath = getPath();
-        setExecutable(p7zPath);
-        execFileSync(p7zPath, [
-          'x',
-          tempPath,
-          `-o${Path.resolve(path)}`,
-          `v2ray${process.platform === 'win32' ? '.exe' : ''}`,
-          '-aoa',
-        ]);
-        execFileSync(p7zPath, [
-          'x',
-          tempPath,
-          `-o${Path.resolve(path)}`,
-          `v2ctl${process.platform === 'win32' ? '.exe' : ''}`,
-          '-aoa',
-        ]);
-        execFileSync(p7zPath, ['x', tempPath, `-o${Path.resolve(path)}`, `geosite.dat`, '-aoa']);
+        execSync(`7z x ${tempPath} -o${Path.resolve(path)} v2ray${process.platform === 'win32' ? '.exe' : ''} -aoa`);
+        execSync(`7z x ${tempPath} -o${Path.resolve(path)} v2ctl${process.platform === 'win32' ? '.exe' : ''} -aoa`);
+        execSync(`7z x ${tempPath} -o${Path.resolve(path)} geosite.dat -aoa`);
         global.appInstance.mainWindow.webContents.send('update-progress', null);
       } catch (e) {
         global.appInstance.mainWindow.webContents.send('update-progress', e.message);

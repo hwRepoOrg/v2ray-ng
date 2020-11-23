@@ -1,28 +1,18 @@
-import { ChildProcessWithoutNullStreams, execSync, spawn } from 'child_process';
-import * as defaultGateway from 'default-gateway';
-import * as log from 'electron-log';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { pathExists } from 'fs-extra';
-import * as ip from 'ip';
 import * as Path from 'path';
 import request from 'request';
-import * as sudoExec from 'sudo-prompt';
 import { DEFAULT_INBOUNDS } from '../config';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
 import {
-  execFile,
-  execShell,
   getDLCUpdatedTime,
   getMellowCoreVersion,
   getV2rayCoreVersion,
-  setExecutable,
   updateDLCData,
   updateMellowCore,
   updateV2rayCore,
 } from './utils';
-
-const TUN_ADDR = '10.255.0.2';
-const TUN_GW = '10.255.0.1';
 
 export class AppCore {
   private mellowCorePath: string;
@@ -121,10 +111,6 @@ export class AppCore {
     }
   }
 
-  async startMellowCore() {}
-
-  async stopMellowCore() {}
-
   async stopDownload() {
     if (this.progressReq) {
       this.progressReq.abort();
@@ -135,12 +121,7 @@ export class AppCore {
     try {
       global.appInstance.clearSystemProxy();
       this.stop();
-      const { extensionMode } = await global.appInstance.config.getGuiConfig(['extensionMode']);
-      if (!extensionMode) {
-        await this.startV2rayCore();
-      } else {
-        await this.startMellowCore();
-      }
+      await this.startV2rayCore();
       const inbounds = await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS);
       inbounds.forEach((inbound) => this.config.setSystemProxy(true, inbound.protocol as any, inbound.port));
     } catch (e) {
@@ -153,10 +134,6 @@ export class AppCore {
       await global.appInstance.clearSystemProxy();
       if (this.v2rayCore) {
         await this.stopV2rayCore();
-      }
-      const { extensionMode } = await this.config.getGuiConfig(['extensionMode']);
-      if (extensionMode) {
-        await this.stopMellowCore();
       }
     } catch (e) {
       console.error(e);
