@@ -108,10 +108,13 @@ export class AppCore {
       global.appInstance.clearSystemProxy();
       await this.stop();
       await this.startV2rayCore();
-      const inbounds = await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS);
-      inbounds
-        .filter((item) => item.systemProxy)
-        .forEach((inbound) => this.config.setSystemProxy(true, inbound.protocol as any, inbound.port));
+      const inbounds = (await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS)).filter(
+        (item) => item.systemProxy
+      );
+      while (inbounds.length) {
+        const inbound = inbounds.pop();
+        await this.config.setSystemProxy(true, inbound.protocol as any, inbound.port);
+      }
     } catch (e) {
       console.error(e);
     }

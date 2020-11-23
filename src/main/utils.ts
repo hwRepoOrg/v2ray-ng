@@ -1,4 +1,4 @@
-import { execFileSync, execSync } from 'child_process';
+import { exec, execFileSync } from 'child_process';
 import { app } from 'electron';
 import extract from 'extract-zip';
 import { chmodSync, constants } from 'fs';
@@ -9,14 +9,17 @@ import progress from 'request-progress';
 
 let tempPath: string;
 
-export function execShell(cmd: string): string {
+export async function execShell(cmd: string): Promise<string> {
   console.log(cmd);
-  try {
-    return execSync(cmd).toString();
-  } catch (e) {
-    console.error(e);
-    return '';
-  }
+  return new Promise((resolve, reject) => {
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(stdout ?? stderr);
+      }
+    });
+  });
 }
 
 export function execFile(file: string, args: any[]) {
@@ -39,37 +42,51 @@ function progressDownload(url: string) {
   );
 }
 
-export function setMacOSSystemProxy(status: boolean, type?: 'socks' | 'http', port?: number) {
-  execShell(`networksetup -listnetworkserviceorder | grep 'Hardware Port'`)
+export async function setMacOSSystemProxy(status: boolean, type?: 'socks' | 'http', port?: number) {
+  const out = await execShell(`networksetup -listnetworkserviceorder | grep 'Hardware Port'`);
+  const activatedNets = out
     .split('\n')
     .filter((s) => !!s)
-    .map((s) => [s.match(/Hardware\sPort:\s(.+)?,/)[1], s.match(/Device:\s(.+)?\)$/)[1]])
-    .forEach((activeNet) => {
-      switch (type) {
-        case 'socks':
-          execShell(
-            `networksetup ${status ? '-setsocksfirewallproxy' : '-setsocksfirewallproxystate'} "${activeNet[0]}" ${
-              status ? `"127.0.0.1" ${port}` : 'off'
-            }`
-          );
-          break;
-        case 'http':
-          execShell(
-            `networksetup ${status ? '-setsecurewebproxy' : '-setsecurewebproxystate'} "${activeNet[0]}" ${
-              status ? `"127.0.0.1" ${port}` : 'off'
-            }`
-          );
-          execShell(
-            `networksetup ${status ? '-setwebproxy' : '-setwebproxystate'} "${activeNet[0]}" ${
-              status ? `"127.0.0.1" ${port}` : 'off'
-            }`
-          );
-          break;
-      }
-    });
+    .map((s) => [s.match(/Hardware\sPort:\s(.+)?,/)[1], s.match(/Device:\s(.+)?\)$/)[1]]);
+  activatedNets.forEach((activeNet) => {
+    switch (type) {
+      case 'socks':
+        execShell(
+          `networksetup ${status ? '-setsocksfirewallproxy' : '-setsocksfirewallproxystate'} "${activeNet[0]}" ${
+            status ? `"127.0.0.1" ${port}` : 'off'
+          }`
+        );
+        break;
+      case 'http':
+        execShell(
+          `networksetup ${status ? '-setsecurewebproxy' : '-setsecurewebproxystate'} "${activeNet[0]}" ${
+            status ? `"127.0.0.1" ${port}` : 'off'
+          }`
+        );
+        execShell(
+          `networksetup ${status ? '-setwebproxy' : '-setwebproxystate'} "${activeNet[0]}" ${
+            status ? `"127.0.0.1" ${port}` : 'off'
+          }`
+        );
+        break;
+    }
+  });
 }
 
-export function setWinSystemProxy(status: boolean, type: 'socks' | 'http', port?: number) {}
+export async function setWinSystemProxy(status: boolean, type: 'socks' | 'http', port?: number) {
+  if (status) {
+    return await execShell(`netsh winhttp reset proxy`);
+  } else {
+    switch (type) {
+      case 'socks':
+        return await execShell(
+          `netsh winhttp set proxy proxy-server="socks=127.0.0.1:${port}" bypass-list="localhost;192.168.*;127.0.0.1"`
+        );
+      case 'http':
+        return await execShell(`netsh winhttp set proxy 127.0.0.1:${port} bypass-list="localhost;192.168.*;127.0.0.1"`);
+    }
+  }
+}
 
 export async function getMellowCoreVersion(path: string) {
   const isExists = await pathExists(path);

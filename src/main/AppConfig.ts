@@ -82,12 +82,12 @@ export class AppConfig extends EventEmitter {
     return writeFile(path, JSON.stringify(value, null, 2), options);
   }
 
-  setSystemProxy(...args: [boolean, 'socks' | 'http', number]) {
+  async setSystemProxy(...args: [boolean, 'socks' | 'http', number]) {
     switch (process.platform) {
       case 'darwin':
-        return setMacOSSystemProxy(...args);
+        return await setMacOSSystemProxy(...args);
       case 'win32':
-        return setWinSystemProxy(...args);
+        return await setWinSystemProxy(...args);
     }
   }
 }

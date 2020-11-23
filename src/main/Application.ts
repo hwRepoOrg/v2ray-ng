@@ -4,7 +4,7 @@ import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
 import { AppCore } from './AppCore';
 import { AppTray } from './AppTray';
-import { setMacOSSystemProxy } from './utils';
+import { setMacOSSystemProxy, setWinSystemProxy } from './utils';
 
 export class Application {
   public tray: AppTray;
@@ -109,13 +109,17 @@ export class Application {
   }
 
   async clearSystemProxy() {
-    const inbounds = await this.config.getConfigByPath<IConfigInbound[]>(this.config.inboundsConfigPath);
-    switch (process.platform) {
-      case 'darwin':
-        inbounds
-          .filter((item) => item.systemProxy)
-          .forEach((inbound) => setMacOSSystemProxy(false, inbound.protocol as 'socks' | 'http'));
-        break;
+    const inbounds = (await this.config.getConfigByPath<IConfigInbound[]>(this.config.inboundsConfigPath)).filter(
+      (item) => item.systemProxy
+    );
+    while (inbounds.length) {
+      const inbound = inbounds.pop();
+      switch (process.platform) {
+        case 'darwin':
+          return await setMacOSSystemProxy(false, inbound.protocol as 'socks' | 'http');
+        case 'win32':
+          return await setWinSystemProxy(false, inbound.protocol as 'socks' | 'http');
+      }
     }
   }
 }
