@@ -90,7 +90,12 @@ export class AppTray extends EventEmitter {
           shell.openPath(log.transports.file.getFile().path);
         },
       },
-      { label: '退出', role: 'quit' },
+      {
+        label: '退出',
+        click: () => {
+          global.appInstance.quit();
+        },
+      },
     ]);
   }
 

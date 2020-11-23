@@ -1,5 +1,5 @@
 import { IConfigInbound } from '@typing/config.interface';
-import { BrowserWindow, ipcMain, Menu, MenuItem } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, MenuItem } from 'electron';
 import { environment } from '../environments/environment';
 import { AppConfig } from './AppConfig';
 import { AppCore } from './AppCore';
@@ -104,8 +104,8 @@ export class Application {
   }
 
   async quit() {
-    await this.clearSystemProxy();
-    this.core.stop();
+    await this.core.stop();
+    app.exit();
   }
 
   async clearSystemProxy() {

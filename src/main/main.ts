@@ -23,12 +23,10 @@ function init() {
     app.on('ready', () => {
       global.appInstance = new Application();
     });
-    app.on('quit', (event) => {
+    app.on('will-quit', (event) => {
       event.preventDefault();
       if (global.appInstance) {
-        global.appInstance.quit().finally(() => {
-          app.exit();
-        });
+        global.appInstance.quit();
       }
     });
     app.on('window-all-closed', (ev: Event) => {
