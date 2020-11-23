@@ -16,8 +16,8 @@
     "build:main": "cross-env NODE_ENV=production PLATFORM=darwin webpack --config webpack.main.config.js",
     "build:renderer": "cross-env NODE_ENV=production ng build",
     "build:mac": "npm-run-all -p clean-build build:main build:renderer && electron-builder -m",
-    "build:win": "npm-run-all -p build:main build:renderer && electron-builder -w",
-    "build:linux": "npm-run-all -p build:main build:renderer && electron-builder -l"
+    "build:win": "npm-run-all -p clean-build build:main build:renderer && electron-builder -w",
+    "build:linux": "npm-run-all -p clean-build build:main build:renderer && electron-builder -l"
   },
   "private": true,
   "build": {
