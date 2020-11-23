@@ -4,7 +4,7 @@ import { ConfigService } from '@renderer/services/config.service';
 import { ElectronService } from '@renderer/services/electron.service';
 import { IConfigInbound, InboundProtocolType } from '@typing/config.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { finalize, switchMap } from 'rxjs/operators';
+import { filter, finalize, map, switchMap } from 'rxjs/operators';
 import { DEFAULT_INBOUNDS } from '../../../../config';
 
 @Component({
@@ -45,14 +45,13 @@ export class InputFormComponent implements OnInit {
   public submit() {
     this.es
       .send('/config/writeConfigByPath', this.cs.inboundsConfigPath, this.inboundsFormArray.value)
-      .pipe(switchMap(() => this.es.send('/config/getGuiConfig', ['enabled'])))
-      .subscribe(({ enabled }) => {
+      .pipe(
+        switchMap(() => this.es.send('/config/getGuiConfig', ['enabled'])),
+        filter((enable) => enable),
+        map(() => this.es.send('/core/start'))
+      )
+      .subscribe(() => {
         this.msgSrv.success('保存成功');
-        if (enabled) {
-          this.inboundsFormArray.value.forEach((inbound) => {
-            this.setSystemProxy(inbound);
-          });
-        }
       });
   }
 
@@ -100,13 +99,6 @@ export class InputFormComponent implements OnInit {
           userLevel: [defaultValue?.userLevel ?? 0],
         });
     }
-  }
-
-  public setSystemProxy(inbound: IConfigInbound) {
-    console.log(inbound);
-    this.es.send('/config/setSystemProxy', true, inbound.protocol, inbound.port).subscribe((res) => {
-      console.log(res);
-    });
   }
 
   addAccount(fb: FormGroup) {
