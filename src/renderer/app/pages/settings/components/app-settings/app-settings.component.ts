@@ -98,6 +98,13 @@ export class AppSettingsComponent implements OnInit {
 
   updateV2rayCore() {
     this.v2rayLoading = true;
+    this.getLatestVersion('v2fly/v2ray-core', this.v2rayVersion).subscribe(() => {
+      this.listenProgress(() => this.getCoreVersion('v2ray').subscribe((version) => (this.v2rayVersion = version)));
+      this.es.send('/core/updateCore', 'v2ray').subscribe();
+    });
+  }
+
+  updateDlc(type: 'dlc' | 'geoip' | 'geosite') {
     this.updateProgress(0);
     this.modalRef = this.modalSrv.create({
       nzTitle: '更新进度',
@@ -106,13 +113,6 @@ export class AppSettingsComponent implements OnInit {
       nzClosable: false,
       nzMaskClosable: false,
     });
-    this.getLatestVersion('v2fly/v2ray-core', this.v2rayVersion).subscribe(() => {
-      this.listenProgress(() => this.getCoreVersion('v2ray').subscribe((version) => (this.v2rayVersion = version)));
-      this.es.send('/core/updateCore', 'v2ray').subscribe();
-    });
-  }
-
-  updateDlc(type: 'dlc' | 'geoip' | 'geosite') {
     this[`${type}Loading`] = true;
     this.listenProgress(() => this.getCoreVersion(type).subscribe((version) => (this[`${type}UpdatedTime`] = version)));
     this.es.send('/core/updateCore', type).subscribe();
@@ -130,7 +130,7 @@ export class AppSettingsComponent implements OnInit {
           this.sub.removeAllListeners('update-progress');
           this.v2rayLoading = false;
           this.dlcLoading = false;
-          this.geositeLoading = false;
+          this.geoipLoading = false;
           this.geositeLoading = false;
           this.msg.success('更新成功');
           if (success) {
@@ -142,7 +142,7 @@ export class AppSettingsComponent implements OnInit {
           this.msg.error(`更新失败：${progress}`);
           this.v2rayLoading = false;
           this.dlcLoading = false;
-          this.geositeLoading = false;
+          this.geoipLoading = false;
           this.geositeLoading = false;
           if (error) {
             error(progress);
