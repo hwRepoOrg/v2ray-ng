@@ -41,6 +41,9 @@
       "icon": "src/main/assets/dog-colorful.tiff",
       "target": "dmg"
     },
+    "win": {
+      "icon": "src/main/assets/dog-colorful.png"
+    },
     "dmg": {
       "icon": "src/main/assets/dog-colorful.tiff"
     }
