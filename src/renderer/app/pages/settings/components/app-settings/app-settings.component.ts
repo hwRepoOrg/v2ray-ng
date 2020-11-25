@@ -104,12 +104,10 @@ export class AppSettingsComponent implements OnInit {
     });
   }
 
-  updateDlc() {
-    this.dlcLoading = true;
-    this.getLatestVersion('v2ray/domain-list-community', '').subscribe(() => {
-      this.listenProgress(() => this.getCoreVersion('dlc').subscribe((version) => (this.dlcUpdatedTime = version)));
-      this.es.send('/core/updateCore', 'dlc').subscribe();
-    });
+  updateDlc(type: 'dlc' | 'geoip' | 'geosite') {
+    this[`${type}Loading`] = true;
+    this.listenProgress(() => this.getCoreVersion(type).subscribe((version) => (this[`${type}UpdatedTime`] = version)));
+    this.es.send('/core/updateCore', type).subscribe();
   }
 
   listenProgress(success?: () => any, error?: (err: string) => any) {
