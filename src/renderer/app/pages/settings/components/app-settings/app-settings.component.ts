@@ -16,8 +16,12 @@ import { environment } from '../../../../../../environments/environment';
 export class AppSettingsComponent implements OnInit {
   public v2rayVersion: string;
   public dlcUpdatedTime: string;
+  public geoipUpdatedTime: string;
+  public geositeUpdatedTime: string;
   public v2rayLoading = false;
   public dlcLoading = false;
+  public geoipLoading = false;
+  public geositeLoading = false;
   public progress$ = new Subject<number>();
   private modalRef: NzModalRef<any>;
   private sub: IpcRenderer;
@@ -34,22 +38,31 @@ export class AppSettingsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    zip(this.getCoreVersion('v2ray'), this.getCoreVersion('dlc')).subscribe(([v2rayVersion, dlcUpdateTime]) => {
+    zip(
+      this.getCoreVersion('v2ray'),
+      this.getCoreVersion('dlc'),
+      this.getCoreVersion('geoip'),
+      this.getCoreVersion('geosite')
+    ).subscribe(([v2rayVersion, dlcUpdateTime, geoipUpdatedTime, geositeUpdatedTime]) => {
       this.v2rayVersion = v2rayVersion;
       this.dlcUpdatedTime = dlcUpdateTime;
+      this.geoipUpdatedTime = geoipUpdatedTime;
+      this.geositeUpdatedTime = geositeUpdatedTime;
     });
   }
 
-  formatVersionStr(version: string, type: 'v2ray' | 'dlc') {
+  formatVersionStr(version: string, type: 'v2ray' | 'dlc' | 'geoip' | 'geosite') {
     switch (type) {
       case 'v2ray':
         return `v${version.match(/V2Ray\s(.*)?\s\(V2F/)[1]}`.replace(/\n|\s/g, '');
       case 'dlc':
+      case 'geoip':
+      case 'geosite':
         return `${new Date(version).toLocaleDateString()} ${new Date(version).toLocaleTimeString()}`;
     }
   }
 
-  getCoreVersion(type: 'v2ray' | 'dlc') {
+  getCoreVersion(type: 'v2ray' | 'dlc' | 'geoip' | 'geosite') {
     return this.es.send('/core/getCoreInfo', type).pipe(map((res) => this.formatVersionStr(res, type)));
   }
 

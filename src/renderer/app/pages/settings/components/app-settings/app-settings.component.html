@@ -17,6 +17,24 @@
       </button>
     </div>
   </nz-descriptions-item>
+  <nz-descriptions-item nzTitle="geoip">
+    <div class="d-flex align-items-center">
+      <span>{{ geoipUpdatedTime }}</span>
+      <button class="ml-auto" nz-button nzType="link" (click)="updateDlc()" [disabled]="geoipLoading">
+        <i nz-icon nzType="sync" [nzSpin]="geoipLoading"></i>
+        <span>更新geoip.dat</span>
+      </button>
+    </div>
+  </nz-descriptions-item>
+  <nz-descriptions-item nzTitle="geosite">
+    <div class="d-flex align-items-center">
+      <span>{{ geositeUpdatedTime }}</span>
+      <button class="ml-auto" nz-button nzType="link" (click)="updateDlc()" [disabled]="geositeLoading">
+        <i nz-icon nzType="sync" [nzSpin]="geositeLoading"></i>
+        <span>更新geosite.dat</span>
+      </button>
+    </div>
+  </nz-descriptions-item>
 </nz-descriptions>
 
 <ng-template #progressTpl>

@@ -1,4 +1,4 @@
-import { app, Event } from 'electron';
+import { app, Event, nativeTheme } from 'electron';
 import * as log from 'electron-log';
 import { Application } from './Application';
 
@@ -22,6 +22,11 @@ function init() {
     app.dock.hide();
     app.on('ready', () => {
       global.appInstance = new Application();
+      nativeTheme.on('updated', () => {
+        if (global.appInstance.tray) {
+          global.appInstance.tray.init();
+        }
+      });
     });
     app.on('will-quit', (event) => {
       event.preventDefault();

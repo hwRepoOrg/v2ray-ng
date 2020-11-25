@@ -10,6 +10,8 @@ import { getDLCUpdatedTime, getV2rayCoreVersion, updateDLCData, updateV2rayCore 
 export class AppCore {
   private v2rayCorePath: string;
   private dlcPath: string;
+  private geoipPath: string;
+  private geositePath: string;
   private config: AppConfig;
   private progressReq: request.Request;
   public v2rayCore: ChildProcessWithoutNullStreams;
@@ -19,6 +21,8 @@ export class AppCore {
     this.config = global.appInstance.config;
     this.v2rayCorePath = Path.resolve(this.config.configPath, './v2ray');
     this.dlcPath = Path.resolve(this.config.configPath, './dlc.dat');
+    this.geoipPath = Path.resolve(this.config.configPath, './geoip.dat');
+    this.geositePath = Path.resolve(this.config.configPath, './geosite.dat');
     this.init();
   }
 
@@ -37,22 +41,41 @@ export class AppCore {
       });
   }
 
-  async getCoreInfo(type: 'v2ray' | 'dlc') {
+  async getCoreInfo(type: 'v2ray' | 'dlc' | 'geoip' | 'geosite') {
     switch (type) {
       case 'v2ray':
         return await getV2rayCoreVersion(this.v2rayCorePath);
       case 'dlc':
         return await getDLCUpdatedTime(this.dlcPath);
+      case 'geoip':
+        return await getDLCUpdatedTime(this.geoipPath);
+      case 'geosite':
+        return await getDLCUpdatedTime(this.geositePath);
     }
   }
 
-  async updateCore(type: 'v2ray' | 'dlc') {
+  async updateCore(type: 'v2ray' | 'dlc' | 'geoip' | 'geosite') {
     switch (type) {
       case 'v2ray':
         this.progressReq = await updateV2rayCore(this.config.configPath);
         break;
       case 'dlc':
-        this.progressReq = await updateDLCData(this.dlcPath);
+        this.progressReq = await updateDLCData(
+          this.dlcPath,
+          `https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat`
+        );
+        break;
+      case 'geoip':
+        this.progressReq = await updateDLCData(
+          this.geoipPath,
+          `https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geoip.dat`
+        );
+        break;
+      case 'geosite':
+        this.progressReq = await updateDLCData(
+          this.geositePath,
+          'https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat'
+        );
         break;
     }
   }

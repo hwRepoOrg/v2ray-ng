@@ -162,9 +162,8 @@ export async function updateV2rayCore(path: string) {
   return progressReq;
 }
 
-export async function updateDLCData(path: string) {
-  const url = `https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat`;
-  tempPath = Path.resolve(app.getPath('temp'), './dlc.dat');
+export async function updateDLCData(path: string, url: string) {
+  tempPath = Path.resolve(app.getPath('temp'), './rules.dat');
   const progressReq = progressDownload(url);
   progressReq
     .on('progress', onProgress)
