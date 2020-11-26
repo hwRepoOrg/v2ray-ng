@@ -24,7 +24,9 @@ function init() {
       global.appInstance = new Application();
       nativeTheme.on('updated', () => {
         if (global.appInstance.tray) {
-          global.appInstance.tray.init();
+          global.appInstance.tray.getTrayImage(0, 0).then((image) => {
+            global.appInstance.tray.tray?.setImage(image);
+          });
         }
       });
     });
