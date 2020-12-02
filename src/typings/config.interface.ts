@@ -35,9 +35,10 @@ export interface IConfigApi {
   tag?: string;
   services?: string[];
 }
+
 export interface IConfigDNS {
   host?: { [key: string]: string };
-  servers?: (string | { address: string; port: number; domains: string[]; expectIps: string[] })[];
+  servers?: (string | { address: string; port?: number; domains?: string[]; expectIps?: string[] })[];
 }
 
 export interface IConfigRouting {

@@ -6,7 +6,7 @@ export const DEFAULT_INBOUNDS: IConfigInbound[] = [
     protocol: 'socks',
     listen: '0.0.0.0',
     port: 1080,
-    settings: { auth: 'noauth', udp: true, ip: '127.0.0.1' },
+    settings: { auth: 'noauth', udp: true, ip: '127.0.0.1' }
   },
   {
     tag: 'http(s)-inbound',
@@ -14,8 +14,8 @@ export const DEFAULT_INBOUNDS: IConfigInbound[] = [
     listen: '0.0.0.0',
     port: 1087,
     settings: { accounts: null, allowTransparent: false },
-    sniffing: { enabled: true, destOverride: ['http', 'tls'] },
-  },
+    sniffing: { enabled: true, destOverride: ['http', 'tls'] }
+  }
 ];
 
 export const DEFAULT_ROUTING: IConfigRouting = {
@@ -26,23 +26,32 @@ export const DEFAULT_ROUTING: IConfigRouting = {
     {
       type: 'field',
       domain: ['geosite:cn', 'dlc:geolocation-cn'],
-      outboundTag: 'direct',
+      outboundTag: 'direct'
     },
     { type: 'field', domain: ['dlc:category-ads'], outboundTag: 'block' },
-    { type: 'field', domain: ['dlc:geolocation-!cn', 'dlc:speedtest'], outboundTag: 'proxy' },
-  ],
+    { type: 'field', domain: ['dlc:geolocation-!cn', 'dlc:speedtest'], outboundTag: 'proxy' }
+  ]
 };
 
 export const DEFAULT_CONFIG_TEMPLATE: IConfig = {
-  log: { loglevel: 'debug' },
-  dns: { servers: ['114.114.114.114', '223.5.5.5'] },
+  log: { loglevel: 'info' },
+  dns: {
+    servers: [
+      { domains: ['geosite:cn', 'dlc:geolocation-cn'], address: '114.114.114.114', port: 53 },
+      {
+        domains: ['geosite:geolocation-!cn', 'dlc:geolocation-!cn', 'dlc:speedtest'],
+        address: '8.8.8.8',
+        port: 53
+      }
+    ]
+  },
   outbounds: [
     {
       protocol: 'freedom',
       tag: 'direct',
       settings: {
-        domainStrategy: 'UseIPv4',
-      },
+        domainStrategy: 'UseIPv4'
+      }
     },
     { protocol: 'dns', tag: 'dns-out' },
     {
@@ -50,9 +59,9 @@ export const DEFAULT_CONFIG_TEMPLATE: IConfig = {
       protocol: 'blackhole',
       settings: {
         response: {
-          type: 'http',
-        },
-      },
-    },
-  ],
+          type: 'http'
+        }
+      }
+    }
+  ]
 };
