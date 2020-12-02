@@ -23,7 +23,7 @@ export class AppCore {
     this.dlcPath = Path.resolve(this.config.configPath, './dlc.dat');
     this.geoipPath = Path.resolve(this.config.configPath, './geoip.dat');
     this.geositePath = Path.resolve(this.config.configPath, './geosite.dat');
-    this.moveTools();
+    // this.moveTools();
     this.init();
   }
 
