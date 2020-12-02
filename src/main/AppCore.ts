@@ -1,5 +1,5 @@
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import { pathExists } from 'fs-extra';
+import { moveSync, pathExists } from 'fs-extra';
 import * as Path from 'path';
 import request from 'request';
 import { DEFAULT_INBOUNDS } from '../config';
@@ -23,6 +23,7 @@ export class AppCore {
     this.dlcPath = Path.resolve(this.config.configPath, './dlc.dat');
     this.geoipPath = Path.resolve(this.config.configPath, './geoip.dat');
     this.geositePath = Path.resolve(this.config.configPath, './geosite.dat');
+    this.moveTools();
     this.init();
   }
 
@@ -39,6 +40,19 @@ export class AppCore {
           global.appInstance.config.setGuiConfig({ enabled: false });
         }
       });
+  }
+
+  moveTools(): void {
+    moveSync(
+      Path.resolve(__dirname, `./assets/vmessping-${process.platform}-amd64`),
+      Path.resolve(this.config.configPath, 'vmessping'),
+      { overwrite: true }
+    );
+    moveSync(
+      Path.resolve(__dirname, `./assets/vmessspeed-${process.platform}-amd64`),
+      Path.resolve(this.config.configPath, 'vmessspeed'),
+      { overwrite: true }
+    );
   }
 
   async getCoreInfo(type: 'v2ray' | 'dlc' | 'geoip' | 'geosite') {
