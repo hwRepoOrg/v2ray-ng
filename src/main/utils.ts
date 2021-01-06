@@ -147,8 +147,9 @@ export async function updateV2rayCore(path: string) {
     .on('progress', onProgress)
     .on('error', onError)
     .on('end', () => {
-      extract(tempPath, { dir: Path.resolve(path) })
+      extract(tempPath, { dir: Path.resolve(app.getPath('temp')) })
         .then(() => {
+          moveSync(Path.resolve(app.getPath('temp'), './v2ray'), Path.resolve(path, './v2ray'), { overwrite: true });
           global.appInstance.mainWindow.webContents.send('update-progress', null);
         })
         .catch((err) => {

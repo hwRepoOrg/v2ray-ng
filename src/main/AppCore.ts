@@ -42,19 +42,6 @@ export class AppCore {
       });
   }
 
-  moveTools(): void {
-    moveSync(
-      Path.resolve(__dirname, `./assets/vmessping-${process.platform}-amd64`),
-      Path.resolve(this.config.configPath, 'vmessping'),
-      { overwrite: true }
-    );
-    moveSync(
-      Path.resolve(__dirname, `./assets/vmessspeed-${process.platform}-amd64`),
-      Path.resolve(this.config.configPath, 'vmessspeed'),
-      { overwrite: true }
-    );
-  }
-
   async getCoreInfo(type: 'v2ray' | 'dlc' | 'geoip' | 'geosite') {
     switch (type) {
       case 'v2ray':
@@ -82,13 +69,13 @@ export class AppCore {
       case 'geoip':
         this.progressReq = await updateDLCData(
           this.geoipPath,
-          `https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geoip.dat`
+          `https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geoip.dat`
         );
         break;
       case 'geosite':
         this.progressReq = await updateDLCData(
           this.geositePath,
-          'https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat'
+          `https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat`
         );
         break;
     }
