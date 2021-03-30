@@ -1,5 +1,5 @@
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import { moveSync, pathExists } from 'fs-extra';
+import { pathExists } from 'fs-extra';
 import * as Path from 'path';
 import request from 'request';
 import { DEFAULT_INBOUNDS } from '../config';
@@ -107,7 +107,7 @@ export class AppCore {
     });
   }
 
-  async stopV2rayCore() {
+  stopV2rayCore() {
     if (this.v2rayCore) {
       switch (process.platform) {
         case 'win32':
@@ -135,10 +135,9 @@ export class AppCore {
       const inbounds = (await this.config.getConfigByPath(this.config.inboundsConfigPath, DEFAULT_INBOUNDS)).filter(
         (item) => item.systemProxy
       );
-      while (inbounds.length) {
-        const inbound = inbounds.pop();
-        await this.config.setSystemProxy(true, inbound.protocol as any, inbound.port);
-      }
+      await Promise.all(
+        inbounds.map<Promise<any>>((inbound) => this.config.setSystemProxy(true, inbound.protocol as any, inbound.port))
+      );
     } catch (e) {
       console.error(e);
     }
@@ -147,11 +146,11 @@ export class AppCore {
   async stop() {
     try {
       await global.appInstance.clearSystemProxy();
-      if (this.v2rayCore) {
-        await this.stopV2rayCore();
-      }
     } catch (e) {
       console.error(e);
+    }
+    if (this.v2rayCore) {
+      this.stopV2rayCore();
     }
   }
 }
