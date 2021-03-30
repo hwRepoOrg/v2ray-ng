@@ -112,15 +112,16 @@ export class Application {
     const inbounds = (await this.config.getConfigByPath<IConfigInbound[]>(this.config.inboundsConfigPath)).filter(
       (item) => item.systemProxy
     );
-    const tasks = inbounds.map((inbound) => {
-      switch (process.platform) {
-        case 'darwin':
-          return setMacOSSystemProxy(false, inbound.protocol as 'socks' | 'http');
-        case 'win32':
-          return setWinSystemProxy(false, inbound.protocol as 'socks' | 'http');
-      }
-    });
 
-    await Promise.all(tasks as PromiseLike<any>[]);
+    await Promise.all(
+      inbounds.map<Promise<any>>((inbound) => {
+        switch (process.platform) {
+          case 'darwin':
+            return setMacOSSystemProxy(false, inbound.protocol as 'socks' | 'http');
+          case 'win32':
+            return setWinSystemProxy(false, inbound.protocol as 'socks' | 'http');
+        }
+      })
+    );
   }
 }
