@@ -30,6 +30,8 @@ export class Application {
       const [classStr, method] = path.replace(/^\//, '').split('/');
       if (this[classStr][method]) {
         return this[classStr][method].apply(this[classStr], args);
+      } else if (this[classStr] && typeof this[classStr] === 'function') {
+        return this[classStr].apply(this, args);
       } else {
         throw new Error('method not found');
       }

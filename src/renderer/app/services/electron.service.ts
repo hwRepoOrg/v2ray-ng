@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as childProcess from 'child_process';
-import { ipcRenderer, remote, webFrame } from 'electron';
-import * as is from 'electron-is';
+import { ipcRenderer, webFrame } from 'electron';
 import { from, Observable } from 'rxjs';
 
 @Injectable({
@@ -10,7 +9,6 @@ import { from, Observable } from 'rxjs';
 export class ElectronService {
   ipcRenderer: typeof ipcRenderer;
   webFrame: typeof webFrame;
-  remote: typeof remote;
   childProcess: typeof childProcess;
 
   get isElectron(): boolean {
@@ -21,7 +19,6 @@ export class ElectronService {
     if (this.isElectron) {
       this.ipcRenderer = window.require('electron').ipcRenderer;
       this.webFrame = window.require('electron').webFrame;
-      this.remote = window.require('electron').remote;
       this.childProcess = window.require('child_process');
     }
   }

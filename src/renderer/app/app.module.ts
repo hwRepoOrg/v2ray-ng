@@ -17,7 +17,7 @@ import { ElectronService } from './services/electron.service';
 export class AppModule {
   constructor(private electronSrv: ElectronService) {
     if (environment.production) {
-      this.electronSrv.remote.getGlobal('appInstance')?.showMainPanel();
+      this.electronSrv.send('showMainPanel');
     }
   }
 }

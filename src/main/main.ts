@@ -1,8 +1,9 @@
 import { app, Event, nativeTheme } from 'electron';
 import * as log from 'electron-log';
-import { environment } from 'environments/environment';
 import express from 'express';
+import path from 'path';
 import { check } from 'tcp-port-used';
+import { environment } from '../environments/environment';
 import { Application } from './Application';
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
@@ -24,7 +25,11 @@ function init() {
   makeSingleInstance().then(() => {
     if (environment.production) {
       const httpApp = express();
-      httpApp.use('/', express.static(''));
+      httpApp.use(express.static(path.resolve(__dirname, 'renderer')));
+      getSafeServerPort(9795).then((port) => {
+        global.serverPort = port;
+        httpApp.listen(port);
+      });
     }
 
     app.dock.hide();
@@ -56,8 +61,8 @@ try {
   console.log(err);
 }
 
-function getSafeServerPort(port: number): any {
-  return new Promise((resolve) => {
+function getSafeServerPort(port: number) {
+  return new Promise<number>((resolve) => {
     this.checkPort(port, resolve);
   });
 }

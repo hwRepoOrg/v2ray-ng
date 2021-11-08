@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Application } from '@main/Application';
 import { ElectronService } from '../../services/electron.service';
 
 @Component({
@@ -9,11 +8,9 @@ import { ElectronService } from '../../services/electron.service';
 })
 export class TitleComponent {
   @Input() title: string;
-  private get application(): Application {
-    return this.electronSrv.remote.getGlobal('appInstance');
-  }
+
   public get isMacOS() {
-    return this.electronSrv.remote.process.platform === 'darwin';
+    return window.process.platform === 'darwin';
   }
 
   constructor(private electronSrv: ElectronService) {}
@@ -21,6 +18,6 @@ export class TitleComponent {
   minimal() {}
 
   close() {
-    this.application.mainWindow?.close();
+    this.electronSrv.send('closeMainPanel');
   }
 }
