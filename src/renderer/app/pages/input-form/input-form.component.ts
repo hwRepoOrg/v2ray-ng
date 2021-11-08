@@ -5,7 +5,6 @@ import { ElectronService } from '@renderer/services/electron.service';
 import { IConfigInbound, InboundProtocolType } from '@typing/config.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { filter, finalize, map, switchMap } from 'rxjs/operators';
-import { DEFAULT_INBOUNDS } from '../../../../config';
 
 @Component({
   selector: 'v2ray-input-form',
@@ -33,7 +32,7 @@ export class InputFormComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.es
-      .send('/config/getConfigByPath', this.cs.inboundsConfigPath, DEFAULT_INBOUNDS)
+      .send('/config/getInboundsConfig')
       .pipe(finalize(() => (this.loading = false)))
       .subscribe((inbounds) => {
         inbounds.forEach((inbound) => {
@@ -44,7 +43,7 @@ export class InputFormComponent implements OnInit {
 
   public submit() {
     this.es
-      .send('/config/writeConfigByPath', this.cs.inboundsConfigPath, this.inboundsFormArray.value)
+      .send('/config/setInboundsConfig', this.inboundsFormArray.value)
       .pipe(
         switchMap(() => this.es.send('/config/getGuiConfig', ['enabled'])),
         filter((enable) => enable),

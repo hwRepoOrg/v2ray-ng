@@ -5,7 +5,6 @@ import { ElectronService } from '@renderer/services/electron.service';
 import { IConfigRoutingRule } from '@typing/config.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { finalize } from 'rxjs/operators';
-import { DEFAULT_ROUTING } from '../../../../config';
 
 @Component({
   selector: 'v2ray-routing-form',
@@ -37,7 +36,7 @@ export class RoutingFormComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.es
-      .send('/config/getConfigByPath', this.cs.routingConfigPath, DEFAULT_ROUTING)
+      .send('/config/getRoutingConfig')
       .pipe(finalize(() => (this.loading = false)))
       .subscribe((routing) => {
         this.routingFormGroup.patchValue(routing);
@@ -48,7 +47,7 @@ export class RoutingFormComponent implements OnInit {
   }
 
   submit() {
-    this.es.send('/config/writeConfigByPath', this.cs.routingConfigPath, this.routingFormGroup.value).subscribe(() => {
+    this.es.send('/config/setRoutingConfig', this.routingFormGroup.value).subscribe(() => {
       this.msgSrv.success('保存成功');
     });
   }

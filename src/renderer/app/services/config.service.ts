@@ -9,16 +9,8 @@ export class ConfigService {
   loading = false;
   subscribeList: ISubscribeConfig[] = [];
   localNodeList: IConfigOutbound[] = [];
-  nodeListPath: string;
-  subscribesConfigPath: string;
-  inboundsConfigPath: string;
-  routingConfigPath: string;
   activatedNode: IConfigOutbound | null;
   constructor(public es: ElectronService, private http: HttpClient) {
-    this.nodeListPath = this.es.getRemoteProperty('appInstance', '.config.nodeListPath');
-    this.subscribesConfigPath = this.es.getRemoteProperty('appInstance', '.config.subscribesConfigPath');
-    this.inboundsConfigPath = this.es.getRemoteProperty('appInstance', '.config.inboundsConfigPath');
-    this.routingConfigPath = this.es.getRemoteProperty('appInstance', '.config.routingConfigPath');
     this.getActivatedNode();
   }
 
@@ -147,7 +139,7 @@ export class ConfigService {
   getLocalNodeList() {
     this.loading = true;
     this.es
-      .send<IConfigOutbound[]>('/config/getConfigByPath', this.nodeListPath, [])
+      .send<IConfigOutbound[]>('/config/getNodeList')
       .pipe(finalize(() => (this.loading = false)))
       .subscribe((list) => {
         this.localNodeList = list;
@@ -157,7 +149,7 @@ export class ConfigService {
   updateLocalNodeList(list: IConfigOutbound[]) {
     this.loading = true;
     this.es
-      .send('/config/writeConfigByPath', this.nodeListPath, list)
+      .send('/config/updateNodeList', list)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe(() => {
         this.getLocalNodeList();
@@ -190,7 +182,7 @@ export class ConfigService {
   getSubscribeList() {
     this.loading = true;
     this.es
-      .send<ISubscribeConfig[]>('/config/getConfigByPath', this.subscribesConfigPath, [])
+      .send<ISubscribeConfig[]>('/config/getSubscribesConfig')
       .pipe(finalize(() => (this.loading = false)))
       .subscribe((list) => {
         this.subscribeList = list;
@@ -200,7 +192,7 @@ export class ConfigService {
   updateSubscribeList(list: ISubscribeConfig[]) {
     this.loading = true;
     this.es
-      .send('/config/writeConfigByPath', this.subscribesConfigPath, list)
+      .send('/config/setSubscribesConfig', list)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe(() => {
         this.getSubscribeList();

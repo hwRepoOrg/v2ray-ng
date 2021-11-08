@@ -34,25 +34,24 @@ module.exports = {
     ],
   },
   plugins: [
-    new webpack.ProgressPlugin(),
-    new CleanWebpackPlugin({
-      verbose: true,
-      cleanOnceBeforeBuildPatterns: ['**/*', '!renderer', '!renderer/**/*'],
-    }),
-    new webpack.NormalModuleReplacementPlugin(/environments\/environment/gi, (resource) => {
-      if (process.env.NODE_ENV === 'production') {
-        resource.request = `${resource.request}.prod`;
-      }
-    }),
-    new CopyPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, './src/main/assets'),
-          to: path.resolve(__dirname, './v2ray-ng/assets'),
-        },
-        ...movePlatformFiles(),
-      ],
-    }),
+    // new webpack.ProgressPlugin(),
+    // new CleanWebpackPlugin({
+    //   verbose: true,
+    //   cleanOnceBeforeBuildPatterns: ['**/*', '!renderer', '!renderer/**/*'],
+    // }),
+    // new webpack.NormalModuleReplacementPlugin(/environments\/environment/gi, (resource) => {
+    //   if (process.env.NODE_ENV === 'production') {
+    //     resource.request = `${resource.request}.prod`;
+    //   }
+    // }),
+    // new CopyPlugin({
+    //   patterns: [
+    //     {
+    //       from: path.resolve(__dirname, './src/main/assets'),
+    //       to: path.resolve(__dirname, './v2ray-ng/assets'),
+    //     },
+    //   ],
+    // }),
   ],
   externals: {
     electron: 'commonjs2 electron',

@@ -1,4 +1,4 @@
-import { IConfig, IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
+import { IConfig, IConfigInbound, IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
 import { app } from 'electron';
 import { EventEmitter } from 'events';
 import { existsSync, mkdirSync, pathExists, readFile, writeFile, WriteFileOptions } from 'fs-extra';
@@ -25,9 +25,33 @@ export class AppConfig extends EventEmitter {
     }, 30);
   }
 
+  public async getRoutingConfig() {
+    return this.getConfigByPath(this.routingConfigPath, DEFAULT_ROUTING);
+  }
+
+  public async getInboundConfig() {
+    return this.getConfigByPath(this.inboundsConfigPath, DEFAULT_INBOUNDS);
+  }
+
+  public async getNodeList() {
+    return this.getConfigByPath(this.nodeListPath, []);
+  }
+
+  public async getSubscribesConfig() {
+    return this.getConfigByPath(this.subscribesConfigPath, []);
+  }
+
+  public async updateNodeList(list: any[]) {
+    return this.writeConfigByPath(this.nodeListPath, list);
+  }
+
+  public async setInboundsConfig(config: IConfigInbound[]) {
+    return this.writeConfigByPath(this.inboundsConfigPath, config);
+  }
+
   public async setRunningConfig(node: IConfigOutbound): Promise<IConfig> {
-    const routing = await this.getConfigByPath(this.routingConfigPath, DEFAULT_ROUTING);
-    const inbounds = await this.getConfigByPath(this.inboundsConfigPath, DEFAULT_INBOUNDS);
+    const routing = await this.getRoutingConfig();
+    const inbounds = await this.getInboundConfig();
     const config: IConfig = {
       ...DEFAULT_CONFIG_TEMPLATE,
       inbounds,

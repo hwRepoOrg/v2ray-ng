@@ -78,7 +78,6 @@ export class Application {
       titleBarStyle: 'hidden',
       transparent: true,
       webPreferences: {
-        partition: 'main',
         nodeIntegration: true,
         nodeIntegrationInWorker: true,
         enableRemoteModule: true,

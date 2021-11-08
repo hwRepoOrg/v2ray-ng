@@ -1,5 +1,5 @@
 import { IConfigOutbound, ISubscribeConfig } from '@typing/config.interface';
-import { Menu, MenuItemConstructorOptions, nativeImage, nativeTheme, shell, Tray } from 'electron';
+import { Menu, nativeImage, nativeTheme, shell, Tray } from 'electron';
 import { macOS } from 'electron-is';
 import log from 'electron-log';
 import { EventEmitter } from 'events';
@@ -28,7 +28,7 @@ export class AppTray extends EventEmitter {
 
   async getTrayContextMenus(): Promise<Menu> {
     const { config, core } = global.appInstance;
-    const localNodeList = await config.getConfigByPath(config.nodeListPath, [] as IConfigOutbound[]);
+    const localNodeList: any[] = await config.getConfigByPath(config.nodeListPath, [] as IConfigOutbound[]);
     const subscribeList = await config.getConfigByPath(config.subscribesConfigPath, [] as ISubscribeConfig[]);
     const { enabled } = await config.getGuiConfig(['extensionMode', 'enabled']);
     const activated = await global.appInstance.config.getActivatedNode();
@@ -49,7 +49,7 @@ export class AppTray extends EventEmitter {
       {
         label: '节点选择',
         submenu: [
-          ...localNodeList.map<MenuItemConstructorOptions>((node) => ({
+          ...localNodeList.map((node) => ({
             label: node.name,
             type: 'radio',
             checked: node.tag === (activated && activated.nodeTag),
@@ -58,9 +58,9 @@ export class AppTray extends EventEmitter {
             },
           })),
           { type: 'separator' },
-          ...subscribeList.map((sub) => ({
+          ...subscribeList.map((sub: any) => ({
             label: sub.title,
-            submenu: sub.nodes.map<MenuItemConstructorOptions>((node) => ({
+            submenu: sub.nodes.map((node) => ({
               label: node.name,
               type: 'radio',
               checked: node.tag === (activated && activated.nodeTag),
