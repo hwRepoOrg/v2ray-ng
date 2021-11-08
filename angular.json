@@ -28,7 +28,6 @@
           "skipTests": true
         },
         "@schematics/angular:module": {
-          "skipTests": true
         },
         "@schematics/angular:pipe": {
           "skipTests": true
@@ -49,10 +48,15 @@
             "main": "src/renderer/main.ts",
             "polyfills": "src/renderer/polyfills.ts",
             "tsConfig": "./src/renderer/tsconfig.json",
-            "aot": true,
             "assets": ["src/renderer/favicon.ico", "src/renderer/assets"],
             "styles": ["src/renderer/styles.less"],
-            "scripts": ["./node_modules/ajv/dist/ajv.bundle.js"]
+            "scripts": ["./node_modules/ajv/dist/ajv.bundle.js"],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -82,7 +86,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
