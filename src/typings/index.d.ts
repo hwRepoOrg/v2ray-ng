@@ -8,6 +8,7 @@ declare namespace NodeJS {
   }
   interface Global {
     appInstance: IApplication;
+    serverPort: number;
   }
 }
 
@@ -43,5 +44,6 @@ declare module '*.webp' {
 
 declare interface IEnvironment {
   production: boolean;
+  entryFolder: string;
   github_token: string;
 }

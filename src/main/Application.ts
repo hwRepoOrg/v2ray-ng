@@ -13,7 +13,7 @@ export class Application {
   public core: AppCore;
 
   private static get mainWindowUrl(): string {
-    return environment.production ? `file://${__dirname}/renderer/index.html` : 'http://localhost:4204';
+    return environment.production ? `http://127.0.0.1:${global.serverPort}/index.html` : 'http://localhost:4204';
   }
 
   constructor() {
@@ -76,6 +76,7 @@ export class Application {
       titleBarStyle: 'hidden',
       transparent: true,
       webPreferences: {
+        partition: 'main',
         nodeIntegration: true,
         nodeIntegrationInWorker: true,
         enableRemoteModule: true,
